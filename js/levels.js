@@ -1946,7 +1946,196 @@ const WORLD9_LEVELS = [
 ];
 
 
-// Futuro: W10 Cosmos
+const WORLD10_LEVELS = [
+  {
+    name: 'Órbita Suave', target: 38,
+    hint: '¡El Cosmo te espera! Nebulosas y planetas de colores.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -40, 6, 72, { type: 'space' });
+      b.coinRow(0, 0, -6, 0, 0, -24, 4);
+      b.checkpoint(0, 0, -28);
+      b.coin(0, 0, -40); b.coin(0, 0, -52);
+      b.checkpoint(0, 0, -56);
+      b.plat(0, 0, -80, 8, 10, { type: 'space', pillars: true });
+      b.crown(0, 0, -81);
+      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
+      b.wp(0, 0, -44); b.wp(0, 0, -56); b.wp(0, 0, -70); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Gravedad Baja', target: 48,
+    hint: 'Zonas de baja gravedad: saltos más altos y flotantes.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
+      // piso ancho continuo — la baja gravedad no te tira al vacío
+      b.plat(0, 0, -50, 8, 92, { type: 'space' });
+      b.lowGravZone(0, 0, -18, 6, 16, { gScale: 0.45, jumpScale: 1.4 });
+      b.coin(0, 0, -14); b.coin(0, 0, -22);
+      b.checkpoint(0, 0, -36);
+      b.lowGravZone(0, 0, -54, 6, 16, { gScale: 0.45, jumpScale: 1.4 });
+      b.coin(0, 0, -50); b.coin(0, 0, -58);
+      b.checkpoint(0, 0, -70);
+      b.plat(0, 0, -88, 8, 10, { type: 'space', pillars: true });
+      b.crown(0, 0, -89);
+      b.wp(0, 0, -2); b.wp(0, 0, -18); b.wp(0, 0, -36);
+      b.wp(0, 0, -54); b.wp(0, 0, -70); b.wp(0, 0, -89);
+    },
+  },
+  {
+    name: 'Pozos de Gravedad', target: 50,
+    hint: 'Los planetas te atraen. Compensa la órbita.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -50, 10, 92, { type: 'space' });
+      b.gravWell(-5.5, 0, -22, { r: 5.0, force: 6.5, color: 0xff9060 });
+      b.coin(0, 0, -18); b.coin(0, 0, -26);
+      b.checkpoint(0, 0, -36);
+      b.gravWell(5.5, 0, -52, { r: 5.0, force: 6.5, color: 0x60c0ff });
+      b.coin(0, 0, -48); b.coin(0, 0, -56);
+      b.checkpoint(0, 0, -68);
+      b.plat(0, 0, -88, 8, 10, { type: 'space', pillars: true });
+      b.crown(0, 0, -89);
+      b.wp(0, 0, -2); b.wp(1.5, 0, -22); b.wp(0, 0, -36);
+      b.wp(-1.5, 0, -52); b.wp(0, 0, -68); b.wp(0, 0, -89);
+    },
+  },
+  {
+    name: 'Asteroides en Órbita', target: 52,
+    hint: 'Asteroides orbitan a los lados. Sigue el camino central.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -50, 6, 92, { type: 'space' });
+      b.orbitPlat(0, 0.85, -28, 2.8, 2.8, { radius: 5.0, speed: 0.7, phase: 0 });
+      b.coin(5.0, 0.85, -28);
+      b.checkpoint(0, 0, -40);
+      b.orbitPlat(0, 0.85, -58, 2.8, 2.8, { radius: 5.0, speed: 0.75, phase: 1.5 });
+      b.coin(-5.0, 0.85, -58);
+      b.checkpoint(0, 0, -70);
+      b.plat(0, 0, -88, 8, 10, { type: 'space', pillars: true });
+      b.crown(0, 0, -89);
+      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -40);
+      b.wp(0, 0, -58); b.wp(0, 0, -70); b.wp(0, 0, -89);
+    },
+  },
+  {
+    name: 'Lluvia de Meteoros', target: 50,
+    hint: '¡Ojo a las sombras naranjas! Espera y cruza.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'space', pillars: true });
+      b.plat(0, 0, -20, 5, 34, { type: 'space' }); b.coinRow(0, 0, -5, 0, 0, -28, 4);
+      const m1 = b.meteor(0, 0, -14, { period: 3.4, phase: 0 });
+      const m2 = b.meteor(0, 0, -24, { period: 3.4, phase: 0.5 });
+      b.plat(0, 0, -42, 6, 8, { type: 'space', pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -60, 5, 28, { type: 'space' });
+      const m3 = b.meteor(0, 0, -52, { period: 3.2, phase: 0.2 });
+      const m4 = b.meteor(0, 0, -62, { period: 3.2, phase: 0.7 });
+      b.coin(0, 0, -55); b.coin(0, 0, -65);
+      b.plat(0, 0, -80, 8, 10, { type: 'space', pillars: true });
+      b.crown(0, 0, -81);
+      const W = (m, lead) => ({ cond: () => m.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -10);
+      b.wp(0, 0, -11.5, 'w', 0, W(m1, 0.15)); b.wp(0, 0, -18, '', 7);
+      b.wp(0, 0, -21.5, 'w', 0, W(m2, 0.15)); b.wp(0, 0, -32); b.wp(0, 0, -42);
+      b.wp(0, 0, -49.5, 'w', 0, W(m3, 0.15)); b.wp(0, 0, -57, '', 7);
+      b.wp(0, 0, -59.5, 'w', 0, W(m4, 0.15)); b.wp(0, 0, -70); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Agujeros Negros', target: 52,
+    hint: 'Atractores al borde. Mantente al centro del camino.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -50, 8, 92, { type: 'space' });
+      b.blackHole(-6.5, 0, -22, { r: 4.0, force: 9 });
+      b.coin(0, 0, -18); b.coin(0, 0, -26);
+      b.checkpoint(0, 0, -36);
+      b.blackHole(6.5, 0, -54, { r: 4.0, force: 9 });
+      b.coin(0, 0, -50); b.coin(0, 0, -58);
+      b.checkpoint(0, 0, -68);
+      b.plat(0, 0, -88, 8, 10, { type: 'space', pillars: true });
+      b.crown(0, 0, -89);
+      b.wp(0, 0, -2); b.wp(0, 0, -22); b.wp(0, 0, -36);
+      b.wp(0, 0, -54); b.wp(0, 0, -68); b.wp(0, 0, -89);
+    },
+  },
+  {
+    name: 'Anillos Estelares', target: 48,
+    hint: 'Atraviesa los anillos dorados para un turbo cósmico.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -48, 6, 88, { type: 'space' });
+      b.starBoost(0, 0, -14, { force: 15 });
+      b.coin(0, 0, -22);
+      b.checkpoint(0, 0, -32);
+      b.starBoost(0, 0, -42, { force: 15 });
+      b.coin(0, 0, -52);
+      b.checkpoint(0, 0, -62);
+      b.starBoost(0, 0, -72, { force: 14 });
+      b.plat(0, 0, -90, 8, 10, { type: 'space', pillars: true });
+      b.crown(0, 0, -91);
+      b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -32);
+      b.wp(0, 0, -42); b.wp(0, 0, -62);
+      b.wp(0, 0, -72); b.wp(0, 0, -91);
+    },
+  },
+  {
+    name: 'Corona del Cosmos', target: 95,
+    hint: '¡El gran final! Un recuerdo de cada mundo.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -110, 12, 220, { type: 'space' });
+      // W1 martillo
+      b.hammer(0, 0, -16, { speed: 1.35, len: 4.0 });
+      b.checkpoint(0, 0, -28);
+      // W2 géiser
+      const j1 = b.fireJet(0, 0, -40, { period: 3.2, h: 2.5 });
+      b.checkpoint(0, 0, -50);
+      // W3 carámbano
+      const ic = b.icicle(0, 0, -60, { period: 3.4 });
+      b.checkpoint(0, 0, -70);
+      // W4 hoja (rebote suave, sin hueco)
+      b.leafTramp(0, 0, -78, { power: 11 });
+      b.coin(0, 2.2, -78);
+      // W5 escarabajo lateral
+      b.scarab(5.8, 0, -90, { to: [0, 0, -8], period: 5.0 });
+      b.checkpoint(0, 0, -96);
+      // W6 cinta chocolate en contra
+      b.chocConvey(0, 0, -108, 4.5, 12, { dir: [0, 0, 1], speed: 2.6 });
+      b.checkpoint(0, 0, -120);
+      // W7 burbujas laterales (decor)
+      b.bubbleColumn(5.5, 0, -128, 3, 6, { force: 10 });
+      // W8 hacha
+      const ax = b.pendulumAxe(0, 0, -140, { speed: 1.35, len: 3.8 });
+      b.checkpoint(0, 0, -152);
+      // W9 láser
+      const lz = b.laserGate(0, 0, -162, { period: 3.0 });
+      b.checkpoint(0, 0, -172);
+      // W10 anillo + lowGrav + corona especial
+      b.starBoost(0, 0, -180, { force: 12 });
+      b.lowGravZone(0, 0, -190, 6, 12, { gScale: 0.5, jumpScale: 1.3 });
+      b.plat(0, 0, -210, 12, 14, { type: 'space', pillars: true });
+      b.pillar(-3.5, 0, -214, 3); b.pillar(3.5, 0, -214, 3);
+      b.cosmosCrown(0, 0, -212);
+      const Wj = (j, lead) => ({ cond: () => j.safe(lead) });
+      const Wi = (i, lead) => ({ cond: () => i.safe(lead) });
+      const Wh = (h, lead) => ({ cond: () => h.safe(lead) });
+      const Wl = (l, lead) => ({ cond: () => l.safe(lead) });
+      b.wp(0, 0, -2);
+      b.wp(2.8, 0, -14, 't'); b.wp(2.8, 0, -20); b.wp(0, 0, -28);
+      b.wp(0, 0, -37.5, 'w', 0, Wj(j1, 0.1)); b.wp(0, 0, -46, '', 7); b.wp(0, 0, -50);
+      b.wp(0, 0, -57.5, 'w', 0, Wi(ic, 0.15)); b.wp(0, 0, -66, '', 7); b.wp(0, 0, -70);
+      b.wp(0, 0, -78); b.wp(-1.5, 0, -90); b.wp(0, 0, -96);
+      b.wp(0, 0, -108); b.wp(0, 0, -120); b.wp(0, 0, -128);
+      b.wp(0, 0, -137, 'w', 0, Wh(ax, 0.25)); b.wp(0, 0, -152);
+      b.wp(0, 0, -159.5, 'w', 0, Wl(lz, 0.1)); b.wp(0, 0, -170, '', 7); b.wp(0, 0, -172);
+      b.wp(0, 0, -180); b.wp(0, 0, -190); b.wp(0, 0, -212);
+    },
+  },
+];
+
+
+
 export const WORLDS = [
   { id: 'ruinas', name: 'Ruinas Flotantes', theme: 'sky', levels: WORLD1_LEVELS },
   { id: 'volcan', name: 'Volcán Ardiente', theme: 'lava', unlockIndex: 7, levels: WORLD2_LEVELS },
@@ -1957,11 +2146,12 @@ export const WORLDS = [
   { id: 'arrecife', name: 'Arrecife Profundo', theme: 'reef', unlockIndex: 47, levels: WORLD7_LEVELS },
   { id: 'castillo', name: 'Castillo Encantado', theme: 'castle', unlockIndex: 55, levels: WORLD8_LEVELS },
   { id: 'neon', name: 'Ciudad Neón', theme: 'neon', unlockIndex: 63, levels: WORLD9_LEVELS },
+  { id: 'cosmos', name: 'Cosmos', theme: 'space', unlockIndex: 71, levels: WORLD10_LEVELS },
 ];
 
 
 
-// Lista plana (índices 0-7 Mundo 1, 8-15 Mundo 2) — compatible con partidas guardadas
+// Lista plana — compatible con partidas guardadas
 export const LEVELS = WORLDS.flatMap((w, wi) => w.levels.map((L, li) => ({
   ...L, world: w.id, worldIndex: wi, theme: w.theme, localIndex: li,
 })));

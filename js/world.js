@@ -54,6 +54,10 @@ export const PAL = {
   ghost: 0xe8f0ff, ghostGlow: 0xb0d0ff,
   // Ciudad Neón
   neonFloor: 0x2a3a78, neonSide: 0x102048, neonEdge: 0x40f0ff,
+  spaceFloor: 0x2a3a78, spaceSide: 0x1a2858, spaceDark: 0x101838,
+  nebulaPink: 0xff80c8, nebulaCyan: 0x60e0ff, nebulaPurple: 0xb070ff,
+  asteroid: 0x8a7a6a, asteroidDark: 0x5a4a3a, starGold: 0xffe066,
+  blackHole: 0x201040, planetPull: 0xffa040, lowGrav: 0xa0ffe0,
   neonPink: 0xff40c8, neonCyan: 0x40f8ff, neonYellow: 0xffe060, neonPurple: 0xb060ff,
   teleA: 0x40f8ff, teleB: 0xff40c8, laser: 0xff40a0, magnet: 0x8060ff,
   boost: 0xffe040, elev: 0x40d0ff, neonConvey: 0x48e0ff,
@@ -115,6 +119,7 @@ const STYLE = {
   reefSand: [PAL.reefSand, PAL.coralSide, PAL.coralDark],
   castle: [PAL.castle, PAL.castleSide, PAL.castleDark],
   neon: [PAL.neonFloor, PAL.neonSide, PAL.neonSide],
+  space: [PAL.spaceFloor, PAL.spaceSide, PAL.spaceDark],
 };
 
 let glowTex = null;
@@ -145,7 +150,7 @@ export class Level {
             : (this.theme === 'candy' ? 'candy'
               : (this.theme === 'reef' ? 'coral'
                 : (this.theme === 'castle' ? 'castle'
-                  : (this.theme === 'neon' ? 'neon' : 'stone')))))));
+                  : (this.theme === 'neon' ? 'neon' : (this.theme === 'space' ? 'space' : 'stone'))))))));
     def.build(this);
     this.finish();
   }
@@ -1400,11 +1405,146 @@ export class Level {
     const to = o.to || [0, 3.5, 0];
     return this.mover(x, y, z, w, d, { to, period: o.period || 4.5, phase: o.phase || 0, color: PAL.elev, side: 0x1880a8, h: o.h || 0.55 });
   }
+
   neonConvey(x, y, z, w, d, o = {}) {
     const e = this.convey(x, y, z, w, d, { dir: o.dir || [0, 0, 1], speed: o.speed || 3.8, h: o.h || 0.45 });
     if (e.mesh) colorGeo(e.mesh.geometry, PAL.neonConvey, PAL.neonSide);
     return e;
   }
+
+  // ---------- Cosmos ----------
+  lowGravZone(x, y, z, w, d, o = {}) {
+    const gScale = o.gScale || 0.38, jumpScale = o.jumpScale || 1.55;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const field = new THREE.Mesh(new THREE.BoxGeometry(w * 0.95, 0.08, d * 0.95), new THREE.MeshBasicMaterial({ color: PAL.lowGrav, transparent: true, opacity: 0.35 }));
+    field.position.y = 0.06; g.add(field);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(Math.min(w, d) * 0.28, 0.06, 8, 24), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.45 }));
+    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.5; g.add(ring);
+    const e = { type: 'lowGrav', g, ring, gScale, jumpScale,
+      min: new THREE.Vector3(x - w / 2, y - 0.5, z - d / 2),
+      max: new THREE.Vector3(x + w / 2, y + 5.5, z + d / 2),
+      contains(p) { return p.x >= this.min.x && p.x <= this.max.x && p.y >= this.min.y && p.y <= this.max.y && p.z >= this.min.z && p.z <= this.max.z; },
+      update(t) { ring.rotation.z = t * 1.5; ring.material.opacity = 0.3 + Math.sin(t * 4) * 0.15; field.material.opacity = 0.25 + Math.sin(t * 3) * 0.1; } };
+    this.entities.push(e); this.bounds.expandByPoint(new THREE.Vector3(x, y, z)); return e;
+  }
+  gravWell(x, y, z, o = {}) {
+    const r = o.r || 5.5, force = o.force || 7.5, planetR = o.planetR || 1.1;
+    const g = new THREE.Group(); g.position.set(x, y + planetR, z); this.group.add(g);
+    const planet = new THREE.Mesh(new THREE.SphereGeometry(planetR, 16, 12), new THREE.MeshLambertMaterial({ color: o.color || PAL.planetPull, emissive: 0x442200, emissiveIntensity: 0.35 }));
+    planet.castShadow = true; g.add(planet);
+    const halo = new THREE.Mesh(new THREE.TorusGeometry(planetR * 1.35, 0.08, 6, 24), new THREE.MeshBasicMaterial({ color: 0xffe0a0, transparent: true, opacity: 0.55 }));
+    halo.rotation.x = 0.6; g.add(halo);
+    // plataforma sólida del planeta (se puede pisar encima)
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + planetR * 0.35, z), r: planetR * 0.85, h: planetR * 0.55 });
+    this.colliders.push(c);
+    const e = { type: 'gravWell', g, planet, halo, cx: x, cy: y + planetR, cz: z, r, force,
+      contains(p) { return Math.hypot(p.x - this.cx, p.z - this.cz) < this.r && Math.abs(p.y - this.cy) < this.r * 0.85; },
+      update(t) { planet.rotation.y = t * 0.6; halo.rotation.z = t * 0.4; } };
+    this.entities.push(e); this.bounds.expandByPoint(new THREE.Vector3(x, y, z)); return e;
+  }
+  orbitPlat(x, y, z, w = 3.2, d = 3.2, o = {}) {
+    const radius = o.radius || 5.5, speed = o.speed || 0.55, phase = o.phase || 0, h = o.h || 0.55;
+    const geo = new THREE.BoxGeometry(w, h, d); colorGeo(geo, PAL.asteroid, PAL.asteroidDark);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
+    const c = new Collider('box', { pos: new THREE.Vector3(x + radius, y - h / 2, z), half: new THREE.Vector3(w / 2, h / 2, d / 2), kinematic: true });
+    this.colliders.push(c);
+    const e = { type: 'orbitPlat', c, mesh, cx: x, cy: y - h / 2, cz: z, radius, speed, phase, w, d,
+      update(t) {
+        const a = t * this.speed + this.phase;
+        c.pos.set(this.cx + Math.cos(a) * this.radius, this.cy, this.cz + Math.sin(a) * this.radius);
+        c.commit(); mesh.position.copy(c.pos); mesh.rotation.y = -a;
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e);
+    this.bounds.expandByPoint(new THREE.Vector3(x + radius, y, z)); return e;
+  }
+  meteor(x, y, z, o = {}) {
+    const period = o.period || 3.8, phase = o.phase || 0, dropH = o.dropH || 6.0;
+    const g = new THREE.Group(); g.position.set(x, y + dropH, z); this.group.add(g);
+    const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55, 0), new THREE.MeshLambertMaterial({ color: PAL.asteroid, emissive: 0x331100, emissiveIntensity: 0.25 }));
+    rock.castShadow = true; g.add(rock);
+    const trail = new THREE.Mesh(new THREE.ConeGeometry(0.25, 1.2, 6), new THREE.MeshBasicMaterial({ color: 0xff8040, transparent: true, opacity: 0.7 }));
+    trail.position.y = 0.9; g.add(trail);
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.7, 16), new THREE.MeshBasicMaterial({ color: 0xff6030, transparent: true, opacity: 0.2 }));
+    shadow.rotation.x = -Math.PI / 2; shadow.position.set(x, y + 0.05, z); this.group.add(shadow);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + dropH, z), r: 0.45, h: 0.55, kind: 'kill', kinematic: true });
+    this.colliders.push(c);
+    const e = { type: 'meteor', c, g, rock, trail, shadow, period, phase, dropH, homeY: y + dropH, groundY: y,
+      safe(lead = 0) {
+        let u = ((this._u || 0) + lead / this.period) % 1; if (u < 0) u += 1;
+        return u < 0.42 || u > 0.75;
+      },
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1; this._u = u;
+        let py = this.homeY, active = false, sop = 0.15;
+        if (u < 0.50) { py = this.homeY; sop = 0.18 + u / 0.50 * 0.55; }
+        else if (u < 0.62) {
+          const k = (u - 0.50) / 0.12;
+          py = this.homeY + (this.groundY + 0.7 - this.homeY) * k * k;
+          active = true; sop = 0.7;
+        } else if (u < 0.75) { py = this.groundY + 0.7; active = true; sop = 0.35; }
+        else { py = this.homeY; sop = 0.12; }
+        g.position.y = py; rock.visible = trail.visible = u < 0.75 || u > 0.88;
+        rock.rotation.x = t * 3; rock.rotation.z = t * 2;
+        shadow.material.opacity = sop;
+        const sc = 0.5 + sop * 0.9; shadow.scale.set(sc, sc, sc);
+        c.pos.set(x, py, z); c.active = active; c.commit();
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  blackHole(x, y, z, o = {}) {
+    // atractor fuerte al BORDE (fair: camino central sigue siendo seguro)
+    const r = o.r || 4.2, force = o.force || 11;
+    const g = new THREE.Group(); g.position.set(x, y + 0.8, z); this.group.add(g);
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.55, 12, 10), new THREE.MeshBasicMaterial({ color: 0x080818 }));
+    g.add(core);
+    const disk = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.18, 8, 24), new THREE.MeshBasicMaterial({ color: PAL.nebulaPurple, transparent: true, opacity: 0.75 }));
+    disk.rotation.x = Math.PI / 2.4; g.add(disk);
+    const e = { type: 'blackHole', g, disk, core, cx: x, cy: y + 0.8, cz: z, r, force,
+      contains(p) { return Math.hypot(p.x - this.cx, p.z - this.cz) < this.r && Math.abs(p.y - this.cy) < 3.5; },
+      update(t) { disk.rotation.z = t * 2.5; core.scale.setScalar(0.9 + Math.sin(t * 5) * 0.08); } };
+    this.entities.push(e); this.bounds.expandByPoint(new THREE.Vector3(x, y, z)); return e;
+  }
+  starBoost(x, y, z, o = {}) {
+    const force = o.force || 16, r = o.r || 1.35;
+    const g = new THREE.Group(); g.position.set(x, y + 1.1, z); this.group.add(g);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.14, 8, 28), new THREE.MeshLambertMaterial({ color: PAL.starGold, emissive: 0xffaa00, emissiveIntensity: 0.7 }));
+    // anillo vertical mirando -Z (se atraviesa rodando)
+    ring.rotation.y = Math.PI / 2; g.add(ring);
+    const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.35), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    star.position.y = 0; g.add(star);
+    const e = { type: 'starBoost', g, ring, star, force, cx: x, cy: y + 1.1, cz: z, r,
+      contains(p) { return Math.hypot(p.x - this.cx, p.y - this.cy) < this.r * 1.1 && Math.abs(p.z - this.cz) < 0.9; },
+      update(t) { ring.rotation.z = t * 3; star.rotation.y = t * 4; star.rotation.x = t * 2; } };
+    this.entities.push(e); this.bounds.expandByPoint(new THREE.Vector3(x, y, z)); return e;
+  }
+  cosmosCrown(x, y, z) {
+    // corona especial del final
+    this.crown(x, y, z);
+    if (this.crownObj) {
+      const rainbow = new THREE.Mesh(new THREE.TorusGeometry(1.1, 0.08, 8, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 }));
+      rainbow.rotation.x = Math.PI / 2; rainbow.position.y = 0.9; this.crownObj.add(rainbow);
+      const tip = new THREE.Mesh(new THREE.OctahedronGeometry(0.35), new THREE.MeshLambertMaterial({ color: 0xff80ff, emissive: 0xff40ff, emissiveIntensity: 0.8 }));
+      tip.position.y = 1.4; this.crownObj.add(tip);
+      this.crownObj.userData.cosmos = true;
+      this._cosmosRainbow = rainbow; this._cosmosTip = tip;
+    }
+    return this.crownObj;
+  }
+  _spaceFloor() {
+    const b = this.bounds.clone(); b.expandByScalar(28);
+    const ww = Math.max(70, b.max.x - b.min.x + 40), dd = Math.max(90, b.max.z - b.min.z + 40);
+    const y = this.minY - 5.0;
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry(ww, dd), new THREE.MeshLambertMaterial({ color: 0x0c1840 }));
+    sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
+    this.group.add(sea);
+    // estrellas lejanas
+    for (let i = 0; i < 40; i++) {
+      const s = new THREE.Mesh(new THREE.SphereGeometry(0.08 + Math.random() * 0.12, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      s.position.set(sea.position.x + (Math.random() - 0.5) * ww * 0.9, y + 0.2 + Math.random() * 18, sea.position.z + (Math.random() - 0.5) * dd * 0.9);
+      this.group.add(s);
+    }
+  }
+
   _neonFloor() {
     const b = this.bounds.clone(); b.expandByScalar(28);
     const ww = Math.max(70, b.max.x - b.min.x + 40), dd = Math.max(90, b.max.z - b.min.z + 40);
@@ -1432,7 +1572,7 @@ export class Level {
     this.coinMesh = new THREE.InstancedMesh(cg, new THREE.MeshLambertMaterial({ color: 0xffd23a, emissive: 0xffa000, emissiveIntensity: 0.5 }), Math.max(1, this.coins.length));
     this.coinMesh.castShadow = true; this.group.add(this.coinMesh);
     this.coinMesh.count = this.coins.length;
-    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : (this.theme === 'desert' ? 8 : (this.theme === 'candy' ? 10 : (this.theme === 'reef' ? 8 : (this.theme === 'castle' ? 10 : (this.theme === 'neon' ? 10 : 14)))))));
+    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : (this.theme === 'desert' ? 8 : (this.theme === 'candy' ? 10 : (this.theme === 'reef' ? 8 : (this.theme === 'castle' ? 10 : (this.theme === 'neon' ? 10 : (this.theme === 'space' ? 12 : 14))))))));
     if (this.theme === 'lava') this._lavaSea();
     if (this.theme === 'ice') this._snowFloor();
     if (this.theme === 'desert') this._sandFloor();
@@ -1440,6 +1580,7 @@ export class Level {
     if (this.theme === 'reef') this._reefFloor();
     if (this.theme === 'castle') this._castleFloor();
     if (this.theme === 'neon') this._neonFloor();
+    if (this.theme === 'space') this._spaceFloor();
     this.updateCoins(0);
   }
   _lavaSea() {
@@ -1477,7 +1618,7 @@ export class Level {
     const b = this.bounds.clone(); b.expandByScalar(4);
     const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, sz = Math.max(b.max.z - b.min.z, 30);
     const lava = this.theme === 'lava', ice = this.theme === 'ice', jungle = this.theme === 'jungle', desert = this.theme === 'desert';
-    const candy = this.theme === 'candy', reef = this.theme === 'reef', castle = this.theme === 'castle', neon = this.theme === 'neon';
+    const candy = this.theme === 'candy', reef = this.theme === 'reef', castle = this.theme === 'castle', neon = this.theme === 'neon', space = this.theme === 'space';
     for (let i = 0; i < 16; i++) {
       const side = i % 2 ? 1 : -1;
       const x = cx + side * (18 + this.rand() * 26), z = b.min.z + this.rand() * sz, y = -6 + this.rand() * 14;
@@ -1554,6 +1695,17 @@ export class Level {
           this.decor.add(new THREE.BoxGeometry(0.9, h, 0.9), _m, PAL.neonSide, PAL.neonSide);
           _m.compose(_v.set(x + 0.2, y + 0.3 + h + 0.3, z), _q.identity(), _s);
           this.decor.add(new THREE.BoxGeometry(1.1, 0.35, 1.1), _m, PAL.neonCyan, PAL.neonPink);
+        }
+      } else if (space) {
+        // planetas y nebulosas laterales
+        this.decor.add(new THREE.SphereGeometry(r * 0.9, 10, 8), _m, PAL.nebulaPurple, PAL.nebulaCyan);
+        if (this.rand() < 0.55) {
+          _m.compose(_v.set(x + side * 2, y + 2 + this.rand() * 3, z), _q.identity(), _s);
+          this.decor.add(new THREE.SphereGeometry(0.6 + this.rand(), 8, 6), _m, PAL.nebulaPink, PAL.nebulaCyan);
+        }
+        if (this.rand() < 0.4) {
+          _m.compose(_v.set(x, y + 1.5, z), _q.setFromEuler(_e.set(0.5, 0, 0)), _s);
+          this.decor.add(new THREE.TorusGeometry(r * 0.7, 0.08, 6, 16), _m, PAL.starGold, PAL.starGold);
         }
       } else {
         this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.8, 7), _m, PAL.grass, PAL.grassSide);

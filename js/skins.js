@@ -31,6 +31,10 @@ export const SKINS = [
   { id: 'cetro', name: 'Cetro', unlock: 'achieve:castillo_listo' },
   { id: 'holo', name: 'Holo', price: 330 },
   { id: 'laser', name: 'Láser', unlock: 'achieve:neon_listo' },
+  { id: 'saturno', name: 'Saturno', price: 360 },
+  { id: 'estrella', name: 'Estrella', price: 380 },
+  { id: 'agujero', name: 'Agujero Negro', unlock: 'achieve:cosmos_listo' },
+  { id: 'leyenda', name: 'Leyenda', unlock: 'achieve:leyenda' },
   // desbloqueos por logros / racha (no se compran)
   { id: 'emoji', name: 'Carita', unlock: 'achieve:primera_corona' },
   { id: 'fantasma', name: 'Fantasma', unlock: 'achieve:sin_caer' },
@@ -271,6 +275,50 @@ export function skinCanvas(id) {
       x.fillStyle = '#fff'; x.beginPath(); x.arc(W / 2, H / 2, 10, 0, 7); x.fill();
       break;
     }
+
+    case 'saturno': {
+      const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#f0c090'); g.addColorStop(0.5, '#d08040'); g.addColorStop(1, '#805020');
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      x.strokeStyle = 'rgba(255,230,160,0.85)'; x.lineWidth = 10;
+      x.beginPath(); x.ellipse(W/2, H/2, 90, 28, -0.35, 0, 7); x.stroke();
+      x.fillStyle = '#ffe8a0'; x.beginPath(); x.arc(W*0.35, H*0.35, 8, 0, 7); x.fill();
+      break;
+    }
+    case 'estrella': {
+      x.fillStyle = '#201848'; x.fillRect(0, 0, W, H);
+      x.fillStyle = '#ffe066';
+      for (let i = 0; i < 18; i++) {
+        const px = (i * 47) % W, py = (i * 31) % H, s = 4 + (i % 3) * 2;
+        x.beginPath();
+        for (let k = 0; k < 5; k++) {
+          const a = -Math.PI/2 + k * Math.PI*2/5, r = k ? s : s*1.7;
+          const xx = px + Math.cos(a)*r, yy = py + Math.sin(a)*r;
+          if (k === 0) x.moveTo(xx, yy); else x.lineTo(xx, yy);
+        }
+        x.closePath(); x.fill();
+      }
+      break;
+    }
+    case 'agujero': {
+      const g = x.createRadialGradient(W/2, H/2, 4, W/2, H/2, 80);
+      g.addColorStop(0, '#000010'); g.addColorStop(0.35, '#401868'); g.addColorStop(0.7, '#a060ff'); g.addColorStop(1, '#201040');
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      x.strokeStyle = '#ff80c8'; x.lineWidth = 6;
+      x.beginPath(); x.ellipse(W/2, H/2, 70, 22, 0.4, 0, 7); x.stroke();
+      break;
+    }
+    case 'leyenda': {
+      const g = x.createLinearGradient(0, 0, W, H);
+      g.addColorStop(0, '#fff0a0'); g.addColorStop(0.25, '#ff80c8'); g.addColorStop(0.5, '#60e0ff');
+      g.addColorStop(0.75, '#b070ff'); g.addColorStop(1, '#ffe066');
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      x.fillStyle = 'rgba(255,255,255,0.85)';
+      x.beginPath(); x.arc(W/2, H/2, 28, 0, 7); x.fill();
+      x.fillStyle = '#ffd23a';
+      x.beginPath(); x.moveTo(W/2, H*0.22); x.lineTo(W*0.42, H*0.55); x.lineTo(W*0.58, H*0.55); x.fill();
+      break;
+    }
+
     case 'real': {
       const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#fff3b0'); g.addColorStop(0.4, '#ffd23a'); g.addColorStop(1, '#c07020');
       x.fillStyle = g; x.fillRect(0, 0, W, H);
@@ -299,6 +347,9 @@ export function skinMaterial(id) {
   if (id === 'coral') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x084848, emissiveIntensity: 0.2 });
   if (id === 'bandera' || id === 'cetro') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x442266, emissiveIntensity: 0.25 });
   if (id === 'holo' || id === 'laser') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x004466, emissiveIntensity: 0.4 });
+  if (id === 'saturno') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x553311, emissiveIntensity: 0.25 });
+  if (id === 'estrella' || id === 'leyenda') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.55 });
+  if (id === 'agujero') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x220044, emissiveIntensity: 0.45 });
   return new THREE.MeshLambertMaterial({ map: tex });
 }
 

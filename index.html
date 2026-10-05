@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Corona Rodante: rueda por las Ruinas, el Volcán y el Glaciar. Reto Diario, bolas y logros. Juego de plataformas 3D para el navegador del móvil.">
 <title>Corona Rodante</title>
-<link rel="icon" href="icon.svg?v=36" type="image/svg+xml">
-<link rel="manifest" href="manifest.json?v=36">
-<link rel="stylesheet" href="css/style.css?v=36">
-<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=36" } }</script>
+<link rel="icon" href="icon.svg?v=44" type="image/svg+xml">
+<link rel="manifest" href="manifest.json?v=44">
+<link rel="stylesheet" href="css/style.css?v=44">
+<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=44" } }</script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -54,7 +54,7 @@
     </div>
     <div class="title-foot">
       <div class="wallet"><span class="coin-ico"></span><span class="wallet-n">0</span></div>
-      <div class="ver-badge" id="ver-badge">v0.3</div>
+      <div class="ver-badge" id="ver-badge">v0.4</div>
     </div>
   </div>
 </section>
@@ -130,6 +130,20 @@
 </section>
 
 
+
+<!-- Final Cosmo -->
+<section class="screen hidden dim" id="scr-ending">
+  <div class="ending-confetti" id="ending-confetti" aria-hidden="true"></div>
+  <div class="panel ending-panel">
+    <div class="ending-emoji">👑🌌</div>
+    <h2 class="win-title ending-title">¡Conquistaste los 10 mundos!</h2>
+    <p class="ending-sub">Eres leyenda de la Corona Rodante. Las nebulosas brillan por ti.</p>
+    <div class="menu">
+      <button class="btn yellow" id="btn-ending-menu">Volver al menú</button>
+    </div>
+  </div>
+</section>
+
 <!-- Reto Diario -->
 <section class="screen hidden" id="scr-daily">
   <div class="panel wide">
@@ -168,6 +182,6 @@
 
 <div id="loading">Cargando…</div>
 <noscript>Este juego necesita JavaScript.</noscript>
-<script type="module" src="js/main.js?v=36"></script>
+<script type="module" src="js/main.js?v=44"></script>
 </body>
 </html>

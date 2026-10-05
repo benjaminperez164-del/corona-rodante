@@ -97,10 +97,12 @@ export class Ball {
     this.airTime = 0; this.lastImpact = 0; this.jumped = false;
     this.events = []; // eventos para el juego (aterrizaje, golpe, muelle...)
     this.quat = new THREE.Quaternion();
+    this.gScale = 1; this.jumpScale = 1;
   }
   reset(p) {
     this.pos.copy(p); this.vel.set(0, 0, 0); this.ground = null; this.sinceGround = 99;
     this.sinceJumpPress = 99; this.groundVel.set(0, 0, 0); this.airTime = 0; this.jumped = false;
+    this.gScale = 1; this.jumpScale = 1;
   }
   pressJump() { this.sinceJumpPress = 0; this.jumpHeld = true; }
   releaseJump() { this.jumpHeld = false; }
@@ -158,11 +160,12 @@ export function stepBall(ball, colliders, input, dt) {
     ball.vel.x -= latX * Math.min(1, lk * dt); ball.vel.z -= latZ * Math.min(1, lk * dt);
   }
   // 3) Gravedad (reducida en pendientes para no resbalar de más)
+  const gNow = P.g * (ball.gScale || 1);
   if (grounded) {
     const n = ball.groundN;
     // gravedad normal completa (mantiene pegado) + tangencial reducida
-    const gn = -P.g * n.y; // componente normal de g (vector g=(0,-g,0))
-    _w.set(0, -P.g, 0).addScaledVector(n, -gn); // tangencial
+    const gn = -gNow * n.y; // componente normal de g (vector g=(0,-g,0))
+    _w.set(0, -gNow, 0).addScaledVector(n, -gn); // tangencial
     ball.vel.addScaledVector(n, gn * dt).addScaledVector(_w, P.slopeGravity * dt);
     // hielo: poca fricción (la bola sigue deslizando)
     const ice = !!(ball.ground && ball.ground.ice);
@@ -174,18 +177,19 @@ export function stepBall(ball, colliders, input, dt) {
     _w.copy(n).multiplyScalar(vn);
     ball.vel.sub(_w).multiplyScalar(f).add(_w);
   } else {
-    ball.vel.y -= P.g * dt;
+    ball.vel.y -= gNow * dt;
     const f = Math.exp(-P.airDrag * dt);
     ball.vel.x *= f; ball.vel.z *= f;
     // salto variable: soltar pronto corta la subida
-    if (ball.jumped && !ball.jumpHeld && ball.vel.y > 2) ball.vel.y -= P.g * 1.2 * dt;
+    if (ball.jumped && !ball.jumpHeld && ball.vel.y > 2) ball.vel.y -= gNow * 1.2 * dt;
   }
   // 4) Salto con coyote time + buffer
   ball.sinceJumpPress += dt;
   if (ball.sinceJumpPress < P.buffer && ball.sinceGround < P.coyote) {
     const keep = Math.max(0, ball.vel.y);
     ball.vel.add(ball.groundVel); // conservar el impulso de la plataforma
-    ball.vel.y = Math.max(P.jumpV, keep * 0.5 + P.jumpV * 0.9);
+    const jv = P.jumpV * (ball.jumpScale || 1);
+    ball.vel.y = Math.max(jv, keep * 0.5 + jv * 0.9);
     ball.sinceJumpPress = 99; ball.sinceGround = 99; ball.ground = null; ball.jumped = true;
     ball.events.push({ type: 'jump' });
   }
