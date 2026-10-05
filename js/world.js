@@ -1,7 +1,7 @@
 // Construcción de niveles: geometría estática fusionada (pocas draw calls),
 // entidades dinámicas (martillos, molinetes, plataformas móviles...) y colliders.
 import * as THREE from 'three';
-import { Collider } from './physics.js?v=8';
+import { Collider } from './physics.js?v=9';
 
 export const PAL = {
   grass: 0x7ddc5a, grassSide: 0xf0d9a8, stoneBottom: 0xc9a777,
@@ -536,32 +536,57 @@ export class Level {
     e.update(0); c.savePrev(); this.entities.push(e); return e;
   }
   convey(x, y, z, w, d, o = {}) {
-    // Cinta transportadora: empuja la bola en dirección dir
+    // Cinta: por defecto EMPUJA EN CONTRA del avance (-Z → corona), o sea hacia +Z
     const h = o.h || 0.45;
-    const dir = o.dir || [0, 0, -1];
-    const speed = o.speed || 5.5;
+    const dir = o.dir || [0, 0, 1];
+    const speed = o.speed || 4.2;
     const len = Math.hypot(dir[0], dir[2]) || 1;
-    const vx = dir[0] / len * speed, vz = dir[2] / len * speed;
+    const nx = dir[0] / len, nz = dir[2] / len;
+    const vx = nx * speed, vz = nz * speed;
     const geo = new THREE.BoxGeometry(w, h, d);
     colorGeo(geo, PAL.convey, PAL.conveySide);
     const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
-    // flechas decorativas
+    // flechas: apuntan en la dirección del empuje; animación de desplazamiento
     const arrows = new THREE.Group(); mesh.add(arrows);
-    const nArr = Math.max(1, Math.floor(Math.max(w, d) / 1.6));
+    const alongZ = Math.abs(nz) >= Math.abs(nx);
+    const nArr = Math.max(2, Math.floor((alongZ ? d : w) / 1.4));
+    const tip = [];
     for (let i = 0; i < nArr; i++) {
-      const a = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.4, 3), new THREE.MeshBasicMaterial({ color: 0xffe08a }));
-      a.rotation.x = Math.PI / 2;
+      const a = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.45, 3), new THREE.MeshBasicMaterial({ color: 0xffe08a }));
+      // cono por defecto +Y; orientar hacia dir en el plano XZ
+      if (alongZ) {
+        a.rotation.x = nz > 0 ? -Math.PI / 2 : Math.PI / 2; // +Z o -Z
+      } else {
+        a.rotation.z = nx > 0 ? Math.PI / 2 : -Math.PI / 2;
+      }
       const t = (i + 0.5) / nArr - 0.5;
-      if (Math.abs(dir[2]) >= Math.abs(dir[0])) a.position.set(0, h / 2 + 0.02, t * d * 0.7);
-      else { a.rotation.z = -Math.PI / 2; a.position.set(t * w * 0.7, h / 2 + 0.02, 0); }
-      arrows.add(a);
+      if (alongZ) a.position.set(0, h / 2 + 0.03, t * d * 0.75);
+      else a.position.set(t * w * 0.75, h / 2 + 0.03, 0);
+      arrows.add(a); tip.push(a);
     }
     const base = new THREE.Vector3(x, y - h / 2, z);
     mesh.position.copy(base);
     const c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2) });
     c.convey = { x: vx, z: vz };
     this.colliders.push(c); this.bounds.expandByPoint(base);
-    const e = { type: 'convey', c, mesh, arrows, update(t) { arrows.position.z = Math.sin(t * 3) * 0.05; } };
+    const span = alongZ ? d * 0.75 : w * 0.75;
+    const e = {
+      type: 'convey', c, mesh, arrows, tip, nx, nz, alongZ, span, speed,
+      update(t) {
+        // deslizamiento visible de las flechas en la dirección del empuje
+        const u = (t * this.speed * 0.35) % 1;
+        for (let i = 0; i < this.tip.length; i++) {
+          const a = this.tip[i];
+          let p = ((i + 0.5) / this.tip.length - 0.5) + (u - 0.5) * 0.35 * (this.nz !== 0 || this.nx !== 0 ? 1 : 1);
+          // avanzar en sentido del empuje
+          p = ((i + u) / this.tip.length) % 1 - 0.5;
+          if (this.alongZ) a.position.z = p * this.span * Math.sign(this.nz || 1);
+          else a.position.x = p * this.span * Math.sign(this.nx || 1);
+          a.material.opacity = 0.45 + (0.5 - Math.abs(p)) * 0.9;
+          a.material.transparent = true;
+        }
+      },
+    };
     this.entities.push(e); return e;
   }
 

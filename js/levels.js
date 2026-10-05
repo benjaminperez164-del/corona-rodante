@@ -380,20 +380,20 @@ const WORLD2_LEVELS = [
   },
   {
     name: 'Cintas Ardientes', target: 48,
-    hint: 'Las cintas te empujan. ¡Úsalas a tu favor!',
+    hint: '¡Las cintas empujan hacia atrás! Rema con fuerza.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
       // todo el camino es cinta o plataforma, sin huecos
       b.plat(0, 0, -6, 4.5, 6);
-      b.convey(0, 0, -15, 4.5, 14, { dir: [0, 0, -1], speed: 5.5 });
+      b.convey(0, 0, -15, 4.5, 14, { dir: [0, 0, 1], speed: 4.0 });
       b.coinRow(0, 0, -10, 0, 0, -20, 3);
       b.plat(0, 0, -25, 5, 6, { pillars: true }); b.checkpoint(0, 0, -25);
-      b.convey(0, 0, -34, 4.5, 14, { dir: [0, 0, -1], speed: 5.5 });
+      b.convey(0, 0, -34, 4.5, 14, { dir: [0, 0, 1], speed: 4.0 });
       b.coin(0, 0, -30); b.coin(0, 0, -38);
       b.plat(0, 0, -44, 5, 6, { pillars: true }); b.checkpoint(0, 0, -44);
-      b.convey(0, 0, -52, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.convey(0, 0, -52, 4.5, 12, { dir: [0, 0, 1], speed: 4.0 });
       b.plat(0, 0, -61, 5, 6, { pillars: true }); b.checkpoint(0, 0, -61);
-      b.convey(0, 0, -69, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.convey(0, 0, -69, 4.5, 12, { dir: [0, 0, 1], speed: 4.0 });
       b.coin(0, 0, -69);
       b.plat(0, 0, -78, 8, 8, { pillars: true });
       b.crown(0, 0, -79);
@@ -412,10 +412,10 @@ const WORLD2_LEVELS = [
       b.plat(0, 0, -26, 5, 12);
       const j1 = b.fireJet(0, 0, -26, { period: 3.4, phase: 0.1, h: 3 });
       b.plat(0, 0, -36, 5, 6, { pillars: true }); b.checkpoint(0, 0, -36);
-      b.convey(0, 0, -44, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.convey(0, 0, -44, 4.5, 12, { dir: [0, 0, 1], speed: 4.0 });
       b.coin(0, 0, -44);
       b.plat(0, 0, -53, 5, 6, { pillars: true }); b.checkpoint(0, 0, -53);
-      b.convey(0, 0, -61, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.convey(0, 0, -61, 4.5, 12, { dir: [0, 0, 1], speed: 4.0 });
       b.coin(0, 0, -61);
       b.plat(0, 0, -70, 5, 6);
       for (let i = 0; i < 4; i++) b.sink(0, 0, -74.0 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
@@ -438,7 +438,7 @@ const WORLD2_LEVELS = [
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
       b.plat(0, 0, -6, 4.5, 6);
-      b.convey(0, 0, -14, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.convey(0, 0, -14, 4.5, 12, { dir: [0, 0, 1], speed: 4.0 });
       b.coinRow(0, 0, -10, 0, 0, -18, 3);
       b.plat(0, 0, -23, 5, 6, { pillars: true }); b.checkpoint(0, 0, -23);
       b.plat(0, 0, -40, 4.5, 28); b.coinRow(0, 0, -28, 0, 0, -48, 3);
@@ -458,7 +458,7 @@ const WORLD2_LEVELS = [
       b.spring(0, 0, -115.5, { power: 16.5 });
       b.coin(0, 3.8, -118.5);
       b.plat(0, 3.5, -123, 5, 6, { pillars: true }); b.checkpoint(0, 3.5, -123);
-      b.convey(0, 3.5, -131, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.convey(0, 3.5, -131, 4.5, 12, { dir: [0, 0, 1], speed: 4.0 });
       b.plat(0, 3.5, -140, 5, 6);
       for (let i = 0; i < 3; i++) b.sink(0, 3.5, -144.0 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
       b.plat(0, 3.5, -154, 10, 10, { pillars: true });
@@ -537,19 +537,19 @@ const WORLD3_LEVELS = [
   },
   {
     name: 'Cintas de Hielo', target: 48,
-    hint: 'Cintas heladas: te llevan y también resbalas.',
+    hint: 'Cintas heladas empujan atrás. ¡Frena en la nieve!',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'snow', pillars: true });
       b.plat(0, 0, -6, 4.5, 6, { type: 'snow' });
-      b.iceConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, -1], speed: 5.2 });
+      b.iceConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, 1], speed: 3.0 });
       b.coinRow(0, 0, -10, 0, 0, -20, 3);
       b.plat(0, 0, -25, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -25);
-      b.iceConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, -1], speed: 5.2 });
+      b.iceConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, 1], speed: 3.0 });
       b.coin(0, 0, -30); b.coin(0, 0, -38);
       b.plat(0, 0, -44, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -44);
-      b.iceConvey(0, 0, -52, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.iceConvey(0, 0, -52, 4.5, 12, { dir: [0, 0, 1], speed: 3.2 });
       b.plat(0, 0, -61, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -61);
-      b.iceConvey(0, 0, -69, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.iceConvey(0, 0, -69, 4.5, 12, { dir: [0, 0, 1], speed: 3.2 });
       b.coin(0, 0, -69);
       b.plat(0, 0, -78, 8, 8, { type: 'snow', pillars: true });
       b.crown(0, 0, -79);
@@ -675,7 +675,7 @@ const WORLD3_LEVELS = [
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 10, { type: 'snow', pillars: true });
       b.plat(0, 0, -8, 4.5, 10, { type: 'snow' });
-      b.iceConvey(0, 0, -16, 4.5, 12, { dir: [0, 0, -1], speed: 5.2 });
+      b.iceConvey(0, 0, -16, 4.5, 12, { dir: [0, 0, 1], speed: 3.0 });
       b.coinRow(0, 0, -12, 0, 0, -20, 3);
       b.plat(0, 0, -26, 6, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -26);
       b.plat(0, 0, -36, 5.5, 16, { type: 'ice' });
@@ -703,7 +703,7 @@ const WORLD3_LEVELS = [
       b.coin(0, 3.8, -131);
       b.plat(0, 3.5, -136, 5.5, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 3.5, -136);
       b.plat(0, 3.5, -146, 4.5, 14, { type: 'ice' });
-      b.iceConvey(0, 3.5, -156, 4.5, 12, { dir: [0, 0, -1], speed: 5 });
+      b.iceConvey(0, 3.5, -156, 4.5, 12, { dir: [0, 0, 1], speed: 3.0 });
       // solape con la cinta: primer crack en -161
       for (let i = 0; i < 3; i++) b.crackIce(0, 3.5, -161.0 - i * 1.7, 2.8, 2.0, { delay: 0.85 });
       b.plat(0, 3.5, -170, 10, 10, { type: 'snow', pillars: true });
