@@ -511,7 +511,13 @@ class Bot {
     }
     if (this.hold > 0) { this.hold -= dt; input.jumpHeld = true; } else input.jumpHeld = false;
     let speed = w.speed || 8;
-    if (!grounded) speed = Math.min(8, d / 0.55);
+    if (!grounded) {
+      // tiempo estimado hasta caer a la altura del objetivo
+      const dy = ball.pos.y - w.pos.y, vy = ball.vel.y, g = 25;
+      const disc = vy * vy + 2 * g * dy;
+      const tl = disc > 0 ? (vy + Math.sqrt(disc)) / g : 0.2;
+      speed = Math.min(8.2, d / Math.max(0.12, tl));
+    }
     else if (w.flag === 't') speed = Math.min(speed, 2.2 + d * 1.5);
     const ux = d > 1e-4 ? dx / d : 0, uz = d > 1e-4 ? dz / d : 0;
     let ix = (ux * speed - ball.vel.x) * 0.7, iz = (uz * speed - ball.vel.z) * 0.7;
