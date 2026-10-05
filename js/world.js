@@ -202,7 +202,21 @@ export class Level {
     this.plat(x, y + 0.25, z, 2.2, 2.2, { type: 'gold', h: 0.25, rock: false });
     this.group.add(g); this.crownObj = g;
   }
-  wp(x, y, z, flag = '') { this.waypoints.push({ pos: new THREE.Vector3(x, y + 0.5, z), flag }); }
+  wp(x, y, z, flag = '', speed = 0, extra = {}) { this.waypoints.push({ pos: new THREE.Vector3(x, y + 0.5, z), flag, speed, ...extra }); }
+  disc(x, y, z, r, o = {}) {
+    const h = o.h || 1;
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y - h / 2, z), r, h: h / 2 });
+    this.colliders.push(c); this.bounds.expandByPoint(c.pos);
+    _m.compose(_v.set(x, y - h / 2, z), _q.identity(), _s);
+    const [t, sd, bt] = STYLE[o.type || 'stone'];
+    this.merge.add(new THREE.CylinderGeometry(r, r, h, 24), _m, t, sd, bt);
+    // anillo decorativo de baldosas
+    _m.compose(_v.set(x, y + 0.004, z), _q.identity(), _s);
+    this.decor.add(new THREE.RingGeometry(r * 0.55, r * 0.6, 24).rotateX(-Math.PI / 2), _m, 0x9be86f, 0x9be86f);
+    this._rockUnder(x, y - h, z, r * 2, r * 2);
+    if (y < this.minY) this.minY = y;
+    return c;
+  }
   hint(t) { this.hintText = t; }
 
   // ---------- entidades dinámicas ----------
@@ -269,9 +283,11 @@ export class Level {
     const c = new Collider('box', { half: halfHead, kind: 'hammer', kinematic: true });
     const ca = new Collider('box', { half: new THREE.Vector3(0.12, len / 2 - 0.5, 0.12), kind: 'hammer', kinematic: true });
     this.colliders.push(c, ca);
-    const e = { type: 'hammer', c, g,
+    const e = { type: 'hammer', c, g, ph: 0,
+      safe(lead = 0) { const p = this.ph + lead * speed; const sn = Math.sin(p), cs = Math.cos(p); return Math.abs(sn) > 0.3 && sn * cs > 0; },
       update(t) {
-        const a = amp * Math.sin(t * speed + phase);
+        this.ph = t * speed + phase;
+        const a = amp * Math.sin(this.ph);
         g.quaternion.setFromAxisAngle(axis, a);
         c.quat.copy(g.quaternion); c.pos.set(0, -len, 0).applyQuaternion(g.quaternion).add(pivot); c.commit();
         ca.quat.copy(g.quaternion); ca.pos.set(0, -len / 2 + 0.3, 0).applyQuaternion(g.quaternion).add(pivot); ca.commit();
@@ -297,8 +313,9 @@ export class Level {
       c.local = arm.position.clone(); c.localA = a; cols.push(c); this.colliders.push(c);
     }
     const e = { type: 'turn', g, cols,
+      angle: 0,
       update(t) {
-        const r = t * speed; g.rotation.y = r;
+        const r = t * speed; g.rotation.y = r; this.angle = r;
         for (const c of cols) {
           c.quat.setFromAxisAngle(_v.set(0, 1, 0), r + c.localA);
           c.pos.copy(c.local).applyAxisAngle(_v, r).add(g.position); c.commit();
@@ -336,7 +353,7 @@ export class Level {
           mesh.scale.setScalar(Math.min(1, this.t * 3)); if (this.t > 0.34) { mesh.scale.setScalar(1); this.state = 'idle'; }
         }
       } };
-    e.reset(); this.entities.push(e); return e;
+    c.owner = e; e.reset(); this.entities.push(e); return e;
   }
   bumper(x, y, z, o = {}) {
     const r = o.r || 0.8;

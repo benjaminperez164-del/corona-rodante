@@ -12,10 +12,10 @@ async def main():
         await pg.goto(URL); await pg.wait_for_timeout(2500)
         await pg.screenshot(path='screenshots/_smoke_title.png')
         await pg.evaluate("__game.resetSave()")
-        for lv in [int(a) for a in sys.argv[1:]] or [0,1,2]:
+        for lv in [int(a) for a in sys.argv[1:]] or list(range(8)):
             await pg.evaluate(f"__game.start({lv})"); await pg.wait_for_timeout(600)
             await pg.evaluate("__game.manual(true)")
-            r = await pg.evaluate("__game.runBot(150)")
+            r = await pg.evaluate("__game.runBot(300)")
             print('level', lv, r)
             await pg.evaluate("__game.manual(false)")
             await pg.wait_for_timeout(1800)

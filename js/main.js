@@ -499,32 +499,39 @@ class Bot {
     for (let k = 0; k < wps.length; k++) { const d = wps[k].pos.distanceTo(ball.pos); if (d < bd) { bd = d; best = k; } }
     this.i = best;
   }
+  target(w) {
+    if (w.follow) { const c = w.follow.c; return _bt.set(c.pos.x + (w.ox || 0), c.pos.y + 0.8, c.pos.z + (w.oz || 0)); }
+    return w.pos;
+  }
   update(dt) {
     const wps = G.level.waypoints; if (!wps.length) return;
     const grounded = ball.sinceGround < 0.02;
-    let w = wps[this.i];
-    let dx = w.pos.x - ball.pos.x, dz = w.pos.z - ball.pos.z, d = Math.hypot(dx, dz);
-    if (d < (w.flag === 'j' ? 0.75 : 1.1) && Math.abs(w.pos.y - ball.pos.y) < 1.4) {
-      if (w.flag === 'j') { if (grounded) { input.jumpQueued = true; this.hold = 0.35; this.i = Math.min(this.i + 1, wps.length - 1); } }
+    let w = wps[this.i], tp = this.target(w);
+    let dx = tp.x - ball.pos.x, dz = tp.z - ball.pos.z, d = Math.hypot(dx, dz);
+    let hold = false;
+    if (d < (w.flag === 'j' ? 0.75 : 1.1) && Math.abs(tp.y - ball.pos.y) < 1.6) {
+      if (w.cond && !w.cond()) hold = true;
+      else if (w.flag === 'j') { if (grounded) { input.jumpQueued = true; this.hold = 0.35; this.i = Math.min(this.i + 1, wps.length - 1); } }
       else this.i = Math.min(this.i + 1, wps.length - 1);
-      w = wps[this.i]; dx = w.pos.x - ball.pos.x; dz = w.pos.z - ball.pos.z; d = Math.hypot(dx, dz);
+      if (!hold) { w = wps[this.i]; tp = this.target(w); dx = tp.x - ball.pos.x; dz = tp.z - ball.pos.z; d = Math.hypot(dx, dz); }
     }
     if (this.hold > 0) { this.hold -= dt; input.jumpHeld = true; } else input.jumpHeld = false;
     let speed = w.speed || 8;
-    if (!grounded) {
+    if (hold) speed = Math.min(2, d * 2);
+    else if (!grounded) {
       // tiempo estimado hasta caer a la altura del objetivo
-      const dy = ball.pos.y - w.pos.y, vy = ball.vel.y, g = 25;
+      const dy = ball.pos.y - tp.y, vy = ball.vel.y, g = 25;
       const disc = vy * vy + 2 * g * dy;
       const tl = disc > 0 ? (vy + Math.sqrt(disc)) / g : 0.2;
       speed = Math.min(8.2, d / Math.max(0.12, tl));
-    }
-    else if (w.flag === 't') speed = Math.min(speed, 2.2 + d * 1.5);
+    } else if (w.flag === 't' || w.flag === 'w' || w.follow) speed = Math.min(speed, 1.5 + d * 1.5);
     const ux = d > 1e-4 ? dx / d : 0, uz = d > 1e-4 ? dz / d : 0;
     let ix = (ux * speed - ball.vel.x) * 0.7, iz = (uz * speed - ball.vel.z) * 0.7;
     const m = Math.hypot(ix, iz); if (m > 1) { ix /= m; iz /= m; }
     input.override = { x: ix, z: iz };
   }
 }
+const _bt = new THREE.Vector3();
 
 // ---------------- API de depuración / pruebas ----------------
 window.__game = {
