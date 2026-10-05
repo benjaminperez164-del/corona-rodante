@@ -1,7 +1,7 @@
 // Construcción de niveles: geometría estática fusionada (pocas draw calls),
 // entidades dinámicas (martillos, molinetes, plataformas móviles...) y colliders.
 import * as THREE from 'three';
-import { Collider } from './physics.js?v=9';
+import { Collider } from './physics.js?v=18';
 
 export const PAL = {
   grass: 0x7ddc5a, grassSide: 0xf0d9a8, stoneBottom: 0xc9a777,
@@ -27,6 +27,13 @@ export const PAL = {
   iceTop: 0x6ad8f8, snow: 0xd4e6f4, snowSide: 0x4a6e8e, snowBottom: 0x2e4e6e,
   crystal: 0x6ad8ff, packIce: 0x5ec0e8, crackIce: 0xb8e8f8,
   windFan: 0x3aa0e0, icicle: 0xc8f0ff, snowBounce: 0xf0f6fc,
+  // Selva Esmeralda
+  leafGreen: 0x5ecf4a, leafDark: 0x2e8a30, mudTop: 0x8a6a38, mudSide: 0x5a4020,
+  logBark: 0x8a5a2a, logEnd: 0xd4b078, vine: 0x3a9a40,
+  // Desierto Dorado
+  sand: 0xf0d078, sandSide: 0xd0a848, sandDark: 0xb88830,
+  quicksand: 0xc8a050, pyramid: 0xe8c878, pyramidSide: 0xc8a040,
+  sandstone: 0xe0b860, sandstoneSide: 0xb88838, scarab: 0x2a8a4a, cactus: 0x3a9a48,
 };
 
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
@@ -75,6 +82,10 @@ const STYLE = {
   ice: [PAL.iceTop, PAL.iceSide, PAL.iceBottom],
   snow: [PAL.snow, PAL.snowSide, PAL.snowBottom],
   packIce: [PAL.packIce, PAL.iceSide, PAL.iceBottom],
+  jungle: [PAL.leafGreen, PAL.leafDark, PAL.mudSide],
+  mud: [PAL.mudTop, PAL.mudSide, PAL.mudSide],
+  sand: [PAL.sand, PAL.sandSide, PAL.sandDark],
+  pyramid: [PAL.pyramid, PAL.pyramidSide, PAL.sandDark],
 };
 
 let glowTex = null;
@@ -98,7 +109,10 @@ export class Level {
     this.mat = new THREE.MeshLambertMaterial({ vertexColors: true });
     this.minY = 0; this.bounds = new THREE.Box3();
     this.rand = rng(index * 97 + 13);
-    this.defaultPlat = this.theme === 'lava' ? 'basalt' : (this.theme === 'ice' ? 'ice' : 'stone');
+    this.defaultPlat = this.theme === 'lava' ? 'basalt'
+      : (this.theme === 'ice' ? 'ice'
+        : (this.theme === 'jungle' ? 'jungle'
+          : (this.theme === 'desert' ? 'sand' : 'stone')));
     def.build(this);
     this.finish();
   }
@@ -741,6 +755,178 @@ export class Level {
     return e;
   }
 
+
+  // ---------- Selva Esmeralda ----------
+  mudPad(x, y, z, w = 4, d = 4, o = {}) {
+    const h = o.h || 0.35;
+    const geo = new THREE.BoxGeometry(w, h, d); colorGeo(geo, PAL.mudTop, PAL.mudSide);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.receiveShadow = true; this.group.add(mesh);
+    const base = new THREE.Vector3(x, y - h / 2, z); mesh.position.copy(base);
+    const c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2) });
+    c.mud = true;
+    this.colliders.push(c); this.bounds.expandByPoint(base);
+    // burbujas
+    for (let i = 0; i < 4; i++) {
+      const b = new THREE.Mesh(new THREE.SphereGeometry(0.12 + Math.random() * 0.1, 6, 6), new THREE.MeshBasicMaterial({ color: 0xa08040, transparent: true, opacity: 0.5 }));
+      b.position.set((Math.random() - 0.5) * w * 0.6, h / 2 + 0.05, (Math.random() - 0.5) * d * 0.6);
+      mesh.add(b);
+    }
+    return c;
+  }
+  leafTramp(x, y, z, o = {}) {
+    const r = o.r || 1.15, power = o.power || 14;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const leaf = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: PAL.leafGreen }));
+    leaf.scale.set(1.2, 0.55, 1.2); leaf.position.y = 0.05; leaf.castShadow = true; g.add(leaf);
+    const vein = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.02, r * 1.6), new THREE.MeshBasicMaterial({ color: PAL.leafDark }));
+    vein.position.y = 0.2; g.add(vein);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + r * 0.2, z), r: r * 0.95, h: r * 0.3, kind: 'spring' });
+    this.colliders.push(c);
+    const e = { type: 'leafTramp', c, g, leaf, power, hit: 0,
+      update(t, dt) { this.hit = Math.max(0, this.hit - dt * 3); const s = 1 + Math.sin(this.hit * 10) * this.hit * 0.2; leaf.scale.set(1.2 * s, 0.55 / s, 1.2 * s); } };
+    c.owner = e; this.entities.push(e); return e;
+  }
+  rollingLog(x, y, z, o = {}) {
+    // Tronco que rueda de lado a lado (peligro + bloqueo)
+    const len = o.len || 3.6, r = o.r || 0.55;
+    const to = o.to || [5, 0, 0], period = o.period || 3.6, phase = o.phase || 0;
+    const g = new THREE.Group(); this.group.add(g);
+    const log = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 10), new THREE.MeshLambertMaterial({ color: PAL.logBark }));
+    log.rotation.z = Math.PI / 2; log.castShadow = true; g.add(log);
+    const endMat = new THREE.MeshLambertMaterial({ color: PAL.logEnd });
+    for (const s of [-1, 1]) {
+      const cap = new THREE.Mesh(new THREE.CircleGeometry(r, 10), endMat);
+      cap.position.x = s * len / 2; cap.rotation.y = s > 0 ? Math.PI / 2 : -Math.PI / 2; g.add(cap);
+    }
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + r, z), r: r * 0.95, h: len * 0.5, kind: 'solid', kinematic: true });
+    // treat as box for boarding
+    c.type = 'box'; c.half = new THREE.Vector3(len / 2, r, r);
+    this.colliders.push(c);
+    const base = new THREE.Vector3(x, y + r, z);
+    const dest = new THREE.Vector3(to[0], to[1], to[2]);
+    const e = { type: 'rollingLog', c, g, log, base, dest, period, phase,
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1;
+        const k = u < 0.5 ? u * 2 : 2 - u * 2;
+        c.pos.copy(this.base).addScaledVector(this.dest, k);
+        c.commit(); g.position.copy(c.pos);
+        log.rotation.x = t * 4 * Math.sign(this.dest.x || 1);
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  vineSwing(x, y, z, o = {}) {
+    // Plataforma colgante que se balancea (pasa por x centrado, como los movers de Ruinas)
+    const w = o.w || 3.2, d = o.d || 2.4, amp = o.amp || 3.2, period = o.period || 3.5, phase = o.phase || 0;
+    const e = this.mover(x - amp / 2, y, z, w, d, { to: [amp, 0, 0], period, phase, color: PAL.leafGreen, side: PAL.leafDark, h: 0.5 });
+    // liana visual
+    const vine = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 4.5, 5), new THREE.MeshLambertMaterial({ color: PAL.vine }));
+    vine.position.set(0, 2.5, 0); e.mesh.add(vine);
+    return e;
+  }
+  rotLog(x, y, z, o = {}) {
+    // Tronco/plataforma que gira en yaw
+    const w = o.w || 5.5, d = o.d || 3.2, speed = o.speed || 0.5;
+    const h = 0.55;
+    const geo = new THREE.BoxGeometry(w, h, d); colorGeo(geo, PAL.logBark, PAL.logEnd);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
+    const c = new Collider('box', { pos: new THREE.Vector3(x, y - h / 2, z), half: new THREE.Vector3(w / 2, h / 2, d / 2), kinematic: true });
+    this.colliders.push(c);
+    mesh.position.copy(c.pos);
+    const e = { type: 'rotLog', c, mesh, speed, ox: x, oy: y - h / 2, oz: z,
+      update(t) {
+        const a = t * this.speed;
+        mesh.rotation.y = a;
+        // actualizar orientación del collider
+        _q.setFromEuler(_e.set(0, a, 0));
+        c.quat.copy(_q); c.pos.set(this.ox, this.oy, this.oz); c.commit();
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+
+  // ---------- Desierto Dorado ----------
+  _sandFloor() {
+    const b = this.bounds.clone(); b.expandByScalar(28);
+    const ww = Math.max(70, b.max.x - b.min.x + 40), dd = Math.max(90, b.max.z - b.min.z + 40);
+    const y = this.minY - 4.2;
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry(ww, dd), new THREE.MeshLambertMaterial({ color: 0xe8c878 }));
+    sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
+    this.group.add(sea); this.sandFloor = sea;
+  }
+  quicksand(x, y, z, w = 3.5, d = 3.5, o = {}) {
+    const h = o.h || 0.4;
+    const geo = new THREE.BoxGeometry(w, h, d); colorGeo(geo, PAL.quicksand, PAL.sandDark);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.receiveShadow = true; this.group.add(mesh);
+    const base = new THREE.Vector3(x, y - h / 2, z); mesh.position.copy(base);
+    const c = new Collider('box', { pos: base.clone(), half: new THREE.Vector3(w / 2, h / 2, d / 2) });
+    c.quicksand = true;
+    this.colliders.push(c);
+    const e = { type: 'quicksand', c, mesh, base, t: 0,
+      update(t, dt) {
+        // ligera vibración / hundimiento visual
+        mesh.position.y = this.base.y + Math.sin(t * 3) * 0.03;
+      } };
+    this.entities.push(e); return e;
+  }
+  sandWhirl(x, y, z, w, d, o = {}) {
+    // remolino de arena (como viento)
+    return this.wind(x, y, z, w, d, { dir: o.dir || [1, 0, 0], force: o.force || 5 });
+  }
+  pyramidBlock(x, y, z, w, d, o = {}) {
+    const e = this.mover(x, y, z, w, d, { ...o, color: PAL.pyramid, side: PAL.pyramidSide, h: o.h || 0.75 });
+    return e;
+  }
+  scarab(x, y, z, o = {}) {
+    const r = o.r || 0.7;
+    const body = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8), new THREE.MeshLambertMaterial({ color: PAL.scarab, emissive: 0x113322 }));
+    const g = new THREE.Group(); g.position.set(x, y + r * 0.6, z); this.group.add(g); g.add(body);
+    body.scale.set(1.2, 0.7, 1); body.castShadow = true;
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + r * 0.55, z), r: r * 1.05, h: r * 0.55, kind: 'bumper' });
+    this.colliders.push(c);
+    const to = o.to || [4, 0, 0], period = o.period || 3.2, phase = o.phase || 0;
+    const base = new THREE.Vector3(x, y + r * 0.55, z);
+    const dest = new THREE.Vector3(to[0], to[1], to[2]);
+    const e = { type: 'scarab', c, g, body, base, dest, period, phase, hit: 0,
+      update(t, dt) {
+        this.hit = Math.max(0, this.hit - dt * 4);
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1;
+        const k = u < 0.5 ? u * 2 : 2 - u * 2;
+        c.pos.copy(this.base).addScaledVector(this.dest, k);
+        c.commit(); g.position.copy(c.pos);
+        const s = 1 + Math.sin(this.hit * 12) * this.hit * 0.25; g.scale.set(s, 1 / s, s);
+      } };
+    c.owner = e; e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  sandstone(x, y, z, w = 2.6, d = 2.6, o = {}) {
+    // como hielo agrietado / baldosa hundible
+    const h = o.h || 0.45;
+    const geo = new THREE.BoxGeometry(w * 0.96, h, d * 0.96); colorGeo(geo, PAL.sandstone, PAL.sandstoneSide);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
+    const base = new THREE.Vector3(x, y - h / 2, z);
+    const c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2), kinematic: true });
+    this.colliders.push(c); this.bounds.expandByPoint(base);
+    const delay = o.delay || 0.75;
+    const e = { type: 'sandstone', c, mesh, base, state: 'idle', t: 0,
+      touch() { if (this.state === 'idle') { this.state = 'warn'; this.t = 0; return true; } return false; },
+      reset() { this.state = 'idle'; this.t = 0; c.active = true; mesh.visible = true; c.pos.copy(base); c.commit(true); mesh.position.copy(base); mesh.rotation.set(0, 0, 0); mesh.scale.setScalar(1); },
+      update(t, dt) {
+        this.t += dt;
+        if (this.state === 'warn') {
+          mesh.position.set(base.x + (Math.random() - 0.5) * 0.06, base.y, base.z + (Math.random() - 0.5) * 0.06);
+          if (this.t > delay) { this.state = 'fall'; this.t = 0; this.vy = 0; }
+        } else if (this.state === 'fall') {
+          this.vy -= 18 * dt; c.pos.y += this.vy * dt; c.commit(); mesh.position.copy(c.pos);
+          mesh.rotation.x += dt * 2;
+          if (this.t > 0.1) c.active = false;
+          if (this.t > 1.0) { this.state = 'gone'; this.t = 0; mesh.visible = false; }
+        } else if (this.state === 'gone') {
+          if (this.t > 2.5) { this.reset(); mesh.scale.setScalar(0.01); this.state = 'grow'; this.t = 0; }
+        } else if (this.state === 'grow') {
+          mesh.scale.setScalar(Math.min(1, this.t * 3)); if (this.t > 0.34) { mesh.scale.setScalar(1); this.state = 'idle'; }
+        }
+      } };
+    c.owner = e; e.reset(); this.entities.push(e); return e;
+  }
+
   // ---------- finalizar ----------
   finish() {
     const mesh = this.merge.build(this.mat); mesh.castShadow = true; mesh.receiveShadow = true; this.group.add(mesh);
@@ -752,9 +938,10 @@ export class Level {
     this.coinMesh = new THREE.InstancedMesh(cg, new THREE.MeshLambertMaterial({ color: 0xffd23a, emissive: 0xffa000, emissiveIntensity: 0.5 }), Math.max(1, this.coins.length));
     this.coinMesh.castShadow = true; this.group.add(this.coinMesh);
     this.coinMesh.count = this.coins.length;
-    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : 14));
+    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : (this.theme === 'desert' ? 8 : 14)));
     if (this.theme === 'lava') this._lavaSea();
     if (this.theme === 'ice') this._snowFloor();
+    if (this.theme === 'desert') this._sandFloor();
     this.updateCoins(0);
   }
   _lavaSea() {
@@ -791,7 +978,7 @@ export class Level {
   _decorScenery() {
     const b = this.bounds.clone(); b.expandByScalar(4);
     const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, sz = Math.max(b.max.z - b.min.z, 30);
-    const lava = this.theme === 'lava', ice = this.theme === 'ice';
+    const lava = this.theme === 'lava', ice = this.theme === 'ice', jungle = this.theme === 'jungle', desert = this.theme === 'desert';
     for (let i = 0; i < 16; i++) {
       const side = i % 2 ? 1 : -1;
       const x = cx + side * (18 + this.rand() * 26), z = b.min.z + this.rand() * sz, y = -6 + this.rand() * 14;
@@ -814,6 +1001,26 @@ export class Level {
           const h = 1.5 + this.rand() * 4;
           _m.compose(_v.set(x + 0.2, y + 0.3 + h / 2, z), _q.identity(), _s);
           this.decor.add(new THREE.ConeGeometry(0.4, h, 5), _m, PAL.icicle, PAL.iceSide);
+        }
+      } else if (jungle) {
+        this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.7, 7), _m, PAL.leafGreen, PAL.leafDark);
+        _m.compose(_v.set(x, y - 0.3 - r * 0.7, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
+        this.decor.add(new THREE.ConeGeometry(r * 0.9, r * 1.3, 7), _m, PAL.mudSide, PAL.mudSide);
+        if (this.rand() < 0.7) {
+          const h = 2 + this.rand() * 5;
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.CylinderGeometry(0.25, 0.35, h, 6), _m, PAL.logBark, PAL.logBark);
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h + 0.6, z), _q.identity(), _s);
+          this.decor.add(new THREE.SphereGeometry(0.9, 6, 6), _m, PAL.leafGreen, PAL.leafDark);
+        }
+      } else if (desert) {
+        this.decor.add(new THREE.CylinderGeometry(r, r * 1.1, 0.6, 6), _m, PAL.sand, PAL.sandSide);
+        _m.compose(_v.set(x, y - 0.2 - r * 0.5, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
+        this.decor.add(new THREE.ConeGeometry(r * 0.85, r * 1.1, 5), _m, PAL.sandSide, PAL.sandDark);
+        if (this.rand() < 0.55) {
+          const h = 1.2 + this.rand() * 2.5;
+          _m.compose(_v.set(x + 0.3, y + 0.3 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.CylinderGeometry(0.2, 0.28, h, 6), _m, PAL.cactus, PAL.cactus);
         }
       } else {
         this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.8, 7), _m, PAL.grass, PAL.grassSide);
@@ -875,7 +1082,7 @@ export class Level {
   }
   resetDynamic() {
     for (const e of this.entities) {
-      if (e.type === 'crumble' || e.type === 'sink' || e.type === 'crackIce') { e.reset(); if (e.mesh) { e.mesh.rotation.x = 0; e.mesh.scale.setScalar(1); } }
+      if (e.type === 'crumble' || e.type === 'sink' || e.type === 'crackIce' || e.type === 'sandstone') { e.reset(); if (e.mesh) { e.mesh.rotation.x = 0; e.mesh.scale.setScalar(1); } }
     }
   }
   dispose() {

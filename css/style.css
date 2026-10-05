@@ -169,6 +169,16 @@ body.playing.joy #joy-zone { display: block; }
 .lvl.ice:active:not(.locked) { box-shadow: 0 2px 0 #2a6fa8; }
 body.theme-ice { background: #4a8ec8; }
 
+.world-tab.jungle.on { background: linear-gradient(#7ad84a, #3a9a30); box-shadow: 0 3px 0 #2a6a20; }
+.lvl.jungle { background: linear-gradient(#7ad84a, #3a9a30); box-shadow: 0 5px 0 #2a6a20; }
+.lvl.jungle:active:not(.locked) { box-shadow: 0 2px 0 #2a6a20; }
+body.theme-jungle { background: #4a9848; }
+
+.world-tab.desert.on { background: linear-gradient(#f0d078, #d0a040); box-shadow: 0 3px 0 #a07828; }
+.lvl.desert { background: linear-gradient(#f0d078, #d0a040); box-shadow: 0 5px 0 #a07828; }
+.lvl.desert:active:not(.locked) { box-shadow: 0 2px 0 #a07828; }
+body.theme-desert { background: #d0a050; }
+
 
 .btn.purple { background: linear-gradient(#c9a0ff, #8a5cff); box-shadow: 0 6px 0 #5a38b0; }
 .btn.purple:active { box-shadow: 0 2px 0 #5a38b0; transform: translateY(4px); }

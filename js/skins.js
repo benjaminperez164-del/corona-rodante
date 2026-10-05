@@ -19,10 +19,15 @@ export const SKINS = [
   { id: 'magma', name: 'Magma', price: 300 },
   { id: 'galaxia', name: 'Galaxia', price: 350 },
   { id: 'dorada', name: 'Dorada', price: 400 },
+  { id: 'hoja', name: 'Hoja', price: 280 },
+  { id: 'coco', name: 'Coco', price: 320 },
+  { id: 'arena', name: 'Arena', price: 290 },
+  { id: 'escarabajo', name: 'Escarabajo', unlock: 'achieve:desierto_listo' },
   // desbloqueos por logros / racha (no se compran)
   { id: 'emoji', name: 'Carita', unlock: 'achieve:primera_corona' },
   { id: 'fantasma', name: 'Fantasma', unlock: 'achieve:sin_caer' },
   { id: 'disco', name: 'Disco', unlock: 'streak:7' },
+  { id: 'liana', name: 'Liana', unlock: 'achieve:selva_lista' },
   { id: 'real', name: 'Real', unlock: 'achieve:maestro' },
 ];
 
@@ -149,6 +154,41 @@ export function skinCanvas(id) {
       x.fillStyle = g; x.beginPath(); x.ellipse(W * 0.5, H * 0.5, 70, 28, 0.4, 0, 7); x.fill();
       break;
     }
+    case 'hoja': {
+      x.fillStyle = '#5ecf4a'; x.fillRect(0, 0, W, H);
+      x.fillStyle = '#2e8a30';
+      for (let i = 0; i < 8; i++) { x.beginPath(); const x0 = i * W / 8; x.moveTo(x0, 0); for (let k = 0; k <= 10; k++) x.lineTo(x0 + Math.sin(k * 1.2 + i) * 8 + 10, k * H / 10); for (let k = 10; k >= 0; k--) x.lineTo(x0 + Math.sin(k * 1.2 + i) * 8 - 4, k * H / 10); x.fill(); }
+      x.strokeStyle = '#1a6020'; x.lineWidth = 4; x.beginPath(); x.moveTo(W * 0.5, 0); x.lineTo(W * 0.5, H); x.stroke();
+      break;
+    }
+    case 'coco': {
+      x.fillStyle = '#8a5a2a'; x.fillRect(0, 0, W, H);
+      for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(${60 + rnd() * 40},${40 + rnd() * 20},${10},0.4)`; x.beginPath(); x.arc(rnd() * W, rnd() * H, 3 + rnd() * 8, 0, 7); x.fill(); }
+      x.fillStyle = '#d4b078'; x.fillRect(0, H * 0.42, W, H * 0.16);
+      break;
+    }
+    case 'arena': {
+      const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#ffe8a8'); g.addColorStop(0.5, '#f0d078'); g.addColorStop(1, '#c89840');
+      x.fillStyle = g; x.fillRect(0, 0, W, H);
+      for (let i = 0; i < 90; i++) { x.fillStyle = `rgba(180,140,50,${0.15 + rnd() * 0.35})`; x.beginPath(); x.arc(rnd() * W, rnd() * H, 1 + rnd() * 4, 0, 7); x.fill(); }
+      x.fillStyle = '#fff8d0'; x.fillRect(0, H * 0.48, W, 6);
+      break;
+    }
+    case 'escarabajo': {
+      x.fillStyle = '#1a4a28'; x.fillRect(0, 0, W, H);
+      const g = x.createRadialGradient(W * 0.5, H * 0.5, 4, W * 0.5, H * 0.5, 55);
+      g.addColorStop(0, '#6aff8a'); g.addColorStop(0.4, '#2a8a4a'); g.addColorStop(1, '#0a2818');
+      x.fillStyle = g; x.beginPath(); x.ellipse(W * 0.5, H * 0.5, 70, 40, 0, 0, 7); x.fill();
+      x.fillStyle = '#ffe14d'; for (let i = 0; i < 6; i++) { x.beginPath(); x.arc(30 + i * 35, H * (i % 2 ? 0.35 : 0.65), 4, 0, 7); x.fill(); }
+      break;
+    }
+    case 'liana': {
+      x.fillStyle = '#3a7a30'; x.fillRect(0, 0, W, H);
+      x.strokeStyle = '#7ad84a'; x.lineWidth = 10;
+      for (let i = 0; i < 5; i++) { x.beginPath(); let px = i * W / 5 + 20, py = 0; x.moveTo(px, py); for (let k = 0; k < 8; k++) { px += Math.sin(k + i) * 18; py += H / 8; x.lineTo(px, py); } x.stroke(); }
+      x.fillStyle = '#ffe14d'; for (let i = 0; i < 10; i++) { x.beginPath(); x.arc(rnd() * W, rnd() * H, 3, 0, 7); x.fill(); }
+      break;
+    }
     case 'emoji': {
       x.fillStyle = '#ffe14d'; x.fillRect(0, 0, W, H);
       x.fillStyle = '#333'; x.beginPath(); x.arc(W * 0.32, H * 0.38, 8, 0, 7); x.arc(W * 0.68, H * 0.38, 8, 0, 7); x.fill();
@@ -190,6 +230,8 @@ export function skinMaterial(id) {
   if (id === 'galaxia') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.45 });
   if (id === 'disco') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.35 });
   if (id === 'fantasma') return new THREE.MeshLambertMaterial({ map: tex, transparent: true, opacity: 0.82 });
+  if (id === 'escarabajo') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x226633, emissiveIntensity: 0.35 });
+  if (id === 'hoja' || id === 'liana') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x114411, emissiveIntensity: 0.15 });
   return new THREE.MeshLambertMaterial({ map: tex });
 }
 

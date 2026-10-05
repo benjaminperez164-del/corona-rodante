@@ -125,6 +125,17 @@ export function stepBall(ball, colliders, input, dt) {
     ball.vel.x += (cv.x - ball.vel.x) * k;
     ball.vel.z += (cv.z - ball.vel.z) * k;
   }
+  // 1c) Barro / arenas movedizas: ralentizan
+  if (grounded && ball.ground && (ball.ground.mud || ball.ground.quicksand)) {
+    // frena pero deja avanzar a niños (y al bot)
+    const drag = ball.ground.quicksand ? 3.2 : 2.6;
+    const f = Math.exp(-drag * dt);
+    ball.vel.x *= f; ball.vel.z *= f;
+    // techo de velocidad más bajo sobre arena movediza / barro
+    const max = ball.ground.quicksand ? 5.5 : 6.5;
+    const sp = Math.hypot(ball.vel.x, ball.vel.z);
+    if (sp > max) { ball.vel.x *= max / sp; ball.vel.z *= max / sp; }
+  }
   // 2) Control
   let ix = input.x, iz = input.z;
   const mag = Math.hypot(ix, iz);

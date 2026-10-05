@@ -1,13 +1,13 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=9';
-import { Level } from './world.js?v=9';
-import { LEVELS, WORLDS } from './levels.js?v=9';
-import { Input } from './input.js?v=9';
-import { Sfx } from './audio.js?v=9';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=9';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=9';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=9';
+import { Ball, stepBall } from './physics.js?v=18';
+import { Level } from './world.js?v=18';
+import { LEVELS, WORLDS } from './levels.js?v=18';
+import { Input } from './input.js?v=18';
+import { Sfx } from './audio.js?v=18';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=18';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=18';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=18';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -105,6 +105,16 @@ const THEMES = {
     sun: 0xffe0c8, sunI: 1.45, skyTop: 0x0a3a78, skyMid: 0x1e68a8, skyHor: 0x4a90c8, skyBot: 0x7ab0d0,
     fogNear: 22, fogFar: 85,
   },
+  jungle: {
+    fog: 0x6ab878, hemiSky: 0xb8e8a0, hemiGround: 0x4a7840, hemiI: 1.5,
+    sun: 0xfff0c8, sunI: 1.7, skyTop: 0x3a8a50, skyMid: 0x7cbc68, skyHor: 0xb8d890, skyBot: 0xd8e8a8,
+    fogNear: 30, fogFar: 110,
+  },
+  desert: {
+    fog: 0xe8c878, hemiSky: 0xffe8b0, hemiGround: 0xc89840, hemiI: 1.65,
+    sun: 0xfff0d0, sunI: 1.9, skyTop: 0x4a90d0, skyMid: 0x90c0e8, skyHor: 0xf0d090, skyBot: 0xf8e0a8,
+    fogNear: 32, fogFar: 115,
+  },
 };
 let currentTheme = 'sky';
 function rebuildSky(th) {
@@ -129,6 +139,8 @@ function applyTheme(th) {
   rebuildSky(th);
   document.body.classList.toggle('theme-lava', th === 'lava');
   document.body.classList.toggle('theme-ice', th === 'ice');
+  document.body.classList.toggle('theme-jungle', th === 'jungle');
+  document.body.classList.toggle('theme-desert', th === 'desert');
 }
 
 // ---------------- Bola ----------------
@@ -245,7 +257,8 @@ function renderLevels() {
   WORLDS.forEach((w, wi) => {
     const unlocked = worldUnlocked(wi);
     const b = document.createElement('button');
-    b.className = 'world-tab' + (wi === G.selectedWorld ? ' on' : '') + (w.theme === 'lava' ? ' lava' : '') + (w.theme === 'ice' ? ' ice' : '') + (unlocked ? '' : ' locked');
+    const thCls = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert') ? ' ' + w.theme : '';
+    b.className = 'world-tab' + (wi === G.selectedWorld ? ' on' : '') + thCls + (unlocked ? '' : ' locked');
     b.textContent = unlocked ? `${wi + 1}. ${w.name}` : `🔒 ${w.name}`;
     b.onclick = () => {
       sfx.play('click');
@@ -263,7 +276,8 @@ function renderLevels() {
     const unlocked = prevDone && worldUnlocked(G.selectedWorld);
     const st = (save.levels[i] && save.levels[i].stars) || [false, false, false];
     const b = document.createElement('button');
-    b.className = 'lvl' + (unlocked ? '' : ' locked') + (w.theme === 'lava' ? ' lava' : '') + (w.theme === 'ice' ? ' ice' : '');
+    const lth = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert') ? ' ' + w.theme : '';
+    b.className = 'lvl' + (unlocked ? '' : ' locked') + lth;
     b.innerHTML = `<div class="n">${unlocked ? li + 1 : '🔒'}</div><div class="nm">${unlocked ? L.name : 'Bloqueado'}</div><div class="st">${st.map(s => `<span class="${s ? 'on' : ''}">★</span>`).join('')}</div>`;
     b.dataset.level = i;
     b.onclick = () => { if (!unlocked) { sfx.play('click'); toast('Termina el nivel anterior para desbloquear'); return; } sfx.play('click'); G.dailyMode = false; G.dailySpec = null; startLevel(i, true); };
@@ -429,7 +443,12 @@ function toTitle() {
   G.state = 'title'; setPlayingUI(false); showScreen('scr-title'); sfx.musicOn = true;
   const doneW1 = save.levels[7] && save.levels[7].done;
   const doneW2 = save.levels[15] && save.levels[15].done;
-  $('title-world').textContent = doneW2 ? 'Mundos · Ruinas, Volcán y Glaciar' : (doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes');
+  const doneW3 = save.levels[23] && save.levels[23].done;
+  const doneW4 = save.levels[31] && save.levels[31].done;
+  $('title-world').textContent = doneW4 ? 'Mundos · Ruinas → Desierto'
+    : (doneW3 ? 'Mundos · Ruinas → Selva'
+    : (doneW2 ? 'Mundos · Ruinas, Volcán y Glaciar'
+    : (doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')));
   applyTheme('sky');
 }
 
@@ -786,7 +805,11 @@ loadLevel(0);
 G.state = 'title';
 showScreen('scr-title');
 const _d1 = save.levels[7] && save.levels[7].done, _d2 = save.levels[15] && save.levels[15].done;
-if ($('title-world')) $('title-world').textContent = _d2 ? 'Mundos · Ruinas, Volcán y Glaciar' : (_d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes');
+const _d3 = save.levels[23] && save.levels[23].done, _d4 = save.levels[31] && save.levels[31].done;
+if ($('title-world')) $('title-world').textContent = _d4 ? 'Mundos · Ruinas → Desierto'
+  : (_d3 ? 'Mundos · Ruinas → Selva'
+  : (_d2 ? 'Mundos · Ruinas, Volcán y Glaciar'
+  : (_d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')));
 notifyAchievements();
 grantUnlockSkins(); persist();
 $('loading').classList.add('hidden');

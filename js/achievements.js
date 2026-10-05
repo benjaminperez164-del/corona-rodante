@@ -4,9 +4,13 @@ export const ACHIEVEMENTS = [
   { id: 'ruinas_listas', name: 'Ruinas exploradas', desc: 'Termina el Mundo 1', icon: '🏛️' },
   { id: 'volcan_listo', name: 'Volcán domado', desc: 'Termina el Mundo 2', icon: '🌋' },
   { id: 'glaciar_listo', name: 'Glaciar conquistado', desc: 'Termina el Mundo 3', icon: '🧊' },
+  { id: 'selva_lista', name: 'Selva explorada', desc: 'Termina el Mundo 4', icon: '🌿' },
+  { id: 'desierto_listo', name: 'Desierto domado', desc: 'Termina el Mundo 5', icon: '🏜️' },
   { id: 'estrellas_ruinas', name: 'Cielo estrellado', desc: '3★ en los 8 niveles de Ruinas', icon: '⭐' },
   { id: 'estrellas_volcan', name: 'Ascua perfecta', desc: '3★ en los 8 niveles del Volcán', icon: '🔥' },
   { id: 'estrellas_glaciar', name: 'Aurora perfecta', desc: '3★ en los 8 niveles del Glaciar', icon: '✨' },
+  { id: 'estrellas_selva', name: 'Canopy perfecto', desc: '3★ en los 8 niveles de la Selva', icon: '🍃' },
+  { id: 'estrellas_desierto', name: 'Oasis perfecto', desc: '3★ en los 8 niveles del Desierto', icon: '☀️' },
   { id: 'monedas_100', name: 'Hucha llena', desc: 'Gana 100 monedas en total', icon: '🪙' },
   { id: 'monedas_500', name: 'Tesoro rodante', desc: 'Gana 500 monedas en total', icon: '💰' },
   { id: 'sin_caer', name: 'Pies firmes', desc: 'Termina un nivel sin caerte', icon: '🛡️' },
@@ -18,8 +22,8 @@ export const ACHIEVEMENTS = [
   { id: 'reto_diario', name: 'Retador', desc: 'Completa el Reto Diario una vez', icon: '📅' },
   { id: 'racha_3', name: 'Constante', desc: 'Racha diaria de 3 días', icon: '🔥' },
   { id: 'racha_7', name: 'Semana heroica', desc: 'Racha diaria de 7 días', icon: '🏆' },
-  { id: 'explorador', name: 'Explorador', desc: 'Desbloquea los 3 mundos', icon: '🗺️' },
-  { id: 'maestro', name: 'Maestro Rodante', desc: 'Completa los 24 niveles', icon: '🎓' },
+  { id: 'explorador', name: 'Explorador', desc: 'Desbloquea 5 mundos', icon: '🗺️' },
+  { id: 'maestro', name: 'Maestro Rodante', desc: 'Completa los 40 niveles', icon: '🎓' },
 ];
 
 function levelDone(save, i) { return !!(save.levels[i] && save.levels[i].done); }
@@ -51,9 +55,13 @@ export function evaluateAchievements(save, LEVELS, extra = {}) {
   if (levelDone(save, 7)) mark('ruinas_listas');
   if (levelDone(save, 15)) mark('volcan_listo');
   if (levelDone(save, 23)) mark('glaciar_listo');
+  if (levelDone(save, 31)) mark('selva_lista');
+  if (levelDone(save, 39)) mark('desierto_listo');
   if (allStars(save, 0, 8)) mark('estrellas_ruinas');
   if (allStars(save, 8, 8)) mark('estrellas_volcan');
   if (allStars(save, 16, 8)) mark('estrellas_glaciar');
+  if (allStars(save, 24, 8)) mark('estrellas_selva');
+  if (allStars(save, 32, 8)) mark('estrellas_desierto');
 
   const earned = save.stats?.earnedCoins || 0;
   if (earned >= 100) mark('monedas_100');
@@ -73,10 +81,10 @@ export function evaluateAchievements(save, LEVELS, extra = {}) {
   if ((save.daily?.bestStreak || save.daily?.streak || 0) >= 3) mark('racha_3');
   if ((save.daily?.bestStreak || save.daily?.streak || 0) >= 7) mark('racha_7');
 
-  if (levelDone(save, 15)) mark('explorador'); // mundos 1–3 desbloqueados
-  let all24 = true;
-  for (let i = 0; i < 24; i++) if (!levelDone(save, i)) { all24 = false; break; }
-  if (all24) mark('maestro');
+  if (levelDone(save, 31)) mark('explorador'); // mundos 1–5 desbloqueados
+  let allDone = true;
+  for (let i = 0; i < LEVELS.length; i++) if (!levelDone(save, i)) { allDone = false; break; }
+  if (allDone && LEVELS.length >= 40) mark('maestro');
 
   return newly;
 }
