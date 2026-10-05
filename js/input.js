@@ -1,11 +1,9 @@
-// Entrada: joystick flotante + botón SALTAR, teclado, e inclinación (DeviceOrientation)
+// Entrada: joystick flotante + botón SALTAR + teclado (WASD / flechas + Espacio)
 export class Input {
   constructor() {
-    this.mode = 'joystick'; // 'joystick' | 'tilt'
     this.joy = { x: 0, y: 0, id: null, ox: 0, oy: 0 };
     this.keys = {};
     this.jumpQueued = false; this.jumpHeld = false; this.jumpReleased = false;
-    this.tilt = { available: false, active: false, beta: null, gamma: null, nb: 0, ng: 0, sens: 1, invert: false, x: 0, y: 0, lastEvent: 0 };
     this.enabled = false;
     this.override = null; // para pruebas automáticas
     this.onFirstGesture = null;
@@ -74,64 +72,6 @@ export class Input {
       if (e.code === 'Space') { this.jumpHeld = false; this.jumpReleased = true; }
     });
     window.addEventListener('blur', () => { this.keys = {}; this.jumpHeld = false; });
-
-    this._onOrient = (e) => {
-      if (e.beta === null || e.gamma === null) return;
-      this.tilt.beta = e.beta; this.tilt.gamma = e.gamma; this.tilt.available = true; this.tilt.lastEvent = performance.now();
-      if (this.tilt.needCalib) { this.calibrate(); this.tilt.needCalib = false; }
-    };
-  }
-  // Ángulo de la pantalla (0, 90, -90/270, 180)
-  screenAngle() {
-    if (screen.orientation && typeof screen.orientation.angle === 'number') return screen.orientation.angle;
-    if (typeof window.orientation === 'number') return window.orientation;
-    return 0;
-  }
-  // Inclinación en ejes de pantalla (grados): x derecha, y hacia el jugador
-  screenTilt(beta, gamma) {
-    const a = ((this.screenAngle() % 360) + 360) % 360;
-    if (a === 90) return { x: beta, y: -gamma };
-    if (a === 270) return { x: -beta, y: gamma };
-    if (a === 180) return { x: -gamma, y: -beta };
-    return { x: gamma, y: beta };
-  }
-  async enableTilt() {
-    // iOS 13+: requiere permiso desde un toque del usuario
-    try {
-      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        const r = await DeviceOrientationEvent.requestPermission();
-        if (r !== 'granted') return 'denied';
-      }
-    } catch (err) { return 'denied'; }
-    if (typeof DeviceOrientationEvent === 'undefined') return 'unavailable';
-    if (!this.tilt.listening) { window.addEventListener('deviceorientation', this._onOrient); this.tilt.listening = true; }
-    this.tilt.active = true;
-    if (this.tilt.beta === null) this.tilt.needCalib = true;
-    // esperar un evento para confirmar que el sensor existe
-    const t0 = performance.now();
-    while (performance.now() - t0 < 1500) {
-      if (this.tilt.available) return 'ok';
-      await new Promise(r => setTimeout(r, 100));
-    }
-    return this.tilt.available ? 'ok' : 'unavailable';
-  }
-  calibrate() {
-    if (this.tilt.beta === null) return false;
-    const s = this.screenTilt(this.tilt.beta, this.tilt.gamma);
-    this.tilt.nx = s.x; this.tilt.ny = s.y; this.tilt.calAngle = this.screenAngle();
-    return true;
-  }
-  tiltVector() {
-    const t = this.tilt;
-    if (!t.active || t.beta === null) return { x: 0, z: 0 };
-    if (t.nx === undefined || t.calAngle !== this.screenAngle()) this.calibrate();
-    const s = this.screenTilt(t.beta, t.gamma);
-    let dx = s.x - t.nx, dy = s.y - t.ny;
-    if (dx > 180) dx -= 360; if (dx < -180) dx += 360; if (dy > 180) dy -= 360; if (dy < -180) dy += 360;
-    const maxA = 22 / t.sens, dead = 2.5;
-    const f = (v) => { const a = Math.abs(v); if (a < dead) return 0; return Math.sign(v) * Math.min(1, (a - dead) / (maxA - dead)); };
-    t.x = f(dx); t.y = f(dy) * (t.invert ? -1 : 1);
-    return { x: t.x, z: t.y };
   }
   // Vector de movimiento en el mundo (x derecha, z hacia la cámara)
   move() {
@@ -140,8 +80,7 @@ export class Input {
     const k = this.keys;
     if (k.KeyA || k.ArrowLeft) x -= 1; if (k.KeyD || k.ArrowRight) x += 1;
     if (k.KeyW || k.ArrowUp) z -= 1; if (k.KeyS || k.ArrowDown) z += 1;
-    if (this.mode === 'tilt') { const t = this.tiltVector(); x += t.x; z += t.z; }
-    else { x += this.joy.x; z += this.joy.y; }
+    x += this.joy.x; z += this.joy.y;
     const m = Math.hypot(x, z); if (m > 1) { x /= m; z /= m; }
     return { x, z };
   }

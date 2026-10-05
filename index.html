@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Corona Rodante: rueda por las Ruinas Flotantes hasta la corona. Juego de plataformas 3D para el navegador del móvil.">
 <title>Corona Rodante</title>
-<link rel="icon" href="icon.svg?v=1" type="image/svg+xml">
-<link rel="manifest" href="manifest.json?v=1">
-<link rel="stylesheet" href="css/style.css?v=1">
-<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=1" } }</script>
+<link rel="icon" href="icon.svg?v=2" type="image/svg+xml">
+<link rel="manifest" href="manifest.json?v=2">
+<link rel="stylesheet" href="css/style.css?v=2">
+<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=2" } }</script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -75,24 +75,9 @@
     <div class="opt-body">
       <div class="opt-col">
         <div class="opt-label">Controles</div>
-        <div class="seg" id="seg-control">
-          <button data-v="joystick">🕹️ Joystick</button>
-          <button data-v="tilt">📱 Inclinar</button>
-        </div>
-        <div id="tilt-panel">
-          <div class="row">
-            <button class="btn small green" id="btn-tilt-enable">Activar sensor</button>
-            <button class="btn small yellow" id="btn-calib">Calibrar</button>
-          </div>
-          <div class="opt-label">Sensibilidad <span id="sens-val">1.0</span></div>
-          <input type="range" id="sens" min="0.5" max="2" step="0.1" value="1">
-          <label class="check"><input type="checkbox" id="tilt-invert"> Invertir adelante/atrás</label>
-          <div class="tilt-status" id="tilt-status">Sostén el teléfono cómodo y pulsa «Calibrar».</div>
-        </div>
-        <div id="joy-panel" class="opt-note">Joystick a la izquierda (aparece donde tocas) y botón SALTAR a la derecha. En ordenador: WASD / flechas + Espacio.</div>
+        <div class="opt-note" id="joy-panel">Joystick a la izquierda (aparece donde tocas) y botón <b>SALTAR</b> a la derecha. En ordenador: WASD / flechas + Espacio.</div>
       </div>
       <div class="opt-col">
-        <div id="tilt-preview"><div id="tilt-dot"></div></div>
         <div class="opt-label">Sonido</div>
         <div class="row">
           <button class="toggle" id="tg-music">🎵 Música</button>
@@ -144,8 +129,20 @@
   <button class="btn small blue" id="btn-portrait">Jugar en vertical</button>
 </div>
 
+<!-- Tutorial primera vez -->
+<div id="tutorial" class="hidden">
+  <div class="tut-card">
+    <div class="tut-hand" aria-hidden="true">
+      <div class="tut-finger">👆</div>
+      <div class="tut-arrow">➜</div>
+    </div>
+    <div class="tut-text">Toca y arrastra en la parte izquierda de la pantalla (o donde quieras) para mover la bola</div>
+    <div class="tut-jump">Pulsa el botón <b>SALTAR</b> a la derecha para saltar</div>
+  </div>
+</div>
+
 <div id="loading">Cargando…</div>
 <noscript>Este juego necesita JavaScript.</noscript>
-<script type="module" src="js/main.js?v=1"></script>
+<script type="module" src="js/main.js?v=2"></script>
 </body>
 </html>

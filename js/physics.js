@@ -197,7 +197,7 @@ export function stepBall(ball, colliders, input, dt) {
       const vn = rvx * n.x + rvy * n.y + rvz * n.z;
       if (c.kind === 'bumper' && n.y < 0.7) {
         const hx = n.x, hz = n.z, hl = Math.hypot(hx, hz) || 1;
-        ball.vel.x = hx / hl * 14; ball.vel.z = hz / hl * 14; ball.vel.y = Math.max(ball.vel.y, 4);
+        ball.vel.x = hx / hl * 10.5; ball.vel.z = hz / hl * 10.5; ball.vel.y = Math.max(ball.vel.y, 3.5);
         ball.events.push({ type: 'bumper', c }); continue;
       }
       if (c.kind === 'spring' && (n.y > 0.6 || (n.y > -0.2 && ball.pos.y > c.pos.y - 0.05))) {

@@ -59,18 +59,7 @@ button { font-family: inherit; cursor: pointer; border: none; touch-action: mani
 .opt-body { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; text-align: left; }
 .opt-label { font-weight: 900; margin: 10px 0 6px; color: #2d6ea8; }
 .opt-note { font-size: 14px; color: #5a7590; margin-top: 10px; }
-.seg { display: flex; background: #d8ecfa; border-radius: 16px; padding: 4px; gap: 4px; }
-.seg button { flex: 1; padding: 10px; border-radius: 12px; font-size: 18px; font-weight: 800; color: #2d6ea8; background: transparent; }
-.seg button.on { background: linear-gradient(#ffe066, #ffb703); color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.2); box-shadow: 0 3px 0 #d48a00; }
-#tilt-panel .row { justify-content: flex-start; margin-top: 10px; }
 input[type=range] { width: 100%; accent-color: #ff7a2f; height: 28px; }
-.check { display: flex; align-items: center; gap: 8px; font-weight: 700; margin-top: 4px; }
-.check input { width: 22px; height: 22px; accent-color: #ff7a2f; }
-.tilt-status { margin-top: 8px; font-size: 14px; font-weight: 700; color: #3f7a3a; background: #eafbe6; border-radius: 10px; padding: 6px 10px; }
-.tilt-status.warn { color: #a3401a; background: #ffeadf; }
-#tilt-preview { width: 110px; height: 110px; border-radius: 50%; margin: 6px auto 0; background: radial-gradient(#ffffff, #d8ecfa); box-shadow: inset 0 0 0 3px #9fd3f0; position: relative; }
-#tilt-preview::after { content: ''; position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px; border-radius: 50%; border: 2px dashed #9fd3f0; }
-#tilt-dot { position: absolute; left: 50%; top: 50%; width: 24px; height: 24px; margin: -12px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff, #ff6fb7 50%, #c2307a); transition: transform .05s linear; }
 .toggle { padding: 10px 14px; border-radius: 14px; font-size: 16px; font-weight: 800; background: #d8ecfa; color: #7a93ab; }
 .toggle.on { background: linear-gradient(#8ef078, #3fc24a); color: #fff; box-shadow: 0 3px 0 #2a8f33; }
 
@@ -121,9 +110,46 @@ body.playing.joy #joy-zone { display: block; }
   .skin img { width: 56px; height: 56px; }
   #btn-jump { width: 108px; height: 108px; }
   .opt-label { margin: 6px 0 4px; }
-  #tilt-preview { width: 84px; height: 84px; }
-}
+  }
 @media (orientation: portrait) {
   .level-grid { grid-template-columns: repeat(2, 1fr); }
   .opt-body { grid-template-columns: 1fr; }
+}
+
+/* ---------- Tutorial primera vez ---------- */
+#tutorial { position: fixed; inset: 0; z-index: 15; display: flex; align-items: center; justify-content: center;
+  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  pointer-events: none; background: rgba(10, 40, 80, .28); }
+#tutorial.hidden { display: none !important; }
+.tut-card { max-width: min(520px, 92vw); background: linear-gradient(#ffffffee, #e8f7ffee); color: #1e4a78;
+  border-radius: 24px; padding: 18px 22px 20px; box-shadow: 0 8px 0 #7ec4e8, 0 18px 36px rgba(0,0,0,.28); text-align: center; }
+.tut-hand { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; height: 64px; }
+.tut-finger { font-size: 48px; line-height: 1; animation: tut-drag 1.6s ease-in-out infinite; filter: drop-shadow(0 4px 2px rgba(0,0,0,.2)); }
+.tut-arrow { font-size: 36px; color: #ff7a2f; font-weight: 900; animation: tut-pulse 1.6s ease-in-out infinite; text-shadow: 0 2px 0 #c45a10; }
+@keyframes tut-drag {
+  0%, 100% { transform: translate(0, 0); }
+  40% { transform: translate(28px, -10px); }
+  70% { transform: translate(10px, 8px); }
+}
+@keyframes tut-pulse {
+  0%, 100% { opacity: .55; transform: translateX(0); }
+  50% { opacity: 1; transform: translateX(8px); }
+}
+.tut-text { font-size: clamp(17px, 4.2vw, 22px); font-weight: 900; line-height: 1.35; color: #1e4a78;
+  text-shadow: 0 1px 0 #fff; }
+.tut-jump { margin-top: 10px; font-size: clamp(15px, 3.6vw, 18px); font-weight: 800; color: #c06f00;
+  background: #fff4c8; border-radius: 14px; padding: 8px 12px; }
+.tut-jump b { color: #e68900; }
+@media (orientation: portrait) {
+  .tut-card { padding: 16px 16px 18px; }
+  .tut-hand { height: 56px; }
+  .tut-finger { font-size: 42px; }
+}
+@media (max-height: 430px) {
+  .tut-card { padding: 10px 14px 12px; }
+  .tut-hand { height: 44px; margin-bottom: 6px; }
+  .tut-finger { font-size: 34px; }
+  .tut-arrow { font-size: 28px; }
+  .tut-text { font-size: 15px; }
+  .tut-jump { font-size: 13px; padding: 6px 10px; margin-top: 6px; }
 }

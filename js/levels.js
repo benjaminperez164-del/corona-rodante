@@ -181,13 +181,13 @@ export const LEVELS = [
       const mc = b.mover(-1.8, 4, -31.0, 3.2, 3.2, { to: [3.6, 0, 0], period: 4.4 });
       b.coin(0, 4.6, -24.4); b.coin(0, 4.6, -28.8);
       b.plat(0, 4, -35.6, 6, 3.6, { pillars: true }); b.checkpoint(0, 4, -35.6);
-      b.plat(0, 4, -44.4, 5, 14);
+      b.plat(0, 4, -44.4, 6.5, 14);
       [[-1, -41], [1.3, -45], [-1.1, -48.5]].forEach(([x, z]) => b.bumper(x, 4, z));
       b.coin(1.2, 4, -41.5); b.coin(-1.2, 4, -45); b.coin(1.2, 4, -48.5);
       b.plat(0, 4, -54.4, 4, 6);
       b.spring(0, 4, -56.2, { power: 17.5 });
-      b.coinRow(0, 7.5, -58, 0, 8.5, -61, 2);
-      b.plat(0, 7, -66, 6, 6, { pillars: true }); b.checkpoint(0, 7, -66);
+      b.coin(0, 9.4, -57.6); b.coin(0, 9.7, -59.6);
+      b.plat(0, 7, -64.5, 6, 9, { pillars: true }); b.checkpoint(0, 7, -66);
       const h1 = b.mover(0, 7, -71.4, 2.6, 2.6, { shape: 'hex', to: [0, -1.2, 0], period: 3 });
       const h2 = b.mover(1.8, 6.5, -75, 2.6, 2.6, { shape: 'hex', to: [0, -1.2, 0], period: 3, phase: 0.5 });
       b.coin(1.8, 6.5, -75);
@@ -203,7 +203,7 @@ export const LEVELS = [
       b.wp(0, 4, -28.8, 'j', 6, { follow: mb, oz: -1.0 });
       b.wp(0, 4, -31, 'r', 0, { follow: mc });
       b.wp(0, 4, -32.2, 'j', 6, { follow: mc, oz: -1.0 });
-      b.wp(0, 4, -35.6); b.wp(0, 4, -39); b.wp(0.3, 4, -43); b.wp(-0.2, 4, -47); b.wp(0.2, 4, -51.5);
+      b.wp(0, 4, -35.6); b.wp(1.4, 4, -38.5); b.wp(1.4, 4, -41.8, 't'); b.wp(-1.3, 4, -43.6, 't'); b.wp(-1.3, 4, -46, 't'); b.wp(1.3, 4, -47.6, 't'); b.wp(1.3, 4, -50, 't'); b.wp(0, 4, -52.5);
       b.wp(0, 4, -56.2, '', 4); b.wp(0, 7, -66); b.wp(0, 7, -68.4, 'j', 4); b.wp(0, 7, -71.4, 'j', 4, { follow: h1 }); b.wp(1.8, 6.5, -75, 'j', 4, { follow: h2 }); b.wp(0, 6, -82);
     },
   },

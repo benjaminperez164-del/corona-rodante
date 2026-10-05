@@ -1,11 +1,11 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=1';
-import { Level } from './world.js?v=1';
-import { LEVELS } from './levels.js?v=1';
-import { Input } from './input.js?v=1';
-import { Sfx } from './audio.js?v=1';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=1';
+import { Ball, stepBall } from './physics.js?v=2';
+import { Level } from './world.js?v=2';
+import { LEVELS } from './levels.js?v=2';
+import { Input } from './input.js?v=2';
+import { Sfx } from './audio.js?v=2';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=2';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -13,8 +13,8 @@ const IS_TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in wi
 
 // ---------------- Guardado ----------------
 const SAVE_KEY = 'coronaRodante.v1';
-const defSave = () => ({ coins: 0, skins: ['piedra'], skin: 'piedra', levels: {}, portraitOk: false, muted: false,
-  opts: { control: 'joystick', sens: 1, invert: false, music: true, sfx: true, shadows: true } });
+const defSave = () => ({ coins: 0, skins: ['piedra'], skin: 'piedra', levels: {}, portraitOk: false, muted: false, tutorialSeen: false,
+  opts: { music: true, sfx: true, shadows: true } });
 function loadSave() {
   try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && typeof s === 'object') { const d = defSave(); return { ...d, ...s, opts: { ...d.opts, ...(s.opts || {}) } }; } } catch (e) { /* sin guardado */ }
   return defSave();
@@ -107,12 +107,11 @@ const fx = new Particles();
 // ---------------- Sistemas ----------------
 const input = new Input();
 const sfx = new Sfx(); sfx.music = save.opts.music && !save.muted; sfx.sfx = save.opts.sfx && !save.muted;
-input.mode = save.opts.control; input.tilt.sens = save.opts.sens; input.tilt.invert = save.opts.invert;
 
 const G = {
   state: 'title', level: null, levelIndex: 0, checkpoint: new THREE.Vector3(), coins: 0, time: 0, timerOn: false,
   deaths: 0, dead: false, deadT: 0, deadKind: '', winT: 0, shake: 0, lastGroundY: 0, cool: {}, t: 0, returnTo: 'title',
-  camPos: new THREE.Vector3(0, 6, 10), camLook: new THREE.Vector3(), followY: 0, bot: null, hintT: 0,
+  camPos: new THREE.Vector3(0, 6, 10), camLook: new THREE.Vector3(), followY: 0, bot: null, hintT: 0, hintShowing: false,
 };
 const DT = 1 / 120;
 
@@ -131,12 +130,28 @@ function toast(text, secs = 2.2) { const t = $('toast'); t.textContent = text; t
 function flash(op = 0.6) { const f = $('flash'); f.style.transition = 'none'; f.style.opacity = op; requestAnimationFrame(() => { f.style.transition = 'opacity .45s'; f.style.opacity = 0; }); }
 function setPlayingUI(on) {
   document.body.classList.toggle('playing', on);
-  document.body.classList.toggle('joy', on && effectiveMode() === 'joystick');
+  document.body.classList.toggle('joy', on);
   $('hud').classList.toggle('hidden', !on);
   input.enabled = on;
   if (!on) input.resetTouch();
 }
-function effectiveMode() { return save.opts.control === 'tilt' && input.tilt.available ? 'tilt' : 'joystick'; }
+
+function showTutorial(on) {
+  const el = $('tutorial');
+  if (!el) return;
+  el.classList.toggle('hidden', !on);
+  G.hintShowing = !!on;
+}
+function maybeShowTutorial() {
+  if (save.tutorialSeen) { showTutorial(false); return; }
+  showTutorial(true);
+}
+function dismissTutorial() {
+  if (!G.hintShowing) return;
+  showTutorial(false);
+  save.tutorialSeen = true;
+  persist();
+}
 function fmtTime(t) { const m = Math.floor(t / 60), s = Math.floor(t % 60); return `${m}:${String(s).padStart(2, '0')}`; }
 function updateHUD() {
   if (!G.level) return;
@@ -177,29 +192,9 @@ function renderShop() {
   }
 }
 function renderOptions() {
-  document.querySelectorAll('#seg-control button').forEach(b => b.classList.toggle('on', b.dataset.v === save.opts.control));
-  $('tilt-panel').classList.toggle('hidden', save.opts.control !== 'tilt');
-  $('tilt-preview').classList.toggle('hidden', save.opts.control !== 'tilt');
-  $('joy-panel').classList.toggle('hidden', save.opts.control === 'tilt');
-  $('sens').value = save.opts.sens; $('sens-val').textContent = Number(save.opts.sens).toFixed(1);
-  $('tilt-invert').checked = save.opts.invert;
   $('tg-music').classList.toggle('on', save.opts.music);
   $('tg-sfx').classList.toggle('on', save.opts.sfx);
   $('tg-shadows').classList.toggle('on', save.opts.shadows);
-  updateTiltStatus();
-}
-function updateTiltStatus(msg, warn) {
-  const el = $('tilt-status');
-  if (msg) { el.textContent = msg; el.classList.toggle('warn', !!warn); return; }
-  if (!input.tilt.active) { el.textContent = 'Pulsa «Activar sensor» para usar la inclinación.'; el.classList.remove('warn'); }
-  else if (!input.tilt.available) { el.textContent = 'Esperando el sensor de movimiento…'; el.classList.add('warn'); }
-  else { el.textContent = '¡Sensor activo! Inclina el teléfono. Pulsa «Calibrar» para fijar la posición neutra.'; el.classList.remove('warn'); }
-}
-async function activateTilt() {
-  const r = await input.enableTilt();
-  if (r === 'ok') { updateTiltStatus(); return true; }
-  updateTiltStatus(r === 'denied' ? 'Permiso denegado. Actívalo en los ajustes del navegador o usa el joystick.' : 'Este dispositivo no tiene sensor de inclinación. Se usará el joystick.', true);
-  return false;
 }
 
 // ---------------- Niveles ----------------
@@ -223,13 +218,14 @@ function resetRun() {
 }
 async function startLevel(i, fromMenu) {
   sfx.init();
-  if (save.opts.control === 'tilt' && !input.tilt.active) { await activateTilt(); }
-  if (save.opts.control === 'tilt' && !input.tilt.available) toast('Sensor no disponible: usa el joystick', 3);
   if (!G.level || G.levelIndex !== i || fromMenu !== 'keep') loadLevel(i); else resetRun();
   G.state = 'play'; showScreen(null); setPlayingUI(true);
   sfx.musicOn = true;
-  setTimeout(() => toast(LEVELS[i].hint, 3.5), 250);
-  $('joy-hint').style.opacity = save.levels[0] && save.levels[0].done ? 0 : 1;
+  maybeShowTutorial();
+  // Si el tutorial está visible, retrasamos el hint del nivel para no saturar
+  const delay = G.hintShowing ? 0 : 250;
+  if (!G.hintShowing) setTimeout(() => toast(LEVELS[i].hint, 3.5), delay);
+  $('joy-hint').style.opacity = (save.tutorialSeen || (save.levels[0] && save.levels[0].done)) ? 0 : 0;
 }
 function pause() { if (G.state !== 'play') return; G.state = 'pause'; setPlayingUI(false); $('hud').classList.remove('hidden'); showScreen('scr-pause'); }
 function resume() { G.state = 'play'; showScreen(null); setPlayingUI(true); }
@@ -304,6 +300,7 @@ function fixedStep(dt) {
       const mv = input.move();
       if (input.consumeJump()) ball.pressJump();
       ball.jumpHeld = input.jumpHeld;
+      if (G.hintShowing && (Math.abs(mv.x) + Math.abs(mv.z) > 0.12 || ball.sinceJumpPress < 0.5)) dismissTutorial();
       if (!G.timerOn && (Math.abs(mv.x) + Math.abs(mv.z) > 0.15 || ball.sinceJumpPress < 0.5)) G.timerOn = true;
       stepBall(ball, L.colliders, mv, dt);
       handleEvents();
@@ -416,9 +413,6 @@ function render(dt) {
   sunLight.position.set(focus.x + 6, focus.y + 20, focus.z + 4); sunLight.target.position.copy(focus);
   sky.position.copy(camera.position); sun.position.set(camera.position.x + 90, camera.position.y + 80, camera.position.z - 220);
   if (G.state === 'play' && G.timerOn) updateHUD();
-  if (!$('scr-options').classList.contains('hidden') && save.opts.control === 'tilt') {
-    const t = input.tiltVector(); $('tilt-dot').style.transform = `translate(${t.x * 40}px, ${t.z * 40}px)`;
-  }
   renderer.render(scene, camera);
 }
 function resize() {
@@ -457,19 +451,6 @@ on('btn-pause-opts', () => { sfx.play('click'); G.returnTo = 'scr-pause'; showSc
 on('btn-next', () => { sfx.play('click'); startLevel(G.levelIndex + 1, true); });
 on('btn-again', () => { sfx.play('click'); startLevel(G.levelIndex, 'keep'); });
 on('btn-win-levels', () => { sfx.play('click'); G.state = 'menu'; showScreen('scr-levels'); });
-document.querySelectorAll('#seg-control button').forEach(b => b.addEventListener('click', async () => {
-  sfx.init(); sfx.play('click');
-  save.opts.control = b.dataset.v; input.mode = b.dataset.v; persist(); renderOptions();
-  if (b.dataset.v === 'tilt' && !input.tilt.active) { await activateTilt(); renderOptions(); }
-}));
-on('btn-tilt-enable', async () => { sfx.play('click'); await activateTilt(); });
-on('btn-calib', () => {
-  sfx.play('click');
-  if (input.calibrate()) updateTiltStatus('¡Calibrado! Esta posición es ahora la neutra.');
-  else updateTiltStatus('Primero activa el sensor.', true);
-});
-$('sens').addEventListener('input', (e) => { save.opts.sens = Number(e.target.value); input.tilt.sens = save.opts.sens; $('sens-val').textContent = save.opts.sens.toFixed(1); persist(); });
-$('tilt-invert').addEventListener('change', (e) => { save.opts.invert = e.target.checked; input.tilt.invert = save.opts.invert; persist(); });
 on('tg-music', () => { save.opts.music = !save.opts.music; sfx.setMusic(save.opts.music && !save.muted); persist(); renderOptions(); sfx.play('click'); });
 on('tg-sfx', () => { save.opts.sfx = !save.opts.sfx; sfx.setSfx(save.opts.sfx && !save.muted); persist(); renderOptions(); sfx.play('click'); });
 on('tg-shadows', () => {
