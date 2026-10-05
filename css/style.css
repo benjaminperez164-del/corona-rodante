@@ -163,3 +163,8 @@ body.playing.joy #joy-zone { display: block; }
 .world-tab.lava.on { background: linear-gradient(#ff8c3a, #e04810); box-shadow: 0 3px 0 #a03008; }
 .lvl.lava { background: linear-gradient(#ff8c4a, #d94512); box-shadow: 0 5px 0 #9a2e08; }
 .lvl.lava:active:not(.locked) { box-shadow: 0 2px 0 #9a2e08; }
+
+.world-tab.ice.on { background: linear-gradient(#c8ecff, #6eb8ef); box-shadow: 0 3px 0 #3a8ac0; }
+.lvl.ice { background: linear-gradient(#c8ecff, #5aa8e0); box-shadow: 0 5px 0 #2a6fa8; }
+.lvl.ice:active:not(.locked) { box-shadow: 0 2px 0 #2a6fa8; }
+body.theme-ice { background: #b8dcff; }

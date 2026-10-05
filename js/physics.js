@@ -129,7 +129,8 @@ export function stepBall(ball, colliders, input, dt) {
   let ix = input.x, iz = input.z;
   const mag = Math.hypot(ix, iz);
   if (mag > 1) { ix /= mag; iz /= mag; }
-  const acc = grounded ? P.accelGround : P.accelAir;
+  const onIce = grounded && ball.ground && ball.ground.ice;
+  const acc = grounded ? (onIce ? P.accelGround * 0.55 : P.accelGround) : P.accelAir;
   if (mag > 0.01) {
     // aceleración, limitada para no superar la velocidad máxima en la dirección deseada
     const dx = ix / Math.max(mag, 1e-6), dz = iz / Math.max(mag, 1e-6);
@@ -143,7 +144,7 @@ export function stepBall(ball, colliders, input, dt) {
     }
     // amortiguar la componente lateral para que responda bien
     const latX = ball.vel.x - dx * along, latZ = ball.vel.z - dz * along;
-    const lk = grounded ? 3.0 : 1.0;
+    const lk = grounded ? (onIce ? 0.7 : 3.0) : 1.0;
     ball.vel.x -= latX * Math.min(1, lk * dt); ball.vel.z -= latZ * Math.min(1, lk * dt);
   }
   // 3) Gravedad (reducida en pendientes para no resbalar de más)
@@ -153,7 +154,10 @@ export function stepBall(ball, colliders, input, dt) {
     const gn = -P.g * n.y; // componente normal de g (vector g=(0,-g,0))
     _w.set(0, -P.g, 0).addScaledVector(n, -gn); // tangencial
     ball.vel.addScaledVector(n, gn * dt).addScaledVector(_w, P.slopeGravity * dt);
-    const fr = mag > 0.01 ? P.frictionMove : P.frictionIdle;
+    // hielo: poca fricción (la bola sigue deslizando)
+    const ice = !!(ball.ground && ball.ground.ice);
+    const frMul = ice ? 0.08 : 1;
+    const fr = (mag > 0.01 ? P.frictionMove : P.frictionIdle) * frMul;
     const f = Math.exp(-fr * dt);
     // fricción solo en el plano del suelo
     const vn = ball.vel.dot(n);

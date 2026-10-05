@@ -1,11 +1,11 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=3';
-import { Level } from './world.js?v=3';
-import { LEVELS, WORLDS } from './levels.js?v=3';
-import { Input } from './input.js?v=3';
-import { Sfx } from './audio.js?v=3';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=3';
+import { Ball, stepBall } from './physics.js?v=5';
+import { Level } from './world.js?v=5';
+import { LEVELS, WORLDS } from './levels.js?v=5';
+import { Input } from './input.js?v=5';
+import { Sfx } from './audio.js?v=5';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=5';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -73,6 +73,10 @@ const THEMES = {
     fog: 0x4a2010, hemiSky: 0xffb080, hemiGround: 0x3a1810, hemiI: 1.55,
     sun: 0xffc090, sunI: 1.85, skyTop: 0x1a0a08, skyMid: 0x5a2010, skyHor: 0xc45018, skyBot: 0xff6a20,
   },
+  ice: {
+    fog: 0xd8eefc, hemiSky: 0xf0f8ff, hemiGround: 0xc8dce8, hemiI: 1.85,
+    sun: 0xfff8f0, sunI: 2.0, skyTop: 0x6eb8ef, skyMid: 0xb8dcff, skyHor: 0xe8f4ff, skyBot: 0xffffff,
+  },
 };
 let currentTheme = 'sky';
 function rebuildSky(th) {
@@ -96,6 +100,7 @@ function applyTheme(th) {
   sunLight.color.set(t.sun); sunLight.intensity = t.sunI;
   rebuildSky(th);
   document.body.classList.toggle('theme-lava', th === 'lava');
+  document.body.classList.toggle('theme-ice', th === 'ice');
 }
 
 // ---------------- Bola ----------------
@@ -209,11 +214,11 @@ function renderLevels() {
   WORLDS.forEach((w, wi) => {
     const unlocked = worldUnlocked(wi);
     const b = document.createElement('button');
-    b.className = 'world-tab' + (wi === G.selectedWorld ? ' on' : '') + (w.theme === 'lava' ? ' lava' : '') + (unlocked ? '' : ' locked');
+    b.className = 'world-tab' + (wi === G.selectedWorld ? ' on' : '') + (w.theme === 'lava' ? ' lava' : '') + (w.theme === 'ice' ? ' ice' : '') + (unlocked ? '' : ' locked');
     b.textContent = unlocked ? `${wi + 1}. ${w.name}` : `🔒 ${w.name}`;
     b.onclick = () => {
       sfx.play('click');
-      if (!unlocked) { toast('Completa el Mundo 1 para desbloquear'); return; }
+      if (!unlocked) { toast(wi === 1 ? 'Completa el Mundo 1 para desbloquear' : 'Completa el mundo anterior para desbloquear'); return; }
       G.selectedWorld = wi; renderLevels();
     };
     tabs.appendChild(b);
@@ -227,7 +232,7 @@ function renderLevels() {
     const unlocked = prevDone && worldUnlocked(G.selectedWorld);
     const st = (save.levels[i] && save.levels[i].stars) || [false, false, false];
     const b = document.createElement('button');
-    b.className = 'lvl' + (unlocked ? '' : ' locked') + (w.theme === 'lava' ? ' lava' : '');
+    b.className = 'lvl' + (unlocked ? '' : ' locked') + (w.theme === 'lava' ? ' lava' : '') + (w.theme === 'ice' ? ' ice' : '');
     b.innerHTML = `<div class="n">${unlocked ? li + 1 : '🔒'}</div><div class="nm">${unlocked ? L.name : 'Bloqueado'}</div><div class="st">${st.map(s => `<span class="${s ? 'on' : ''}">★</span>`).join('')}</div>`;
     b.dataset.level = i;
     b.onclick = () => { if (!unlocked) { sfx.play('click'); toast('Termina el nivel anterior para desbloquear'); return; } sfx.play('click'); startLevel(i, true); };
@@ -296,7 +301,8 @@ function resume() { G.state = 'play'; showScreen(null); setPlayingUI(true); }
 function toTitle() {
   G.state = 'title'; setPlayingUI(false); showScreen('scr-title'); sfx.musicOn = true;
   const doneW1 = save.levels[7] && save.levels[7].done;
-  $('title-world').textContent = doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes';
+  const doneW2 = save.levels[15] && save.levels[15].done;
+  $('title-world').textContent = doneW2 ? 'Mundos · Ruinas, Volcán y Glaciar' : (doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes');
   applyTheme('sky');
 }
 
@@ -311,7 +317,7 @@ function handleEvents() {
       case 'hammer': if (cooldown('hammer', 0.4)) { sfx.play('hammer'); G.shake = 0.6; fx.burst(ball.pos, 16, [0xffd447, 0xffffff, 0xef4f5f], { speed: 6, up: 4, life: 0.6 }); } break;
       case 'spring': if (cooldown('spring', 0.25)) { sfx.play('spring'); if (e.c.owner) e.c.owner.hit = 1; fx.burst(ball.pos, 10, [0xffd23f, 0xffffff], { speed: 3, up: 5, life: 0.6 }); } break;
       case 'bumper': if (cooldown('bumper', 0.15)) { sfx.play('bumper'); if (e.c.owner) e.c.owner.hit = 1; G.shake = Math.max(G.shake, 0.2); fx.burst(ball.pos, 10, [0xff6fb7, 0xffffff], { speed: 5, up: 2, life: 0.4 }); } break;
-      case 'touch': if (e.c.owner && e.c.owner.touch && e.c.owner.touch()) sfx.play('crumble'); break;
+      case 'touch': if (e.c.owner && e.c.owner.touch && e.c.owner.touch()) sfx.play(e.c.owner.type === 'crackIce' ? 'crumble' : 'crumble'); break;
     }
   }
   ball.events.length = 0;
@@ -374,6 +380,12 @@ function fixedStep(dt) {
       if (G.hintShowing && (Math.abs(mv.x) + Math.abs(mv.z) > 0.12 || ball.sinceJumpPress < 0.5)) dismissTutorial();
       if (!G.timerOn && (Math.abs(mv.x) + Math.abs(mv.z) > 0.15 || ball.sinceJumpPress < 0.5)) G.timerOn = true;
       stepBall(ball, L.colliders, mv, dt);
+      // viento (zonas del glaciar)
+      for (const e of L.entities) {
+        if (e.type === 'wind' && e.contains(ball.pos)) {
+          ball.vel.x += e.force.x * dt; ball.vel.z += e.force.z * dt;
+        }
+      }
       handleEvents();
       if (G.timerOn) G.time += dt;
       if (ball.sinceGround === 0) G.lastGroundY = ball.pos.y;
@@ -482,6 +494,11 @@ function render(dt) {
     const bp = ball.pos;
     fx.burst(_v.set(bp.x + (Math.random() - 0.5) * 14, bp.y - 2 + Math.random() * 4, bp.z + (Math.random() - 0.5) * 18 - 4),
       1, [0xff6a1a, 0xffb020, 0xff3a0a], { speed: 0.8, up: 2.5, life: 1.4, g: -1.5, size: 0.7, spread: 2 });
+  }
+  if (currentTheme === 'ice' && (G.state === 'play' || G.state === 'won' || G.state === 'title') && Math.random() < dt * 10) {
+    const bp = (G.state === 'title' && L) ? L.spawn : ball.pos;
+    fx.burst(_v.set(bp.x + (Math.random() - 0.5) * 16, bp.y + 6 + Math.random() * 5, bp.z + (Math.random() - 0.5) * 20 - 2),
+      1, [0xffffff, 0xe8f4ff, 0xd0e8ff], { speed: 0.4, up: -0.2, life: 2.2, g: 1.2, size: 0.55, spread: 1.5 });
   }
   updateCamera(dt);
   // luz y sombra siguen a la bola
@@ -616,7 +633,7 @@ resize();
 loadLevel(0);
 G.state = 'title';
 showScreen('scr-title');
-const _d1 = save.levels[7] && save.levels[7].done;
-if ($('title-world')) $('title-world').textContent = _d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes';
+const _d1 = save.levels[7] && save.levels[7].done, _d2 = save.levels[15] && save.levels[15].done;
+if ($('title-world')) $('title-world').textContent = _d2 ? 'Mundos · Ruinas, Volcán y Glaciar' : (_d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes');
 $('loading').classList.add('hidden');
 requestAnimationFrame((t) => { last = t; frame(t); });

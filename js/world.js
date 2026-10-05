@@ -1,7 +1,7 @@
 // Construcción de niveles: geometría estática fusionada (pocas draw calls),
 // entidades dinámicas (martillos, molinetes, plataformas móviles...) y colliders.
 import * as THREE from 'three';
-import { Collider } from './physics.js?v=3';
+import { Collider } from './physics.js?v=5';
 
 export const PAL = {
   grass: 0x7ddc5a, grassSide: 0xf0d9a8, stoneBottom: 0xc9a777,
@@ -22,6 +22,11 @@ export const PAL = {
   lavaCrumb: 0xff7a28, lavaCrumbSide: 0xb83a10,
   convey: 0xff9a3a, conveySide: 0xc45a12,
   lavaMover: 0xff7040, lavaMoverSide: 0xc04020,
+  // Glaciar Resbaloso
+  ice: 0xb8e8ff, iceSide: 0x7ec8e8, iceBottom: 0x5aa8c8,
+  iceTop: 0xe8f8ff, snow: 0xf5fbff, snowSide: 0xd0e4f0, snowBottom: 0xb8c8d8,
+  crystal: 0xa8f0ff, packIce: 0x9ad4f0, crackIce: 0xd0f0ff,
+  windFan: 0x6ec8ff, icicle: 0xd8f4ff, snowBounce: 0xffffff,
 };
 
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
@@ -67,6 +72,9 @@ const STYLE = {
   basalt: [PAL.basaltTop, PAL.basaltSide, PAL.basaltBottom],
   scorched: [PAL.ash, PAL.scorched, PAL.basaltBottom],
   lavaWood: [PAL.convey, PAL.conveySide, PAL.basaltBottom],
+  ice: [PAL.iceTop, PAL.iceSide, PAL.iceBottom],
+  snow: [PAL.snow, PAL.snowSide, PAL.snowBottom],
+  packIce: [PAL.packIce, PAL.iceSide, PAL.iceBottom],
 };
 
 let glowTex = null;
@@ -90,7 +98,7 @@ export class Level {
     this.mat = new THREE.MeshLambertMaterial({ vertexColors: true });
     this.minY = 0; this.bounds = new THREE.Box3();
     this.rand = rng(index * 97 + 13);
-    this.defaultPlat = this.theme === 'lava' ? 'basalt' : 'stone';
+    this.defaultPlat = this.theme === 'lava' ? 'basalt' : (this.theme === 'ice' ? 'ice' : 'stone');
     def.build(this);
     this.finish();
   }
@@ -110,11 +118,17 @@ export class Level {
   plat(x, y, z, w, d, o = {}) {
     const h = o.h || 1, type = o.type || this.defaultPlat;
     const c = this._staticBox(new THREE.Vector3(x, y - h / 2, z), new THREE.Quaternion(), new THREE.Vector3(w / 2, h / 2, d / 2), type);
+    if (type === 'ice' || type === 'packIce' || o.ice) c.ice = true;
     if (type === 'wood') this._planks(x, y, z, w, d);
-    if (o.rock !== false && type !== 'wood' && w * d >= 6) this._rockUnder(x, y - h, z, w, d);
+    if (type === 'ice' || type === 'packIce') this._iceShine(x, y, z, w, d);
+    if (o.rock !== false && type !== 'wood' && type !== 'ice' && type !== 'packIce' && type !== 'snow' && w * d >= 6) this._rockUnder(x, y - h, z, w, d);
     if (o.pillars) this._cornerPillars(x, y, z, w, d);
     if (y < this.minY) this.minY = y;
     return c;
+  }
+  _iceShine(x, y, z, w, d) {
+    _m.compose(_v.set(x, y + 0.02, z), _q.identity(), _s);
+    this.decor.add(new THREE.BoxGeometry(Math.max(0.4, w * 0.35), 0.02, Math.max(0.3, d * 0.15)), _m, 0xffffff, 0xffffff);
   }
   _planks(x, y, z, w, d) {
     // líneas de tablones (decorativas, apenas sobresalen)
@@ -131,8 +145,8 @@ export class Level {
     const geo = new THREE.ConeGeometry(r, hgt, 7, 1);
     _q.setFromEuler(_e.set(Math.PI, this.rand() * 6, 0));
     _m.compose(_v.set(x, y - hgt / 2 + 0.02, z), _q, _s.set(w / (2 * r) * 0.95, 1, d / (2 * r) * 0.95));
-    const rk = this.theme === 'lava' ? PAL.basaltSide : PAL.rock;
-    const rkd = this.theme === 'lava' ? PAL.basaltBottom : PAL.rockDark;
+    const rk = this.theme === 'lava' ? PAL.basaltSide : (this.theme === 'ice' ? PAL.iceSide : PAL.rock);
+    const rkd = this.theme === 'lava' ? PAL.basaltBottom : (this.theme === 'ice' ? PAL.iceBottom : PAL.rockDark);
     this.decor.add(geo, _m, rk, rk, rkd);
     _s.set(1, 1, 1);
   }
@@ -146,8 +160,8 @@ export class Level {
     const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + h / 2, z), r, h: h / 2 });
     this.colliders.push(c);
     _m.compose(_v.set(x, y + h / 2, z), _q.identity(), _s);
-    const pc = this.theme === 'lava' ? PAL.basaltTop : PAL.pillar;
-    const pb = this.theme === 'lava' ? PAL.basaltSide : PAL.marbleSide;
+    const pc = this.theme === 'lava' ? PAL.basaltTop : (this.theme === 'ice' ? PAL.iceTop : PAL.pillar);
+    const pb = this.theme === 'lava' ? PAL.basaltSide : (this.theme === 'ice' ? PAL.iceSide : PAL.marbleSide);
     this.merge.add(new THREE.CylinderGeometry(r * 0.9, r, h, 8), _m, pc, pc);
     _m.compose(_v.set(x, y + 0.12, z), _q.identity(), _s);
     this.merge.add(new THREE.BoxGeometry(r * 2.6, 0.24, r * 2.6), _m, pb, pb);
@@ -161,14 +175,18 @@ export class Level {
     const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(xa, ya, dir));
     const h = o.h || 1;
     const mid = p1.clone().add(p2).multiplyScalar(0.5).addScaledVector(ya, -h / 2);
-    this._staticBox(mid, quat, new THREE.Vector3(w / 2, h / 2, L / 2 + 0.05), o.type || this.defaultPlat);
+    const rc = this._staticBox(mid, quat, new THREE.Vector3(w / 2, h / 2, L / 2 + 0.05), o.type || this.defaultPlat);
+    const rt = o.type || this.defaultPlat;
+    if (rt === 'ice' || rt === 'packIce' || o.ice) rc.ice = true;
   }
   hex(x, y, z, r = 1.1, o = {}) {
     const h = o.h || 0.8;
     const c = new Collider('cyl', { pos: new THREE.Vector3(x, y - h / 2, z), r: r * 0.93, h: h / 2 });
     this.colliders.push(c); this.bounds.expandByPoint(c.pos);
     _m.compose(_v.set(x, y - h / 2, z), _q.setFromEuler(_e.set(0, Math.PI / 6, 0)), _s);
-    this.merge.add(new THREE.CylinderGeometry(r, r, h, 6), _m, this.theme === 'lava' ? PAL.ember : PAL.hex, this.theme === 'lava' ? PAL.magmaDeep : PAL.hexSide);
+    const hxTop = this.theme === 'lava' ? PAL.ember : (this.theme === 'ice' ? PAL.crystal : PAL.hex);
+    const hxSide = this.theme === 'lava' ? PAL.magmaDeep : (this.theme === 'ice' ? PAL.iceSide : PAL.hexSide);
+    this.merge.add(new THREE.CylinderGeometry(r, r, h, 6), _m, hxTop, hxSide);
     _m.compose(_v.set(x, y - h - 0.6, z), _q.setFromEuler(_e.set(Math.PI, 0.3, 0)), _s);
     this.decor.add(new THREE.ConeGeometry(r * 0.8, 1.2, 6), _m, PAL.rock, PAL.rock);
     return c;
@@ -251,8 +269,11 @@ export class Level {
       geo = new THREE.BoxGeometry(w, h, d);
       c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2), kinematic: true });
     }
-    colorGeo(geo, o.color || (this.theme === 'lava' ? PAL.lavaMover : PAL.mover), o.side || (this.theme === 'lava' ? PAL.lavaMoverSide : PAL.moverSide));
+    const mc = o.color || (this.theme === 'lava' ? PAL.lavaMover : (this.theme === 'ice' ? PAL.iceTop : PAL.mover));
+    const ms = o.side || (this.theme === 'lava' ? PAL.lavaMoverSide : (this.theme === 'ice' ? PAL.iceSide : PAL.moverSide));
+    colorGeo(geo, mc, ms);
     const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
+    if (this.theme === 'ice') c.ice = true;
     this.colliders.push(c); this.bounds.expandByPoint(base);
     const to = new THREE.Vector3(...(o.to || [0, 0, 0]));
     const e = { type: 'mover', c, mesh, base, to, period: o.period || 4, phase: o.phase || 0, spin: o.spin || 0,
@@ -522,6 +543,157 @@ export class Level {
     this.entities.push(e); return e;
   }
 
+
+  // ---------- obstáculos Mundo 3 (hielo) ----------
+  wind(x, y, z, w, d, o = {}) {
+    // Zona de viento: empuja la bola; partículas visibles indican la dirección
+    const dir = o.dir || [1, 0, 0];
+    const len = Math.hypot(dir[0], dir[2]) || 1;
+    const force = o.force || 14;
+    const fx = dir[0] / len * force, fz = dir[2] / len * force;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    // ventilador decorativo
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 0.3, 10), new THREE.MeshLambertMaterial({ color: 0x8ab4d0 }));
+    base.position.set(-Math.sign(fx || 1) * (w / 2 - 0.4), 0.4, -Math.sign(fz || 0) * (d / 2 - 0.4));
+    if (Math.abs(fx) >= Math.abs(fz)) base.position.set(-Math.sign(fx) * (w / 2 + 0.2), 0.5, 0);
+    else base.position.set(0, 0.5, -Math.sign(fz) * (d / 2 + 0.2));
+    g.add(base);
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.8, 8), new THREE.MeshLambertMaterial({ color: PAL.windFan }));
+    hub.position.copy(base.position); hub.position.y += 0.6; g.add(hub);
+    const blades = new THREE.Group(); blades.position.copy(hub.position);
+    for (let i = 0; i < 3; i++) {
+      const bl = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.08, 0.35), new THREE.MeshLambertMaterial({ color: 0xd0f0ff, transparent: true, opacity: 0.85 }));
+      bl.rotation.y = i * Math.PI * 2 / 3; blades.add(bl);
+    }
+    g.add(blades);
+    // zona invisible (AABB) + flechas de partículas (sprites simples)
+    const arrows = [];
+    for (let i = 0; i < 6; i++) {
+      const a = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.45, 4), new THREE.MeshBasicMaterial({ color: 0xa0e0ff, transparent: true, opacity: 0.55 }));
+      if (Math.abs(fx) >= Math.abs(fz)) { a.rotation.z = -Math.PI / 2 * Math.sign(fx); a.position.set((i / 5 - 0.5) * w * 0.7, 0.9, (Math.random() - 0.5) * d * 0.5); }
+      else { a.rotation.x = Math.PI / 2 * Math.sign(fz); a.position.set((Math.random() - 0.5) * w * 0.5, 0.9, (i / 5 - 0.5) * d * 0.7); }
+      g.add(a); arrows.push(a);
+    }
+    const half = new THREE.Vector3(w / 2, 2.2, d / 2);
+    const e = { type: 'wind', g, blades, arrows, force: { x: fx, z: fz },
+      min: new THREE.Vector3(x - half.x, y - 0.2, z - half.z),
+      max: new THREE.Vector3(x + half.x, y + 3.5, z + half.z),
+      contains(p) { return p.x >= this.min.x && p.x <= this.max.x && p.y >= this.min.y && p.y <= this.max.y && p.z >= this.min.z && p.z <= this.max.z; },
+      update(t) {
+        blades.rotation.y = t * 8;
+        for (let i = 0; i < arrows.length; i++) {
+          const a = arrows[i];
+          const u = (t * 1.5 + i * 0.2) % 1;
+          a.material.opacity = 0.25 + u * 0.5;
+          if (Math.abs(fx) >= Math.abs(fz)) a.position.x = (u - 0.5) * w * 0.85 * Math.sign(fx || 1);
+          else a.position.z = (u - 0.5) * d * 0.85 * Math.sign(fz || 1);
+        }
+      } };
+    this.entities.push(e); this.bounds.expandByPoint(new THREE.Vector3(x, y, z)); return e;
+  }
+  crackIce(x, y, z, w = 2.6, d = 2.6, o = {}) {
+    // Hielo que se rompe al pisarlo (como baldosa hundible, tema hielo)
+    const h = o.h || 0.45;
+    const geo = new THREE.BoxGeometry(w * 0.96, h, d * 0.96); colorGeo(geo, PAL.crackIce, PAL.iceSide);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
+    const crack = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.6, 0.05), new THREE.MeshBasicMaterial({ color: 0x4a90b8 }));
+    crack.rotation.set(-Math.PI / 2, 0, 0.5); crack.position.y = h / 2 + 0.01; mesh.add(crack);
+    const crack2 = crack.clone(); crack2.rotation.z = -0.8; crack2.scale.x = 0.7; mesh.add(crack2);
+    const base = new THREE.Vector3(x, y - h / 2, z);
+    const c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2), kinematic: true });
+    c.ice = true;
+    this.colliders.push(c); this.bounds.expandByPoint(base);
+    const delay = o.delay || 0.7;
+    const e = { type: 'crackIce', c, mesh, base, state: 'idle', t: 0,
+      touch() { if (this.state === 'idle') { this.state = 'warn'; this.t = 0; return true; } return false; },
+      reset() { this.state = 'idle'; this.t = 0; c.active = true; mesh.visible = true; c.pos.copy(base); c.commit(true); mesh.position.copy(base); mesh.rotation.set(0, 0, 0); mesh.scale.setScalar(1); },
+      update(t, dt) {
+        this.t += dt;
+        if (this.state === 'warn') {
+          mesh.position.set(base.x + (Math.random() - 0.5) * 0.05, base.y, base.z + (Math.random() - 0.5) * 0.05);
+          if (this.t > delay) { this.state = 'fall'; this.t = 0; this.vy = 0; }
+        } else if (this.state === 'fall') {
+          this.vy -= 18 * dt; c.pos.y += this.vy * dt; c.commit(); mesh.position.copy(c.pos);
+          mesh.rotation.x += dt * 2; mesh.rotation.z += dt;
+          if (this.t > 0.1) c.active = false;
+          if (this.t > 1.0) { this.state = 'gone'; this.t = 0; mesh.visible = false; }
+        } else if (this.state === 'gone') {
+          if (this.t > 2.5) { this.reset(); mesh.scale.setScalar(0.01); this.state = 'grow'; this.t = 0; }
+        } else if (this.state === 'grow') {
+          mesh.scale.setScalar(Math.min(1, this.t * 3)); if (this.t > 0.34) { mesh.scale.setScalar(1); this.state = 'idle'; }
+        }
+      } };
+    c.owner = e; e.reset(); this.entities.push(e); return e;
+  }
+  snowBump(x, y, z, o = {}) {
+    // Montículo de nieve elástico
+    const r = o.r || 1.1, power = o.power || 12;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const mound = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: PAL.snowBounce }));
+    mound.scale.set(1.15, 0.7, 1.15); mound.position.y = 0.05; mound.castShadow = true; g.add(mound);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + r * 0.25, z), r: r * 0.95, h: r * 0.35, kind: 'spring' });
+    this.colliders.push(c);
+    const e = { type: 'snowBump', c, g, mound, power, hit: 0,
+      update(t, dt) { this.hit = Math.max(0, this.hit - dt * 3); const s = 1 + Math.sin(this.hit * 10) * this.hit * 0.2; mound.scale.set(1.15 * s, 0.7 / s, 1.15 * s); } };
+    c.owner = e; this.entities.push(e); return e;
+  }
+  icePush(x, y, z, w, d, o = {}) {
+    // Bloque de hielo que empuja (mover cinemático)
+    const e = this.mover(x, y, z, w, d, { ...o, color: PAL.iceTop, side: PAL.iceSide, h: o.h || 0.7 });
+    e.c.ice = true; return e;
+  }
+  icicle(x, y, z, o = {}) {
+    // Carámbano que cae a ritmo; sombra de aviso en el suelo
+    const period = o.period || 3.6, phase = o.phase || 0, dropH = o.dropH || 5.5;
+    const g = new THREE.Group(); g.position.set(x, y + dropH, z); this.group.add(g);
+    const ice = new THREE.Mesh(new THREE.ConeGeometry(0.35, 1.4, 6), new THREE.MeshLambertMaterial({ color: PAL.icicle, transparent: true, opacity: 0.92, emissive: 0x88ccff, emissiveIntensity: 0.15 }));
+    ice.rotation.x = Math.PI; ice.castShadow = true; g.add(ice);
+    // sombra de aviso en el suelo
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.5, 16), new THREE.MeshBasicMaterial({ color: 0x224466, transparent: true, opacity: 0.25 }));
+    shadow.rotation.x = -Math.PI / 2; shadow.position.set(x, y + 0.04, z); this.group.add(shadow);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + dropH, z), r: 0.32, h: 0.6, kind: 'kill', kinematic: true });
+    this.colliders.push(c);
+    const e = { type: 'icicle', c, g, ice, shadow, period, phase, dropH, homeY: y + dropH, groundY: y,
+      safe(lead = 0) {
+        let u = ((this._u || 0) + lead / this.period) % 1; if (u < 0) u += 1;
+        return u < 0.42 || u > 0.75; // arriba o ya reset
+      },
+      // ¿Hay tiempo para cruzar antes de que caiga?
+      canCross(travel = 1.2) {
+        const u = this._u || 0, fallAt = 0.50;
+        if (u >= 0.42 && u < 0.75) return false;
+        const left = u < fallAt ? (fallAt - u) * this.period : (1 - u + fallAt) * this.period;
+        return left >= travel;
+      },
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1; this._u = u;
+        // 0-0.50 hang + sombra, 0.50-0.62 cae, 0.62-0.75 impacto, 0.75-1 sube
+        let py = this.homeY, active = false, sop = 0.15;
+        if (u < 0.50) { py = this.homeY; sop = 0.15 + u / 0.50 * 0.5; }
+        else if (u < 0.62) {
+          const k = (u - 0.50) / 0.12;
+          py = this.homeY + (this.groundY + 0.7 - this.homeY) * k * k;
+          active = true; sop = 0.65;
+        } else if (u < 0.75) { py = this.groundY + 0.7; active = true; sop = 0.35; }
+        else { py = this.homeY; sop = 0.12; }
+        g.position.y = py; ice.visible = u < 0.75 || u > 0.88;
+        shadow.material.opacity = sop;
+        const sc = 0.45 + sop * 0.8; shadow.scale.set(sc, sc, sc);
+        c.pos.set(x, py, z); c.active = active; c.commit();
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  iceConvey(x, y, z, w, d, o = {}) {
+    const e = this.convey(x, y, z, w, d, o);
+    // recolorear a hielo y marcar fricción de hielo
+    e.c.ice = true;
+    e.mesh.geometry.dispose();
+    const h = o.h || 0.45;
+    const geo = new THREE.BoxGeometry(w, h, d); colorGeo(geo, PAL.iceTop, PAL.iceSide);
+    e.mesh.geometry = geo;
+    return e;
+  }
+
   // ---------- finalizar ----------
   finish() {
     const mesh = this.merge.build(this.mat); mesh.castShadow = true; mesh.receiveShadow = true; this.group.add(mesh);
@@ -533,8 +705,9 @@ export class Level {
     this.coinMesh = new THREE.InstancedMesh(cg, new THREE.MeshLambertMaterial({ color: 0xffd23a, emissive: 0xffa000, emissiveIntensity: 0.5 }), Math.max(1, this.coins.length));
     this.coinMesh.castShadow = true; this.group.add(this.coinMesh);
     this.coinMesh.count = this.coins.length;
-    this.killY = this.minY - (this.theme === 'lava' ? 6 : 14);
+    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : 14));
     if (this.theme === 'lava') this._lavaSea();
+    if (this.theme === 'ice') this._snowFloor();
     this.updateCoins(0);
   }
   _lavaSea() {
@@ -560,10 +733,18 @@ export class Level {
       this.decor.add(new THREE.CylinderGeometry(0.8 + this.rand(), 1.1 + this.rand(), 0.35, 6), _m, PAL.basalt, PAL.basaltSide);
     }
   }
+  _snowFloor() {
+    const b = this.bounds.clone(); b.expandByScalar(28);
+    const w = Math.max(70, b.max.x - b.min.x + 40), d = Math.max(90, b.max.z - b.min.z + 40);
+    const y = this.minY - 4.5;
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ color: 0xe8f4ff }));
+    sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
+    this.group.add(sea); this.snowFloor = sea;
+  }
   _decorScenery() {
     const b = this.bounds.clone(); b.expandByScalar(4);
     const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, sz = Math.max(b.max.z - b.min.z, 30);
-    const lava = this.theme === 'lava';
+    const lava = this.theme === 'lava', ice = this.theme === 'ice';
     for (let i = 0; i < 16; i++) {
       const side = i % 2 ? 1 : -1;
       const x = cx + side * (18 + this.rand() * 26), z = b.min.z + this.rand() * sz, y = -6 + this.rand() * 14;
@@ -578,6 +759,15 @@ export class Level {
           _m.compose(_v.set(x + 0.2, y + 0.4 + h / 2, z), _q.identity(), _s);
           this.decor.add(new THREE.ConeGeometry(0.55, h, 6), _m, PAL.basalt, PAL.basaltSide);
         }
+      } else if (ice) {
+        this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.7, 7), _m, PAL.snow, PAL.iceSide);
+        _m.compose(_v.set(x, y - 0.3 - r * 0.8, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
+        this.decor.add(new THREE.ConeGeometry(r * 0.9, r * 1.3, 7), _m, PAL.iceSide, PAL.iceSide, PAL.iceBottom);
+        if (this.rand() < 0.5) {
+          const h = 1.5 + this.rand() * 4;
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.ConeGeometry(0.4, h, 5), _m, PAL.icicle, PAL.iceSide);
+        }
       } else {
         this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.8, 7), _m, PAL.grass, PAL.grassSide);
         _m.compose(_v.set(x, y - 0.4 - r * 0.7, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
@@ -589,7 +779,7 @@ export class Level {
         }
       }
     }
-    if (!lava) {
+    if (!lava && !ice) {
       for (let i = 0; i < 14; i++) {
         const x = cx + (this.rand() - 0.5) * 90, z = b.min.z + this.rand() * sz, y = -16 + this.rand() * 8;
         for (let k = 0; k < 3; k++) {
@@ -597,6 +787,14 @@ export class Level {
           _m.compose(_v.set(x + k * 1.8 - 1.8, y + (k === 1 ? 0.6 : 0), z + this.rand()), _q.identity(), _s.set(1.3, 0.7, 1));
           this.decor.add(new THREE.IcosahedronGeometry(r, 0), _m, PAL.cloud, 0xf3f8ff, 0xdfe9f5);
         }
+        _s.set(1, 1, 1);
+      }
+    } else if (ice) {
+      for (let i = 0; i < 12; i++) {
+        const x = cx + (this.rand() - 0.5) * 80, z = b.min.z + this.rand() * sz, y = 6 + this.rand() * 16;
+        const r = 1.2 + this.rand() * 2;
+        _m.compose(_v.set(x, y, z), _q.identity(), _s.set(1.5, 0.7, 1.2));
+        this.decor.add(new THREE.IcosahedronGeometry(r, 0), _m, 0xffffff, 0xe8f4ff, 0xd0e8f8);
         _s.set(1, 1, 1);
       }
     } else {
@@ -630,7 +828,7 @@ export class Level {
   }
   resetDynamic() {
     for (const e of this.entities) {
-      if (e.type === 'crumble' || e.type === 'sink') { e.reset(); if (e.mesh) { e.mesh.rotation.x = 0; e.mesh.scale.setScalar(1); } }
+      if (e.type === 'crumble' || e.type === 'sink' || e.type === 'crackIce') { e.reset(); if (e.mesh) { e.mesh.rotation.x = 0; e.mesh.scale.setScalar(1); } }
     }
   }
   dispose() {

@@ -486,10 +486,257 @@ const WORLD2_LEVELS = [
 ];
 
 
+
+const WORLD3_LEVELS = [
+  {
+    name: 'Primera Nevada', target: 36,
+    hint: '¡El hielo resbala! Usa la nieve blanca para frenar.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'snow', pillars: true });
+      b.plat(0, 0, -10, 4.5, 14, { type: 'ice' }); b.coinRow(0, 0, -5, 0, 0, -14, 4);
+      b.plat(0, 0, -20, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -20);
+      b.plat(0, 0, -28, 3.8, 12, { type: 'ice' }); b.coinRow(0, 0, -24, 0, 0, -32, 3);
+      b.plat(0, 0, -36, 5.5, 6, { type: 'snow' }); // zona de freno
+      b.plat(0, 0, -44, 4, 14, { type: 'ice' }); b.coin(0, 0, -44);
+      b.plat(0, 0, -54, 6, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -54);
+      b.ramp(0, 0, -58, 0, 1.5, -66, 4, { type: 'ice' });
+      b.plat(0, 1.5, -70, 5.5, 8, { type: 'snow' }); b.coin(0, 1.5, -70);
+      b.plat(0, 1.5, -78, 8, 8, { type: 'snow', pillars: true });
+      b.crown(0, 1.5, -79);
+      b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -20); b.wp(0, 0, -32); b.wp(0, 0, -36);
+      b.wp(0, 0, -48); b.wp(0, 0, -54); b.wp(0, 1.5, -66); b.wp(0, 1.5, -79);
+    },
+  },
+  {
+    name: 'Viento Helado', target: 45,
+    hint: 'Los ventiladores empujan. ¡Mira las flechas azules!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'snow', pillars: true });
+      // pasillo continuo: hielo + nieve lateral solapada
+      b.plat(0, 0, -14, 5.5, 22, { type: 'ice' });
+      b.plat(-3.6, 0, -14, 2.8, 22, { type: 'snow' });
+      b.plat(3.6, 0, -14, 2.8, 22, { type: 'snow' });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      b.wind(0, 0, -14, 5, 16, { dir: [1, 0, 0], force: 3.5 });
+      b.plat(0, 0, -28, 7, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -28);
+      b.plat(0, 0, -42, 5.5, 22, { type: 'ice' });
+      b.plat(-3.6, 0, -42, 2.8, 22, { type: 'snow' });
+      b.plat(3.6, 0, -42, 2.8, 22, { type: 'snow' });
+      b.wind(0, 0, -42, 5, 16, { dir: [-1, 0, 0], force: 3.5 });
+      b.coin(0, 0, -36); b.coin(0, 0, -48);
+      b.plat(0, 0, -56, 7, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -56);
+      b.plat(0, 0, -68, 6, 16, { type: 'ice' });
+      b.wind(0, 0, -66, 5, 10, { dir: [0, 0, -1], force: 2.5 });
+      b.coin(0, 0, -68);
+      b.plat(0, 0, -80, 8, 8, { type: 'snow', pillars: true });
+      b.crown(0, 0, -81);
+      b.wp(0, 0, -2); b.wp(-1.8, 0, -14); b.wp(0, 0, -24); b.wp(0, 0, -28);
+      b.wp(1.8, 0, -42); b.wp(0, 0, -52); b.wp(0, 0, -56);
+      b.wp(0, 0, -68); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Cintas de Hielo', target: 48,
+    hint: 'Cintas heladas: te llevan y también resbalas.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'snow', pillars: true });
+      b.plat(0, 0, -6, 4.5, 6, { type: 'snow' });
+      b.iceConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, -1], speed: 5.2 });
+      b.coinRow(0, 0, -10, 0, 0, -20, 3);
+      b.plat(0, 0, -25, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -25);
+      b.iceConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, -1], speed: 5.2 });
+      b.coin(0, 0, -30); b.coin(0, 0, -38);
+      b.plat(0, 0, -44, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -44);
+      b.iceConvey(0, 0, -52, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.plat(0, 0, -61, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -61);
+      b.iceConvey(0, 0, -69, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.coin(0, 0, -69);
+      b.plat(0, 0, -78, 8, 8, { type: 'snow', pillars: true });
+      b.crown(0, 0, -79);
+      b.wp(0, 0, -2); b.wp(0, 0, -15); b.wp(0, 0, -25);
+      b.wp(0, 0, -34); b.wp(0, 0, -44); b.wp(0, 0, -52);
+      b.wp(0, 0, -61); b.wp(0, 0, -69); b.wp(0, 0, -79);
+    },
+  },
+  {
+    name: 'Hielo Quebradizo', target: 48,
+    hint: 'El hielo agrietado se rompe. ¡Pasa rápido!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'snow', pillars: true });
+      b.plat(0, 0, -7, 4.5, 8, { type: 'snow' }); b.coin(0, 0, -7);
+      for (let i = 0; i < 5; i++) b.crackIce(0, 0, -12.2 - i * 1.85, 2.6, 2.1, { delay: 0.85 });
+      b.plat(0, 0, -25, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -25); b.coin(0, 0, -25);
+      for (let i = 0; i < 5; i++) b.crackIce(0, 0, -30.2 - i * 1.85, 2.6, 2.1, { delay: 0.85 });
+      b.plat(0, 0, -43, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -43);
+      b.plat(0, 0, -50, 4, 8, { type: 'ice' });
+      for (let i = 0; i < 4; i++) b.crackIce(0, 0, -56.2 - i * 1.85, 2.6, 2.1, { delay: 0.85 });
+      b.plat(0, 0, -68, 8, 8, { type: 'snow', pillars: true });
+      b.crown(0, 0, -69);
+      b.wp(0, 0, -2); b.wp(0, 0, -10);
+      for (let i = 0; i < 5; i++) b.wp(0, 0, -12.2 - i * 1.85, '', 8);
+      b.wp(0, 0, -25);
+      for (let i = 0; i < 5; i++) b.wp(0, 0, -30.2 - i * 1.85, '', 8);
+      b.wp(0, 0, -43); b.wp(0, 0, -50);
+      for (let i = 0; i < 4; i++) b.wp(0, 0, -56.2 - i * 1.85, '', 8);
+      b.wp(0, 0, -69);
+    },
+  },
+  {
+    name: 'Bloques Deslizantes', target: 52,
+    hint: 'Bloques de hielo que se mueven. ¡Salta a tiempo!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'snow', pillars: true });
+      b.plat(0, 0, -10, 4.5, 14, { type: 'ice' }); b.coinRow(0, 0, -5, 0, 0, -15, 3);
+      b.plat(0, 0, -20, 5.5, 6, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -20);
+      const m1 = b.icePush(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
+      const m2 = b.icePush(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      b.coin(0, 0.4, -25); b.coin(0, 0.4, -30);
+      b.plat(0, 0, -36, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -36);
+      const m3 = b.icePush(-2.0, 0, -42, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
+      const m4 = b.icePush(-2.0, 0, -47, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      b.coin(0, 0.4, -42); b.coin(0, 0.4, -47);
+      b.plat(0, 0, -54, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -54);
+      b.plat(0, 0, -62, 4.5, 12, { type: 'ice' }); b.coinRow(0, 0, -58, 0, 0, -66, 2);
+      b.plat(0, 0, -72, 8, 8, { type: 'snow', pillars: true });
+      b.crown(0, 0, -73);
+      b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -20);
+      b.wp(0, 0, -22.2, 'w', 0, { cond: () => Math.abs(m1.c.pos.x) < 0.4 });
+      b.wp(0, 0, -23.0, 'j', 5);
+      b.wp(0, 0, -25, 'r', 0, { follow: m1 });
+      b.wp(0, 0, -27.5, 'j', 6, { follow: m1, oz: -1.0 });
+      b.wp(0, 0, -30, 'r', 0, { follow: m2 });
+      b.wp(0, 0, -32.5, 'j', 6, { follow: m2, oz: -1.0 });
+      b.wp(0, 0, -36);
+      b.wp(0, 0, -39.2, 'w', 0, { cond: () => Math.abs(m3.c.pos.x) < 0.4 });
+      b.wp(0, 0, -40.0, 'j', 5);
+      b.wp(0, 0, -42, 'r', 0, { follow: m3 });
+      b.wp(0, 0, -44.5, 'j', 6, { follow: m3, oz: -1.0 });
+      b.wp(0, 0, -47, 'r', 0, { follow: m4 });
+      b.wp(0, 0, -49.5, 'j', 6, { follow: m4, oz: -1.0 });
+      b.wp(0, 0, -54); b.wp(0, 0, -64); b.wp(0, 0, -73);
+    },
+  },
+  {
+    name: 'Montículos Blandos', target: 48,
+    hint: 'Los montículos de nieve te lanzan. ¡Boing helado!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'snow', pillars: true });
+      b.plat(0, 0, -10, 4.5, 14, { type: 'ice' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
+      b.snowBump(0, 0, -14, { power: 14 });
+      b.coin(0, 3.8, -17);
+      b.plat(0, 3.5, -22, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 3.5, -22);
+      b.plat(0, 3.5, -30, 4.5, 14, { type: 'ice' });
+      b.snowBump(0, 3.5, -34, { power: 14 });
+      b.coin(0, 7.0, -37);
+      b.plat(0, 6.8, -42, 5.5, 8, { type: 'snow', pillars: true }); b.checkpoint(0, 6.8, -42);
+      b.plat(0, 6.8, -50, 4.5, 14, { type: 'ice' }); b.coin(0, 6.8, -48);
+      b.snowBump(0, 6.8, -54, { power: 13 });
+      b.plat(0, 9.5, -62, 8, 8, { type: 'snow', pillars: true });
+      b.crown(0, 9.5, -63);
+      b.wp(0, 0, -2); b.wp(0, 0, -14, '', 4); b.wp(0, 3.5, -22);
+      b.wp(0, 3.5, -34, '', 4); b.wp(0, 6.8, -42);
+      b.wp(0, 6.8, -54, '', 4); b.wp(0, 9.5, -63);
+    },
+  },
+  {
+    name: 'Carámbanos', target: 55,
+    hint: '¡Cuidado con la sombra! Los carámbanos caen.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 10, { type: 'snow', pillars: true });
+      b.plat(0, 0, -8, 5, 10, { type: 'snow' });
+      b.plat(0, 0, -16, 4.5, 12, { type: 'ice' }); b.coin(0, 0, -14);
+      const i1 = b.icicle(0, 0, -16, { period: 4.2, phase: 0 });
+      b.plat(0, 0, -26, 5, 10, { type: 'snow' }); b.coin(0, 0, -26);
+      b.plat(0, 0, -34, 4.5, 12, { type: 'ice' });
+      const i2 = b.icicle(0, 0, -34, { period: 4.2, phase: 0.5 });
+      b.plat(0, 0, -44, 6, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -44);
+      b.plat(0, 0, -52, 4.5, 12, { type: 'ice' }); b.coin(0, 0, -52);
+      const i3 = b.icicle(0, 0, -52, { period: 4.0, phase: 0.2 });
+      b.plat(0, 0, -62, 5, 10, { type: 'snow' });
+      b.plat(0, 0, -70, 4.5, 12, { type: 'ice' }); b.coin(0, 0, -70);
+      const i4 = b.icicle(0, 0, -70, { period: 4.0, phase: 0.55 });
+      b.plat(0, 0, -80, 6, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -80);
+      b.plat(0, 0, -88, 4.5, 12, { type: 'ice' }); b.coin(0, 0, -88);
+      const i5 = b.icicle(0, 0, -88, { period: 3.8, phase: 0.25 });
+      b.plat(0, 0, -98, 8, 10, { type: 'snow', pillars: true });
+      b.crown(0, 0, -99);
+      const C = (j, t) => ({ cond: () => j.canCross(t) });
+      b.wp(0, 0, -2); b.wp(0, 0, -8);
+      b.wp(0, 0, -10, 'w', 0, C(i1, 1.4)); b.wp(0, 0, -22, '', 9); b.wp(0, 0, -26);
+      b.wp(0, 0, -28, 'w', 0, C(i2, 1.4)); b.wp(0, 0, -40, '', 9); b.wp(0, 0, -44);
+      b.wp(0, 0, -46, 'w', 0, C(i3, 1.4)); b.wp(0, 0, -58, '', 9); b.wp(0, 0, -62);
+      b.wp(0, 0, -64, 'w', 0, C(i4, 1.4)); b.wp(0, 0, -76, '', 9); b.wp(0, 0, -80);
+      b.wp(0, 0, -82, 'w', 0, C(i5, 1.4)); b.wp(0, 0, -94, '', 9); b.wp(0, 0, -99);
+    },
+  },
+  {
+    name: 'Corona del Glaciar', target: 80,
+    hint: '¡La cima helada! Usa todo lo aprendido para la corona.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 10, { type: 'snow', pillars: true });
+      b.plat(0, 0, -8, 4.5, 10, { type: 'snow' });
+      b.iceConvey(0, 0, -16, 4.5, 12, { dir: [0, 0, -1], speed: 5.2 });
+      b.coinRow(0, 0, -12, 0, 0, -20, 3);
+      b.plat(0, 0, -26, 6, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -26);
+      b.plat(0, 0, -36, 5.5, 16, { type: 'ice' });
+      b.plat(-3.6, 0, -36, 2.8, 16, { type: 'snow' });
+      b.plat(3.6, 0, -36, 2.8, 16, { type: 'snow' });
+      b.wind(0, 0, -36, 5, 12, { dir: [1, 0, 0], force: 3.2 });
+      b.coin(0, 0, -32); b.coin(0, 0, -40);
+      b.plat(0, 0, -48, 6, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -48);
+      for (let i = 0; i < 4; i++) b.crackIce(0, 0, -52.5 - i * 1.7, 2.8, 2.0, { delay: 0.85 });
+      b.plat(0, 0, -63, 6, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -63);
+      const m1 = b.icePush(-2.0, 0, -70, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
+      const m2 = b.icePush(-2.0, 0, -75, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      b.coin(0, 0.4, -70); b.coin(0, 0.4, -75);
+      b.plat(0, 0, -82, 6, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 0, -82);
+      b.plat(0, 0, -90, 5, 10, { type: 'snow' });
+      b.plat(0, 0, -98, 4.5, 12, { type: 'ice' });
+      const ic1 = b.icicle(0, 0, -98, { period: 4.2, phase: 0.1 });
+      b.coin(0, 0, -98);
+      b.plat(0, 0, -108, 5, 10, { type: 'snow' });
+      b.plat(0, 0, -116, 4.5, 12, { type: 'ice' });
+      const ic2 = b.icicle(0, 0, -116, { period: 4.2, phase: 0.55 });
+      b.coin(0, 0, -116);
+      b.plat(0, 0, -126, 5.5, 10, { type: 'snow' });
+      b.snowBump(0, 0, -128, { power: 14 });
+      b.coin(0, 3.8, -131);
+      b.plat(0, 3.5, -136, 5.5, 10, { type: 'snow', pillars: true }); b.checkpoint(0, 3.5, -136);
+      b.plat(0, 3.5, -146, 4.5, 14, { type: 'ice' });
+      b.iceConvey(0, 3.5, -156, 4.5, 12, { dir: [0, 0, -1], speed: 5 });
+      // solape con la cinta: primer crack en -161
+      for (let i = 0; i < 3; i++) b.crackIce(0, 3.5, -161.0 - i * 1.7, 2.8, 2.0, { delay: 0.85 });
+      b.plat(0, 3.5, -170, 10, 10, { type: 'snow', pillars: true });
+      b.pillar(-3.2, 3.5, -173, 3.2); b.pillar(3.2, 3.5, -173, 3.2);
+      b.crown(0, 3.5, -172);
+      const C = (j, t) => ({ cond: () => j.canCross(t) });
+      b.wp(0, 0, -2); b.wp(0, 0, -16); b.wp(0, 0, -26);
+      b.wp(-1.5, 0, -36); b.wp(0, 0, -44); b.wp(0, 0, -48);
+      for (let i = 0; i < 4; i++) b.wp(0, 0, -52.5 - i * 1.7, '', 8);
+      b.wp(0, 0, -63);
+      b.wp(0, 0, -67.2, 'w', 0, { cond: () => Math.abs(m1.c.pos.x) < 0.4 });
+      b.wp(0, 0, -68.0, 'j', 5);
+      b.wp(0, 0, -70, 'r', 0, { follow: m1 });
+      b.wp(0, 0, -72.5, 'j', 6, { follow: m1, oz: -1.0 });
+      b.wp(0, 0, -75, 'r', 0, { follow: m2 });
+      b.wp(0, 0, -77.5, 'j', 6, { follow: m2, oz: -1.0 });
+      b.wp(0, 0, -82); b.wp(0, 0, -90);
+      b.wp(0, 0, -92, 'w', 0, C(ic1, 1.4)); b.wp(0, 0, -104, '', 9); b.wp(0, 0, -108);
+      b.wp(0, 0, -110, 'w', 0, C(ic2, 1.4)); b.wp(0, 0, -122, '', 9); b.wp(0, 0, -126);
+      b.wp(0, 0, -128, '', 4); b.wp(0, 3.5, -136);
+      b.wp(0, 3.5, -146); b.wp(0, 3.5, -156);
+      for (let i = 0; i < 3; i++) b.wp(0, 3.5, -161.0 - i * 1.7, '', 8);
+      b.wp(0, 3.5, -172);
+    },
+  },
+];
+
 export const WORLDS = [
   { id: 'ruinas', name: 'Ruinas Flotantes', theme: 'sky', levels: WORLD1_LEVELS },
   { id: 'volcan', name: 'Volcán Ardiente', theme: 'lava', unlockIndex: 7, levels: WORLD2_LEVELS },
+  { id: 'glaciar', name: 'Glaciar Resbaloso', theme: 'ice', unlockIndex: 15, levels: WORLD3_LEVELS },
 ];
+
 
 // Lista plana (índices 0-7 Mundo 1, 8-15 Mundo 2) — compatible con partidas guardadas
 export const LEVELS = WORLDS.flatMap((w, wi) => w.levels.map((L, li) => ({
