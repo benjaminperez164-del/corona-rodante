@@ -8,6 +8,8 @@ export const ACHIEVEMENTS = [
   { id: 'desierto_listo', name: 'Desierto domado', desc: 'Termina el Mundo 5', icon: '🏜️' },
   { id: 'dulces_listo', name: 'Fábrica conquistada', desc: 'Termina el Mundo 6', icon: '🍬' },
   { id: 'arrecife_listo', name: 'Arrecife explorado', desc: 'Termina el Mundo 7', icon: '🐠' },
+  { id: 'castillo_listo', name: 'Castillo conquistado', desc: 'Termina el Mundo 8', icon: '🏰' },
+  { id: 'neon_listo', name: 'Neón dominado', desc: 'Termina el Mundo 9', icon: '🌃' },
   { id: 'estrellas_ruinas', name: 'Cielo estrellado', desc: '3★ en los 8 niveles de Ruinas', icon: '⭐' },
   { id: 'estrellas_volcan', name: 'Ascua perfecta', desc: '3★ en los 8 niveles del Volcán', icon: '🔥' },
   { id: 'estrellas_glaciar', name: 'Aurora perfecta', desc: '3★ en los 8 niveles del Glaciar', icon: '✨' },
@@ -15,6 +17,8 @@ export const ACHIEVEMENTS = [
   { id: 'estrellas_desierto', name: 'Oasis perfecto', desc: '3★ en los 8 niveles del Desierto', icon: '☀️' },
   { id: 'estrellas_dulces', name: 'Caramelo perfecto', desc: '3★ en los 8 niveles de Dulces', icon: '🍭' },
   { id: 'estrellas_arrecife', name: 'Coral perfecto', desc: '3★ en los 8 niveles del Arrecife', icon: '🪸' },
+  { id: 'estrellas_castillo', name: 'Cuento perfecto', desc: '3★ en los 8 niveles del Castillo', icon: '👑' },
+  { id: 'estrellas_neon', name: 'Circuito perfecto', desc: '3★ en los 8 niveles de Neón', icon: '💡' },
   { id: 'monedas_100', name: 'Hucha llena', desc: 'Gana 100 monedas en total', icon: '🪙' },
   { id: 'monedas_500', name: 'Tesoro rodante', desc: 'Gana 500 monedas en total', icon: '💰' },
   { id: 'sin_caer', name: 'Pies firmes', desc: 'Termina un nivel sin caerte', icon: '🛡️' },
@@ -26,8 +30,8 @@ export const ACHIEVEMENTS = [
   { id: 'reto_diario', name: 'Retador', desc: 'Completa el Reto Diario una vez', icon: '📅' },
   { id: 'racha_3', name: 'Constante', desc: 'Racha diaria de 3 días', icon: '🔥' },
   { id: 'racha_7', name: 'Semana heroica', desc: 'Racha diaria de 7 días', icon: '🏆' },
-  { id: 'explorador', name: 'Explorador', desc: 'Desbloquea 7 mundos', icon: '🗺️' },
-  { id: 'maestro', name: 'Maestro Rodante', desc: 'Completa los 56 niveles', icon: '🎓' },
+  { id: 'explorador', name: 'Explorador', desc: 'Desbloquea 9 mundos', icon: '🗺️' },
+  { id: 'maestro', name: 'Maestro Rodante', desc: 'Completa los 72 niveles', icon: '🎓' },
 ];
 
 function levelDone(save, i) { return !!(save.levels[i] && save.levels[i].done); }
@@ -63,6 +67,8 @@ export function evaluateAchievements(save, LEVELS, extra = {}) {
   if (levelDone(save, 39)) mark('desierto_listo');
   if (levelDone(save, 47)) mark('dulces_listo');
   if (levelDone(save, 55)) mark('arrecife_listo');
+  if (levelDone(save, 63)) mark('castillo_listo');
+  if (levelDone(save, 71)) mark('neon_listo');
   if (allStars(save, 0, 8)) mark('estrellas_ruinas');
   if (allStars(save, 8, 8)) mark('estrellas_volcan');
   if (allStars(save, 16, 8)) mark('estrellas_glaciar');
@@ -70,6 +76,8 @@ export function evaluateAchievements(save, LEVELS, extra = {}) {
   if (allStars(save, 32, 8)) mark('estrellas_desierto');
   if (allStars(save, 40, 8)) mark('estrellas_dulces');
   if (allStars(save, 48, 8)) mark('estrellas_arrecife');
+  if (allStars(save, 56, 8)) mark('estrellas_castillo');
+  if (allStars(save, 64, 8)) mark('estrellas_neon');
 
   const earned = save.stats?.earnedCoins || 0;
   if (earned >= 100) mark('monedas_100');
@@ -89,10 +97,10 @@ export function evaluateAchievements(save, LEVELS, extra = {}) {
   if ((save.daily?.bestStreak || save.daily?.streak || 0) >= 3) mark('racha_3');
   if ((save.daily?.bestStreak || save.daily?.streak || 0) >= 7) mark('racha_7');
 
-  if (levelDone(save, 47)) mark('explorador'); // mundos 1–7 desbloqueados
+  if (levelDone(save, 63)) mark('explorador'); // mundos 1–9 desbloqueados
   let allDone = true;
   for (let i = 0; i < LEVELS.length; i++) if (!levelDone(save, i)) { allDone = false; break; }
-  if (allDone && LEVELS.length >= 56) mark('maestro');
+  if (allDone && LEVELS.length >= 72) mark('maestro');
 
   return newly;
 }

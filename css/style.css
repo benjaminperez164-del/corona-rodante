@@ -189,6 +189,16 @@ body.theme-candy { background: #e070a8; }
 .lvl.reef:active:not(.locked) { box-shadow: 0 2px 0 #0a6078; }
 body.theme-reef { background: #0a7898; }
 
+.world-tab.castle.on { background: linear-gradient(#e0b0ff, #b070e0); box-shadow: 0 3px 0 #8040b0; }
+.lvl.castle { background: linear-gradient(#e8c0ff, #b070e0); box-shadow: 0 5px 0 #8040b0; }
+.lvl.castle:active:not(.locked) { box-shadow: 0 2px 0 #8040b0; }
+body.theme-castle { background: #c090e0; }
+
+.world-tab.neon.on { background: linear-gradient(#40f0ff, #2080d0); box-shadow: 0 3px 0 #104878; }
+.lvl.neon { background: linear-gradient(#48f8ff, #1868b8); box-shadow: 0 5px 0 #0a3868; }
+.lvl.neon:active:not(.locked) { box-shadow: 0 2px 0 #0a3868; }
+body.theme-neon { background: #0a2860; }
+
 
 .btn.purple { background: linear-gradient(#c9a0ff, #8a5cff); box-shadow: 0 6px 0 #5a38b0; }
 .btn.purple:active { box-shadow: 0 2px 0 #5a38b0; transform: translateY(4px); }

@@ -1,7 +1,7 @@
 // Construcción de niveles: geometría estática fusionada (pocas draw calls),
 // entidades dinámicas (martillos, molinetes, plataformas móviles...) y colliders.
 import * as THREE from 'three';
-import { Collider } from './physics.js?v=30';
+import { Collider } from './physics.js?v=34';
 
 export const PAL = {
   grass: 0x7ddc5a, grassSide: 0xf0d9a8, stoneBottom: 0xc9a777,
@@ -46,6 +46,17 @@ export const PAL = {
   reefSand: 0xf0e0a8, bubble: 0xa8e8ff, current: 0x40b0e0,
   jellyFish: 0xff80d0, clam: 0xffd080, clamIn: 0xffa060,
   anchor: 0x708090, urchin: 0x6030a0, urchinSpike: 0xd0a0ff,
+  // Castillo Encantado (claro, cuento de hadas)
+  castle: 0xf0e0ff, castleSide: 0xc090e0, castleDark: 0x9060c0,
+  banner: 0xffd060, bannerRed: 0xff6a9a, torch: 0xffc040,
+  axeHead: 0xe8e8f8, axeBand: 0xffd060, blinkOn: 0xe0b0ff, blinkOff: 0x8060a0,
+  bridge: 0xe8c878, bridgeSide: 0xb09048, gear: 0xd0b0ff, gearHub: 0xffd060,
+  ghost: 0xe8f0ff, ghostGlow: 0xb0d0ff,
+  // Ciudad Neón
+  neonFloor: 0x2a3a78, neonSide: 0x102048, neonEdge: 0x40f0ff,
+  neonPink: 0xff40c8, neonCyan: 0x40f8ff, neonYellow: 0xffe060, neonPurple: 0xb060ff,
+  teleA: 0x40f8ff, teleB: 0xff40c8, laser: 0xff40a0, magnet: 0x8060ff,
+  boost: 0xffe040, elev: 0x40d0ff, neonConvey: 0x48e0ff,
 };
 
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
@@ -102,6 +113,8 @@ const STYLE = {
   chocolate: [PAL.chocolate, PAL.chocolateSide, PAL.chocolateSide],
   coral: [PAL.coral, PAL.coralSide, PAL.coralDark],
   reefSand: [PAL.reefSand, PAL.coralSide, PAL.coralDark],
+  castle: [PAL.castle, PAL.castleSide, PAL.castleDark],
+  neon: [PAL.neonFloor, PAL.neonSide, PAL.neonSide],
 };
 
 let glowTex = null;
@@ -130,7 +143,9 @@ export class Level {
         : (this.theme === 'jungle' ? 'jungle'
           : (this.theme === 'desert' ? 'sand'
             : (this.theme === 'candy' ? 'candy'
-              : (this.theme === 'reef' ? 'coral' : 'stone')))));
+              : (this.theme === 'reef' ? 'coral'
+                : (this.theme === 'castle' ? 'castle'
+                  : (this.theme === 'neon' ? 'neon' : 'stone')))))));
     def.build(this);
     this.finish();
   }
@@ -1177,6 +1192,235 @@ export class Level {
     this.group.add(sea); this.reefFloor = sea;
   }
 
+
+  // ---------- Castillo Encantado ----------
+  pendulumAxe(x, y, z, o = {}) {
+    // hacha cartoon: reusa martillo con colores claros
+    const e = this.hammer(x, y, z, { speed: o.speed || 1.55, phase: o.phase || 0, len: o.len || 3.8, amp: o.amp || 62, ...o });
+    // recolorear mallas del grupo
+    try {
+      e.g.traverse((o) => {
+        if (!o.isMesh || !o.material || !o.material.color) return;
+        const c = o.material.color;
+        const isBand = c.r > 0.8 && c.g > 0.7;
+        o.material = o.material.clone();
+        o.material.color.setHex(isBand ? PAL.axeBand : PAL.axeHead);
+        if (!isBand && o.material.emissive) { o.material.emissive.setHex(0x443366); o.material.emissiveIntensity = 0.15; }
+      });
+    } catch (_) { /* decorativo */ }
+    return e;
+  }
+  blinkPlat(x, y, z, w = 3.2, d = 3.2, o = {}) {
+    // aparece/desaparece a ritmo; sólida cuando está ON
+    const period = o.period || 2.4, phase = o.phase || 0, h = o.h || 0.55;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshLambertMaterial({ color: PAL.blinkOn, emissive: 0x6622aa, emissiveIntensity: 0.35 }));
+    mesh.position.y = -h / 2; mesh.castShadow = mesh.receiveShadow = true; g.add(mesh);
+    const rim = new THREE.Mesh(new THREE.BoxGeometry(w * 1.02, 0.08, d * 1.02), new THREE.MeshLambertMaterial({ color: PAL.banner }));
+    rim.position.y = 0.02; g.add(rim);
+    const c = new Collider('box', { pos: new THREE.Vector3(x, y - h / 2, z), half: new THREE.Vector3(w / 2, h / 2, d / 2), kinematic: true });
+    this.colliders.push(c); this.bounds.expandByPoint(c.pos);
+    const onFrac = o.onFrac || 0.55;
+    const e = { type: 'blinkPlat', c, g, mesh, rim, period, phase, onFrac,
+      open(lead = 0) {
+        let u = ((this._u || 0) + lead / this.period) % 1; if (u < 0) u += 1;
+        return u < this.onFrac;
+      },
+      safe(lead = 0) { return this.open(lead); },
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1; this._u = u;
+        const on = u < this.onFrac;
+        c.active = on; mesh.visible = on; this.rim.visible = on;
+        mesh.material.color.set(on ? PAL.blinkOn : PAL.blinkOff);
+        c.commit();
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  drawbridge(x, y, z, o = {}) {
+    // puente que baja (seguro) y sube (bloquea/mata al borde)
+    const w = o.w || 3.6, d = o.d || 5.5, period = o.period || 4.0, phase = o.phase || 0;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const board = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, d), new THREE.MeshLambertMaterial({ color: PAL.bridge }));
+    board.position.z = -d / 2; board.castShadow = true; g.add(board);
+    const band = new THREE.Mesh(new THREE.BoxGeometry(w * 1.05, 0.1, 0.2), new THREE.MeshLambertMaterial({ color: PAL.banner }));
+    band.position.set(0, 0.2, -0.1); g.add(band);
+    const c = new Collider('box', { pos: new THREE.Vector3(x, y - 0.15, z - d / 2), half: new THREE.Vector3(w / 2, 0.2, d / 2), kinematic: true });
+    this.colliders.push(c);
+    const e = { type: 'drawbridge', c, g, board, period, phase, d, w,
+      open(lead = 0) {
+        let u = ((this._u || 0) + lead / this.period) % 1; if (u < 0) u += 1;
+        // abajo = abierto la mayor parte
+        return u < 0.55 || u > 0.85;
+      },
+      safe(lead = 0) { return this.open(lead); },
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1; this._u = u;
+        const down = u < 0.55 || u > 0.85;
+        const ang = down ? 0 : -1.05;
+        g.rotation.x = ang;
+        // collider sigue la tabla aproximadamente cuando está abajo
+        c.active = down;
+        const cz = z - Math.cos(-ang) * (this.d / 2);
+        const cy = y - 0.15 + Math.sin(-ang) * (this.d / 2);
+        c.pos.set(x, down ? y - 0.15 : cy, down ? z - this.d / 2 : cz);
+        c.quat.setFromAxisAngle(_v.set(1, 0, 0), ang);
+        c.commit();
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  gearWall(x, y, z, o = {}) {
+    return this.turnstile(x, y, z, { len: o.len || 3.5, speed: o.speed || 0.85, arms: o.arms || 4, h: o.h || 0.65, ...o });
+  }
+  ghostPusher(x, y, z, o = {}) {
+    const r = o.r || 0.85;
+    const g = new THREE.Group(); g.position.set(x, y + r * 0.5, z); this.group.add(g);
+    const body = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 10), new THREE.MeshLambertMaterial({ color: PAL.ghost, transparent: true, opacity: 0.85, emissive: 0x6688cc, emissiveIntensity: 0.4 }));
+    body.castShadow = true; g.add(body);
+    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.12, 6, 6), new THREE.MeshBasicMaterial({ color: 0x224466 })); eyeL.position.set(-0.25, 0.15, 0.55); g.add(eyeL);
+    const eyeR = eyeL.clone(); eyeR.position.x = 0.25; g.add(eyeR);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + r * 0.4, z), r: r * 1.05, h: r * 0.55, kind: 'bumper' });
+    this.colliders.push(c);
+    const to = o.to || [4, 0, 0], period = o.period || 4.0, phase = o.phase || 0;
+    const base = new THREE.Vector3(x, y + r * 0.4, z);
+    const dest = new THREE.Vector3(to[0], to[1], to[2]);
+    const e = { type: 'ghostPusher', c, g, body, base, dest, period, phase, hit: 0,
+      update(t, dt) {
+        this.hit = Math.max(0, this.hit - dt * 4);
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1;
+        const k = u < 0.5 ? u * 2 : 2 - u * 2;
+        c.pos.copy(this.base).addScaledVector(this.dest, k);
+        c.pos.y = this.base.y + Math.sin(t * 2.2 + this.phase) * 0.2;
+        c.commit(); g.position.copy(c.pos);
+        body.material.opacity = 0.7 + Math.sin(t * 3) * 0.15;
+        const s = 1 + Math.sin(this.hit * 12) * this.hit * 0.2; g.scale.set(s, 1 / s, s);
+      } };
+    c.owner = e; e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  secretDoor(x, y, z, o = {}) {
+    // arco decorativo + monedas bonus en un pasillo lateral (atajo)
+    const side = o.side || 1; // +X o -X
+    const len = o.len || 10;
+    const sx = x + side * 5.5;
+    this.plat(sx, y, z - len / 2, 3.2, len, { type: 'castle', pillars: false });
+    // arco
+    const arch = new THREE.Mesh(new THREE.TorusGeometry(1.6, 0.25, 8, 12, Math.PI), new THREE.MeshLambertMaterial({ color: PAL.banner }));
+    arch.rotation.z = Math.PI / 2; arch.position.set(x + side * 2.2, y + 1.6, z);
+    this.group.add(arch);
+    this.coinRow(sx, y, z - 1, sx, y, z - len + 2, o.coins || 4);
+    return { x: sx, z: z - len / 2 };
+  }
+  _castleFloor() {
+    const b = this.bounds.clone(); b.expandByScalar(28);
+    const ww = Math.max(70, b.max.x - b.min.x + 40), dd = Math.max(90, b.max.z - b.min.z + 40);
+    const y = this.minY - 3.5;
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry(ww, dd), new THREE.MeshLambertMaterial({ color: 0xd8c0f0 }));
+    sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
+    this.group.add(sea);
+  }
+
+  // ---------- Ciudad Neón ----------
+  teleportPad(x, y, z, o = {}) {
+    const r = o.r || 1.15;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const col = o.color || PAL.teleA;
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(r * 0.75, 0.12, 8, 20), new THREE.MeshLambertMaterial({ color: col, emissive: col, emissiveIntensity: 0.7 }));
+    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.08; g.add(ring);
+    const disc = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.65, r * 0.65, 0.12, 16), new THREE.MeshLambertMaterial({ color: 0x102040, emissive: col, emissiveIntensity: 0.35 }));
+    disc.position.y = 0.06; g.add(disc);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y - 0.15, z), r: r * 0.7, h: 0.2 });
+    this.colliders.push(c);
+    const e = { type: 'teleport', c, g, ring, link: null, cool: 0, color: col,
+      contains(p) { return Math.hypot(p.x - x, p.z - z) < r * 0.85 && Math.abs(p.y - y) < 1.2; },
+      update(t, dt) { this.cool = Math.max(0, this.cool - dt); ring.rotation.z = t * 2; disc.material.emissiveIntensity = 0.25 + Math.sin(t * 6) * 0.15; } };
+    this.entities.push(e); this.bounds.expandByPoint(new THREE.Vector3(x, y, z)); return e;
+  }
+  linkTeleports(a, b) {
+    a.link = b; b.link = a;
+    try {
+      if (a.g?.children?.[0]?.material?.color) a.g.children[0].material.color.setHex(PAL.teleA);
+      if (b.g?.children?.[0]?.material?.color) b.g.children[0].material.color.setHex(PAL.teleB);
+    } catch (_) {}
+  }
+  laserGate(x, y, z, o = {}) {
+    // láser horizontal que se enciende/apaga (kill cuando ON)
+    const period = o.period || 2.8, phase = o.phase || 0, w = o.w || 4.5, h = o.h || 1.6;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const posts = [];
+    for (const sx of [-w / 2, w / 2]) {
+      const p = new THREE.Mesh(new THREE.BoxGeometry(0.25, h + 0.6, 0.25), new THREE.MeshLambertMaterial({ color: 0x203060, emissive: PAL.neonCyan, emissiveIntensity: 0.3 }));
+      p.position.set(sx, h / 2, 0); g.add(p); posts.push(p);
+    }
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(w * 0.92, 0.18, 0.18), new THREE.MeshLambertMaterial({ color: PAL.laser, emissive: PAL.laser, emissiveIntensity: 0.9, transparent: true, opacity: 0.9 }));
+    beam.position.y = h * 0.55; g.add(beam);
+    const c = new Collider('box', { pos: new THREE.Vector3(x, y + h * 0.55, z), half: new THREE.Vector3(w * 0.45, 0.25, 0.35), kind: 'kill', kinematic: true });
+    this.colliders.push(c);
+    const e = { type: 'laserGate', c, g, beam, period, phase,
+      safe(lead = 0) {
+        let u = ((this._u || 0) + lead / this.period) % 1; if (u < 0) u += 1;
+        return u < 0.38 || u > 0.78; // apagado = seguro
+      },
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1; this._u = u;
+        const on = !(u < 0.38 || u > 0.78);
+        beam.visible = on; c.active = on;
+        beam.material.opacity = on ? 0.85 + Math.sin(t * 20) * 0.1 : 0;
+        c.commit();
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  magnetZone(x, y, z, w, d, o = {}) {
+    // zona que empuja hacia un lado (como viento, visual imán)
+    const e = this.wind(x, y, z, w, d, { dir: o.dir || [1, 0, 0], force: o.force || 4.5 });
+    // retinte flechas
+    if (e.g) e.g.traverse((o) => {
+      if (o.isMesh && o.material && o.material.color) {
+        o.material = o.material.clone();
+        o.material.color.set(PAL.magnet);
+        if ('emissive' in o.material) { o.material.emissive.set(PAL.magnet); o.material.emissiveIntensity = 0.35; }
+      }
+    });
+    e.type = 'magnet';
+    return e;
+  }
+  boostPad(x, y, z, o = {}) {
+    const w = o.w || 2.8, d = o.d || 2.8, force = o.force || 18;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const pad = new THREE.Mesh(new THREE.BoxGeometry(w, 0.2, d), new THREE.MeshLambertMaterial({ color: PAL.boost, emissive: 0xaa8800, emissiveIntensity: 0.45 }));
+    pad.position.y = 0.05; pad.receiveShadow = true; g.add(pad);
+    const arrow = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.7, 3), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    arrow.rotation.x = -Math.PI / 2; arrow.position.set(0, 0.25, 0); g.add(arrow);
+    const c = new Collider('box', { pos: new THREE.Vector3(x, y - 0.15, z), half: new THREE.Vector3(w / 2, 0.2, d / 2) });
+    this.colliders.push(c);
+    const e = { type: 'boostPad', c, g, arrow, force,
+      contains(p) { return Math.abs(p.x - x) < w / 2 && Math.abs(p.z - z) < d / 2 && Math.abs(p.y - y) < 1.0; },
+      update(t) { arrow.position.z = Math.sin(t * 6) * 0.25; } };
+    this.entities.push(e); return e;
+  }
+  elevator(x, y, z, w, d, o = {}) {
+    const to = o.to || [0, 3.5, 0];
+    return this.mover(x, y, z, w, d, { to, period: o.period || 4.5, phase: o.phase || 0, color: PAL.elev, side: 0x1880a8, h: o.h || 0.55 });
+  }
+  neonConvey(x, y, z, w, d, o = {}) {
+    const e = this.convey(x, y, z, w, d, { dir: o.dir || [0, 0, 1], speed: o.speed || 3.8, h: o.h || 0.45 });
+    if (e.mesh) colorGeo(e.mesh.geometry, PAL.neonConvey, PAL.neonSide);
+    return e;
+  }
+  _neonFloor() {
+    const b = this.bounds.clone(); b.expandByScalar(28);
+    const ww = Math.max(70, b.max.x - b.min.x + 40), dd = Math.max(90, b.max.z - b.min.z + 40);
+    const y = this.minY - 4.0;
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry(ww, dd), new THREE.MeshLambertMaterial({ color: 0x0a1838 }));
+    sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
+    this.group.add(sea);
+    // rejilla neón decorativa
+    for (let i = 0; i < 8; i++) {
+      const line = new THREE.Mesh(new THREE.PlaneGeometry(ww * 0.9, 0.08), new THREE.MeshBasicMaterial({ color: PAL.neonCyan, transparent: true, opacity: 0.25 }));
+      line.rotation.x = -Math.PI / 2;
+      line.position.set(sea.position.x, y + 0.05, sea.position.z - dd / 2 + (i + 0.5) * (dd / 8));
+      this.group.add(line);
+    }
+  }
+
   // ---------- finalizar ----------
   finish() {
     const mesh = this.merge.build(this.mat); mesh.castShadow = true; mesh.receiveShadow = true; this.group.add(mesh);
@@ -1188,12 +1432,14 @@ export class Level {
     this.coinMesh = new THREE.InstancedMesh(cg, new THREE.MeshLambertMaterial({ color: 0xffd23a, emissive: 0xffa000, emissiveIntensity: 0.5 }), Math.max(1, this.coins.length));
     this.coinMesh.castShadow = true; this.group.add(this.coinMesh);
     this.coinMesh.count = this.coins.length;
-    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : (this.theme === 'desert' ? 8 : (this.theme === 'candy' ? 10 : (this.theme === 'reef' ? 8 : 14)))));
+    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : (this.theme === 'desert' ? 8 : (this.theme === 'candy' ? 10 : (this.theme === 'reef' ? 8 : (this.theme === 'castle' ? 10 : (this.theme === 'neon' ? 10 : 14)))))));
     if (this.theme === 'lava') this._lavaSea();
     if (this.theme === 'ice') this._snowFloor();
     if (this.theme === 'desert') this._sandFloor();
     if (this.theme === 'candy') this._chocFloor();
     if (this.theme === 'reef') this._reefFloor();
+    if (this.theme === 'castle') this._castleFloor();
+    if (this.theme === 'neon') this._neonFloor();
     this.updateCoins(0);
   }
   _lavaSea() {
@@ -1231,7 +1477,7 @@ export class Level {
     const b = this.bounds.clone(); b.expandByScalar(4);
     const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, sz = Math.max(b.max.z - b.min.z, 30);
     const lava = this.theme === 'lava', ice = this.theme === 'ice', jungle = this.theme === 'jungle', desert = this.theme === 'desert';
-    const candy = this.theme === 'candy', reef = this.theme === 'reef';
+    const candy = this.theme === 'candy', reef = this.theme === 'reef', castle = this.theme === 'castle', neon = this.theme === 'neon';
     for (let i = 0; i < 16; i++) {
       const side = i % 2 ? 1 : -1;
       const x = cx + side * (18 + this.rand() * 26), z = b.min.z + this.rand() * sz, y = -6 + this.rand() * 14;
@@ -1291,6 +1537,24 @@ export class Level {
           _m.compose(_v.set(x + 0.2, y + 0.3 + h / 2, z), _q.identity(), _s);
           this.decor.add(new THREE.ConeGeometry(0.45, h, 5), _m, PAL.coralSide, PAL.coralDark);
         }
+      } else if (castle) {
+        this.decor.add(new THREE.CylinderGeometry(r, r * 0.95, 0.7, 8), _m, PAL.castle, PAL.castleSide);
+        if (this.rand() < 0.65) {
+          const h = 2.5 + this.rand() * 4;
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.BoxGeometry(1.2, h, 1.2), _m, PAL.castle, PAL.castleSide);
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h + 0.5, z), _q.identity(), _s);
+          this.decor.add(new THREE.ConeGeometry(1.0, 1.2, 4), _m, PAL.bannerRed, PAL.banner);
+        }
+      } else if (neon) {
+        this.decor.add(new THREE.BoxGeometry(r * 1.6, 0.5, r * 1.6), _m, PAL.neonFloor, PAL.neonSide);
+        if (this.rand() < 0.7) {
+          const h = 3 + this.rand() * 8;
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.BoxGeometry(0.9, h, 0.9), _m, PAL.neonSide, PAL.neonSide);
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h + 0.3, z), _q.identity(), _s);
+          this.decor.add(new THREE.BoxGeometry(1.1, 0.35, 1.1), _m, PAL.neonCyan, PAL.neonPink);
+        }
       } else {
         this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.8, 7), _m, PAL.grass, PAL.grassSide);
         _m.compose(_v.set(x, y - 0.4 - r * 0.7, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
@@ -1302,7 +1566,7 @@ export class Level {
         }
       }
     }
-    if (!lava && !ice && !reef) {
+    if (!lava && !ice && !reef && !neon) {
       for (let i = 0; i < 14; i++) {
         const x = cx + (this.rand() - 0.5) * 90, z = b.min.z + this.rand() * sz, y = -16 + this.rand() * 8;
         for (let k = 0; k < 3; k++) {

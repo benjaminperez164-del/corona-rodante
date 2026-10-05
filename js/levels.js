@@ -1583,8 +1583,370 @@ const WORLD7_LEVELS = [
   },
 ];
 
-// Futuros mundos (arquitectura lista, no activos aún):
-// W8 Castillo Encantado · W9 Ciudad Neón · W10 Cosmos
+const WORLD8_LEVELS = [
+  {
+    name: 'Patio Encantado', target: 38,
+    hint: '¡Un castillo de cuento! Sigue las banderas doradas.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
+      b.plat(0, 0, -40, 6, 72, { type: 'castle' });
+      b.coinRow(0, 0, -6, 0, 0, -24, 4);
+      b.checkpoint(0, 0, -28);
+      b.coin(0, 0, -40); b.coin(0, 0, -52);
+      b.checkpoint(0, 0, -56);
+      b.plat(0, 0, -80, 8, 10, { type: 'castle', pillars: true });
+      b.crown(0, 0, -81);
+      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
+      b.wp(0, 0, -44); b.wp(0, 0, -56); b.wp(0, 0, -70); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Hachas Pendulares', target: 48,
+    hint: 'Hachas de cuento. ¡Espera y cruza!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'castle', pillars: true });
+      b.plat(0, 0, -12, 3.4, 18, { type: 'castle' }); b.coinRow(0, 0, -5, 0, 0, -16, 3);
+      const h1 = b.pendulumAxe(0, 0, -8, { speed: 1.6, phase: 0, len: 4.2 });
+      const h2 = b.pendulumAxe(0, 0, -13, { speed: 1.6, phase: Math.PI * 0.6, len: 4.2 });
+      b.plat(0, 0, -22, 6, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -22);
+      b.plat(0, 0, -38, 3.4, 24, { type: 'castle' });
+      const h3 = b.pendulumAxe(0, 0, -32, { speed: 1.7, phase: 0, len: 4.2 });
+      const h4 = b.pendulumAxe(0, 0, -38, { speed: 1.7, phase: 2.1, len: 4.2 });
+      b.coin(0, 0, -35);
+      b.plat(0, 0, -52, 6, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -52);
+      b.plat(0, 0, -64, 5, 20, { type: 'castle' });
+      b.plat(0, 0, -78, 8, 10, { type: 'castle', pillars: true });
+      b.crown(0, 0, -79);
+      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      b.wp(0, 0, -2);
+      b.wp(0, 0, -5.5, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -10.5, 'w', 0, W(h2, 0.25));
+      b.wp(0, 0, -18); b.wp(0, 0, -22);
+      b.wp(0, 0, -29.5, 'w', 0, W(h3, 0.25)); b.wp(0, 0, -35.5, 'w', 0, W(h4, 0.25));
+      b.wp(0, 0, -46); b.wp(0, 0, -52); b.wp(0, 0, -64); b.wp(0, 0, -79);
+    },
+  },
+  {
+    name: 'Baldosas Mágicas', target: 50,
+    hint: 'Las baldosas aparecen y desaparecen. ¡Cruza cuando brillen!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
+      b.plat(0, 0, -42, 6, 76, { type: 'castle' });
+      // baldosas que parpadean ENCIMA del camino (reto de monedas / ritmo)
+      b.blinkPlat(0, 0.55, -18, 3.5, 3.5, { period: 2.4, onFrac: 0.5 });
+      b.blinkPlat(0, 0.55, -28, 3.5, 3.5, { period: 2.4, phase: 0.5, onFrac: 0.5 });
+      b.coin(0, 1.2, -18); b.coin(0, 1.2, -28);
+      b.checkpoint(0, 0, -36);
+      b.blinkPlat(0, 0.55, -48, 3.5, 3.5, { period: 2.2, onFrac: 0.5 });
+      b.blinkPlat(0, 0.55, -58, 3.5, 3.5, { period: 2.2, phase: 0.5, onFrac: 0.5 });
+      b.coin(0, 1.2, -48);
+      b.checkpoint(0, 0, -66);
+      b.plat(0, 0, -84, 8, 10, { type: 'castle', pillars: true });
+      b.crown(0, 0, -85);
+      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -36);
+      b.wp(0, 0, -52); b.wp(0, 0, -66); b.wp(0, 0, -85);
+    },
+  },
+  {
+    name: 'Puente Levadizo', target: 50,
+    hint: 'El puente baja: ¡pasa cuando esté horizontal!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'castle', pillars: true });
+      b.plat(0, 0, -10, 4.5, 12, { type: 'castle' });
+      b.plat(0, 0, -18, 5, 5, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -18);
+      const d1 = b.drawbridge(0, 0, -20, { period: 3.8, d: 6 });
+      b.plat(0, 0, -30, 5, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -30);
+      const d2 = b.drawbridge(0, 0, -32, { period: 3.6, phase: 0.35, d: 6 });
+      b.plat(0, 0, -42, 5, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -54, 5, 16, { type: 'castle' }); b.coinRow(0, 0, -48, 0, 0, -58, 3);
+      b.plat(0, 0, -66, 8, 8, { type: 'castle', pillars: true });
+      b.crown(0, 0, -67);
+      const O = (d) => ({ cond: () => d.open(0.15) });
+      b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -18);
+      b.wp(0, 0, -19.5, 'w', 0, O(d1)); b.wp(0, 0, -26, '', 7); b.wp(0, 0, -30);
+      b.wp(0, 0, -31.5, 'w', 0, O(d2)); b.wp(0, 0, -38, '', 7); b.wp(0, 0, -42);
+      b.wp(0, 0, -54); b.wp(0, 0, -67);
+    },
+  },
+  {
+    name: 'Engranajes Reales', target: 50,
+    hint: 'Engranajes giratorios. ¡Pasa por el borde!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
+      b.plat(0, 0, -40, 12, 72, { type: 'castle' });
+      b.plat(0, 0, -18, 8, 8, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -18);
+      const g1 = b.gearWall(0, 0, -30, { len: 3.2, speed: 0.7, arms: 3 });
+      b.coin(4.5, 0, -30);
+      b.plat(0, 0, -44, 8, 8, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -44);
+      const g2 = b.gearWall(0, 0, -56, { len: 3.2, speed: 0.75, arms: 3 });
+      b.coin(-4.5, 0, -56);
+      b.plat(0, 0, -70, 8, 10, { type: 'castle', pillars: true });
+      b.crown(0, 0, -71);
+      void g1; void g2;
+      b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -18);
+      b.wp(4.5, 0, -26); b.wp(4.5, 0, -30, 't'); b.wp(4.5, 0, -36); b.wp(0, 0, -44);
+      b.wp(-4.5, 0, -50); b.wp(-4.5, 0, -56, 't'); b.wp(-4.5, 0, -62); b.wp(0, 0, -71);
+    },
+  },
+  {
+    name: 'Fantasmas Empujones', target: 50,
+    hint: 'Fantasmas amistosos… pero empujan. ¡Esquívalos!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'castle', pillars: true });
+      b.plat(0, 0, -45, 12, 84, { type: 'castle' });
+      b.coinRow(4.5, 0, -8, 4.5, 0, -28, 4);
+      b.ghostPusher(0, 0, -18, { to: [0, 0, -10], period: 6.0 });
+      b.checkpoint(0, 0, -36);
+      b.ghostPusher(-3.5, 0, -50, { to: [7, 0, 0], period: 5.5 });
+      b.ghostPusher(3.5, 0, -60, { to: [-7, 0, 0], period: 5.5, phase: 0.5 });
+      b.coin(-4.5, 0, -46); b.coin(4.5, 0, -58);
+      b.checkpoint(0, 0, -72);
+      b.plat(0, 0, -90, 8, 10, { type: 'castle', pillars: true });
+      b.crown(0, 0, -91);
+      b.wp(0, 0, -2); b.wp(4.5, 0, -18, 't'); b.wp(4.5, 0, -28); b.wp(0, 0, -36);
+      b.wp(-4.5, 0, -52, 't'); b.wp(4.5, 0, -62, 't'); b.wp(0, 0, -72);
+      b.wp(0, 0, -91);
+    },
+  },
+  {
+    name: 'Pasadizos Secretos', target: 55,
+    hint: 'Busca el arco dorado: ¡atajo con monedas!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
+      b.plat(0, 0, -42, 6, 76, { type: 'castle' });
+      b.secretDoor(0, 0, -14, { side: 1, len: 14, coins: 4 });
+      b.checkpoint(0, 0, -28);
+      const h1 = b.pendulumAxe(0, 0, -40, { speed: 1.55, len: 4.0 });
+      b.coin(0, 0, -48);
+      b.checkpoint(0, 0, -56);
+      // baldosa mágica opcional; carril continuo ya cubre
+      b.blinkPlat(0, 0.4, -64, 3.2, 3.2, { period: 2.5, onFrac: 0.6 });
+      b.plat(0, 0, -84, 8, 10, { type: 'castle', pillars: true });
+      b.crown(0, 0, -85);
+      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
+      b.wp(0, 0, -37.5, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -48); b.wp(0, 0, -56);
+      b.wp(0, 0, -70); b.wp(0, 0, -85);
+    },
+  },
+  {
+    name: 'Corona del Castillo', target: 80,
+    hint: '¡La corona real! Usa todo lo aprendido.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
+      // piso continuo hasta la corona (sin huecos)
+      b.plat(0, 0, -70, 12, 140, { type: 'castle' });
+      b.secretDoor(0, 0, -14, { side: -1, len: 12, coins: 3 });
+      b.checkpoint(0, 0, -28);
+      b.drawbridge(0, 0, -40, { period: 4.2, d: 5 });
+      b.checkpoint(0, 0, -52);
+      b.gearWall(0, 0, -64, { len: 3.0, speed: 0.6, arms: 3 });
+      const h1 = b.pendulumAxe(0, 0, -78, { speed: 1.45, len: 4.0 });
+      b.checkpoint(0, 0, -90);
+      b.ghostPusher(6.0, 0, -102, { to: [0, 0, -6], period: 5.5 });
+      b.plat(0, 0, -120, 10, 12, { type: 'castle', pillars: true });
+      b.pillar(-3.2, 0, -123, 3); b.pillar(3.2, 0, -123, 3);
+      b.crown(0, 0, -122);
+      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -28); b.wp(0, 0, -52);
+      b.wp(5.2, 0, -60); b.wp(5.2, 0, -64, 't'); b.wp(5.2, 0, -72);
+      b.wp(0, 0, -76, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -90);
+      b.wp(-2.0, 0, -102); b.wp(0, 0, -122);
+    },
+  },
+];
+
+const WORLD9_LEVELS = [
+  {
+    name: 'Avenida Neón', target: 38,
+    hint: '¡Bienvenido a la ciudad de neón! Sigue las luces.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -40, 6, 72, { type: 'neon' });
+      b.coinRow(0, 0, -6, 0, 0, -24, 4);
+      b.checkpoint(0, 0, -28);
+      b.coin(0, 0, -40); b.coin(0, 0, -52);
+      b.checkpoint(0, 0, -56);
+      b.plat(0, 0, -80, 8, 10, { type: 'neon', pillars: true });
+      b.crown(0, 0, -81);
+      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
+      b.wp(0, 0, -44); b.wp(0, 0, -56); b.wp(0, 0, -70); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Teletransportes', target: 45,
+    hint: 'Pisa el pad cian y apareces en el rosa.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -10, 5, 12, { type: 'neon' });
+      const t1 = b.teleportPad(0, 0, -14, { color: 0x40f8ff });
+      // hueco; destino alto
+      b.plat(0, 3.5, -28, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 3.5, -28);
+      const t2 = b.teleportPad(0, 3.5, -28, { color: 0xff40c8 });
+      b.linkTeleports(t1, t2);
+      b.plat(0, 3.5, -40, 5, 14, { type: 'neon' });
+      const t3 = b.teleportPad(0, 3.5, -44, { color: 0x40f8ff });
+      b.plat(0, 7.0, -58, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 7.0, -58);
+      const t4 = b.teleportPad(0, 7.0, -58, { color: 0xff40c8 });
+      b.linkTeleports(t3, t4);
+      b.coin(0, 3.5, -36); b.coin(0, 7.0, -64);
+      b.plat(0, 7.0, -70, 5, 14, { type: 'neon' });
+      b.plat(0, 7.0, -82, 8, 8, { type: 'neon', pillars: true });
+      b.crown(0, 7.0, -83);
+      const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
+      // ir hacia el destino: al cruzar el pad, el teleporte te sube
+      b.wp(0, 0, -2); b.wp(0, 0, -12);
+      b.wp(0, 3.5, -28, 'w', 0, Hi(2.8));
+      b.wp(0, 3.5, -40);
+      b.wp(0, 7.0, -58, 'w', 0, Hi(6.2));
+      b.wp(0, 7.0, -70); b.wp(0, 7.0, -83);
+    },
+  },
+  {
+    name: 'Láseres Temporizados', target: 50,
+    hint: 'Láseres rosa. Cruza cuando se apaguen.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'neon', pillars: true });
+      b.plat(0, 0, -20, 5, 34, { type: 'neon' }); b.coinRow(0, 0, -5, 0, 0, -28, 4);
+      const l1 = b.laserGate(0, 0, -14, { period: 2.8 });
+      const l2 = b.laserGate(0, 0, -24, { period: 2.8, phase: 0.5 });
+      b.plat(0, 0, -42, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -60, 5, 28, { type: 'neon' });
+      const l3 = b.laserGate(0, 0, -52, { period: 2.6, phase: 0.2 });
+      const l4 = b.laserGate(0, 0, -62, { period: 2.6, phase: 0.7 });
+      b.coin(0, 0, -55); b.coin(0, 0, -65);
+      b.plat(0, 0, -80, 8, 10, { type: 'neon', pillars: true });
+      b.crown(0, 0, -81);
+      const W = (l, lead) => ({ cond: () => l.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -10);
+      b.wp(0, 0, -11.5, 'w', 0, W(l1, 0.1)); b.wp(0, 0, -18, '', 7);
+      b.wp(0, 0, -21.5, 'w', 0, W(l2, 0.1)); b.wp(0, 0, -32); b.wp(0, 0, -42);
+      b.wp(0, 0, -49.5, 'w', 0, W(l3, 0.1)); b.wp(0, 0, -57, '', 7);
+      b.wp(0, 0, -59.5, 'w', 0, W(l4, 0.1)); b.wp(0, 0, -70); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Imán Urbano', target: 48,
+    hint: 'Los imanes te jalan de lado. Compensa la trayectoria.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -14, 8, 22, { type: 'neon' });
+      b.plat(-3.8, 0, -14, 2.6, 22, { type: 'neon' });
+      b.plat(3.8, 0, -14, 2.6, 22, { type: 'neon' });
+      b.magnetZone(0, 0, -14, 5, 16, { dir: [1, 0, 0], force: 3.5 });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      b.plat(0, 0, -28, 7, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -28);
+      b.plat(0, 0, -42, 8, 22, { type: 'neon' });
+      b.plat(-3.8, 0, -42, 2.6, 22, { type: 'neon' });
+      b.plat(3.8, 0, -42, 2.6, 22, { type: 'neon' });
+      b.magnetZone(0, 0, -42, 5, 16, { dir: [-1, 0, 0], force: 3.5 });
+      b.coin(0, 0, -36); b.coin(0, 0, -48);
+      b.plat(0, 0, -56, 7, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -56);
+      b.plat(0, 0, -68, 6, 14, { type: 'neon' });
+      b.plat(0, 0, -80, 8, 8, { type: 'neon', pillars: true });
+      b.crown(0, 0, -81);
+      b.wp(0, 0, -2); b.wp(-1.8, 0, -14); b.wp(0, 0, -24); b.wp(0, 0, -28);
+      b.wp(1.8, 0, -42); b.wp(0, 0, -52); b.wp(0, 0, -56);
+      b.wp(0, 0, -68); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Turbos Neón', target: 48,
+    hint: 'Pads amarillos = turbo hacia adelante. ¡Sujétate!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -48, 6, 88, { type: 'neon' });
+      b.boostPad(0, 0, -14, { force: 16 });
+      b.coin(0, 0, -22);
+      b.checkpoint(0, 0, -32);
+      b.boostPad(0, 0, -42, { force: 16 });
+      b.coin(0, 0, -52);
+      b.checkpoint(0, 0, -62);
+      b.boostPad(0, 0, -72, { force: 14 });
+      b.plat(0, 0, -90, 8, 10, { type: 'neon', pillars: true });
+      b.crown(0, 0, -91);
+      b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -32);
+      b.wp(0, 0, -42); b.wp(0, 0, -62);
+      b.wp(0, 0, -72); b.wp(0, 0, -91);
+    },
+  },
+  {
+    name: 'Ascensores', target: 52,
+    hint: 'Plataformas elevadoras. Los resortes te suben.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -12, 5, 16, { type: 'neon' });
+      b.elevator(4.5, 0, -16, 2.6, 2.6, { to: [0, 3.5, 0], period: 4.0 });
+      b.spring(0, 0, -18, { power: 16 });
+      b.plat(0, 3.5, -26, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 3.5, -26);
+      b.plat(0, 3.5, -36, 5, 12, { type: 'neon' });
+      b.elevator(4.5, 3.5, -38, 2.6, 2.6, { to: [0, 3.5, 0], period: 4.0, phase: 0.5 });
+      b.spring(0, 3.5, -40, { power: 16 });
+      b.plat(0, 7.0, -48, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 7.0, -48);
+      b.plat(0, 7.0, -60, 6, 16, { type: 'neon' }); b.coin(0, 7.0, -56);
+      b.plat(0, 7.0, -74, 8, 10, { type: 'neon', pillars: true });
+      b.crown(0, 7.0, -75);
+      b.wp(0, 0, -2); b.wp(0, 0, -18, '', 4); b.wp(0, 3.5, -26);
+      b.wp(0, 3.5, -40, '', 4); b.wp(0, 7.0, -48);
+      b.wp(0, 7.0, -60); b.wp(0, 7.0, -75);
+    },
+  },
+  {
+    name: 'Cintas Opuestas', target: 55,
+    hint: 'Cintas neón empujan hacia atrás. ¡Rema!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'neon', pillars: true });
+      b.plat(0, 0, -6, 4.5, 6, { type: 'neon' });
+      b.neonConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, 1], speed: 3.4 });
+      b.coinRow(0, 0, -10, 0, 0, -20, 3);
+      b.plat(0, 0, -25, 5, 6, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -25);
+      b.neonConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, 1], speed: 3.4 });
+      b.coin(0, 0, -30); b.coin(0, 0, -38);
+      b.plat(0, 0, -44, 5, 6, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -44);
+      b.plat(0, 0, -58, 5, 22, { type: 'neon' });
+      b.boostPad(0, 0, -58, { force: 14 });
+      b.plat(0, 0, -74, 8, 10, { type: 'neon', pillars: true });
+      b.crown(0, 0, -75);
+      b.wp(0, 0, -2); b.wp(0, 0, -15); b.wp(0, 0, -25);
+      b.wp(0, 0, -34); b.wp(0, 0, -44);
+      b.wp(0, 0, -58); b.wp(0, 0, -75);
+    }
+  },
+  {
+    name: 'Corona Neón', target: 80,
+    hint: '¡La corona de la ciudad! Turbo, láseres y teleports.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -50, 8, 100, { type: 'neon' });
+      b.neonConvey(0, 0, -16, 4.5, 12, { dir: [0, 0, 1], speed: 3.0 });
+      b.checkpoint(0, 0, -28);
+      b.boostPad(0, 0, -36, { force: 12 });
+      const l1 = b.laserGate(0, 0, -48, { period: 3.2 });
+      b.checkpoint(0, 0, -58);
+      const ta = b.teleportPad(-4.8, 0, -66, { color: 0x40f8ff });
+      b.plat(-4.8, 3.2, -66, 4, 6, { type: 'neon' });
+      const tb = b.teleportPad(-4.8, 3.2, -66, { color: 0xff40c8 });
+      b.linkTeleports(ta, tb);
+      b.coin(-4.8, 3.2, -64); b.coin(-4.8, 3.2, -68);
+      b.plat(-3.5, 0, -80, 2.8, 18, { type: 'neon' });
+      b.plat(3.5, 0, -80, 2.8, 18, { type: 'neon' });
+      b.magnetZone(0, 0, -80, 5, 14, { dir: [1, 0, 0], force: 2.8 });
+      b.checkpoint(0, 0, -92);
+      b.spring(0, 0, -98, { power: 16 });
+      b.elevator(4.5, 0, -98, 2.6, 2.6, { to: [0, 3.5, 0], period: 4.5 });
+      b.plat(0, 3.5, -106, 10, 10, { type: 'neon', pillars: true });
+      b.pillar(-3.2, 3.5, -109, 3); b.pillar(3.2, 3.5, -109, 3);
+      b.crown(0, 3.5, -108);
+      const W = (l, lead) => ({ cond: () => l.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -16); b.wp(0, 0, -28); b.wp(0, 0, -36);
+      b.wp(0, 0, -45.5, 'w', 0, W(l1, 0.1)); b.wp(0, 0, -54, '', 7); b.wp(0, 0, -58);
+      b.wp(-1.5, 0, -80); b.wp(0, 0, -92);
+      b.wp(0, 0, -98, '', 4); b.wp(0, 3.5, -106); b.wp(0, 3.5, -108);
+    },
+  },
+];
+
+
+// Futuro: W10 Cosmos
 export const WORLDS = [
   { id: 'ruinas', name: 'Ruinas Flotantes', theme: 'sky', levels: WORLD1_LEVELS },
   { id: 'volcan', name: 'Volcán Ardiente', theme: 'lava', unlockIndex: 7, levels: WORLD2_LEVELS },
@@ -1593,6 +1955,8 @@ export const WORLDS = [
   { id: 'desierto', name: 'Desierto Dorado', theme: 'desert', unlockIndex: 31, levels: WORLD5_LEVELS },
   { id: 'dulces', name: 'Fábrica de Dulces', theme: 'candy', unlockIndex: 39, levels: WORLD6_LEVELS },
   { id: 'arrecife', name: 'Arrecife Profundo', theme: 'reef', unlockIndex: 47, levels: WORLD7_LEVELS },
+  { id: 'castillo', name: 'Castillo Encantado', theme: 'castle', unlockIndex: 55, levels: WORLD8_LEVELS },
+  { id: 'neon', name: 'Ciudad Neón', theme: 'neon', unlockIndex: 63, levels: WORLD9_LEVELS },
 ];
 
 

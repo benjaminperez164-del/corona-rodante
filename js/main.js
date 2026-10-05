@@ -1,13 +1,13 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=30';
-import { Level } from './world.js?v=30';
-import { LEVELS, WORLDS } from './levels.js?v=30';
-import { Input } from './input.js?v=30';
-import { Sfx } from './audio.js?v=30';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=30';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=30';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=30';
+import { Ball, stepBall } from './physics.js?v=34';
+import { Level } from './world.js?v=34';
+import { LEVELS, WORLDS } from './levels.js?v=34';
+import { Input } from './input.js?v=34';
+import { Sfx } from './audio.js?v=34';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=34';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=34';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=34';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -125,6 +125,16 @@ const THEMES = {
     sun: 0xc8f0ff, sunI: 1.55, skyTop: 0x045878, skyMid: 0x0a88a8, skyHor: 0x40c0d8, skyBot: 0x88e0f0,
     fogNear: 28, fogFar: 100,
   },
+  castle: {
+    fog: 0xd0b0f0, hemiSky: 0xffe8ff, hemiGround: 0xa080c0, hemiI: 1.55,
+    sun: 0xfff0d0, sunI: 1.7, skyTop: 0x9060c8, skyMid: 0xc090e8, skyHor: 0xe8c0ff, skyBot: 0xffe8f8,
+    fogNear: 35, fogFar: 120,
+  },
+  neon: {
+    fog: 0x102048, hemiSky: 0x40c0ff, hemiGround: 0x081028, hemiI: 1.35,
+    sun: 0xa0e8ff, sunI: 1.5, skyTop: 0x061030, skyMid: 0x0a2860, skyHor: 0x184898, skyBot: 0x2060a8,
+    fogNear: 30, fogFar: 110,
+  },
 };
 let currentTheme = 'sky';
 function rebuildSky(th) {
@@ -153,6 +163,8 @@ function applyTheme(th) {
   document.body.classList.toggle('theme-desert', th === 'desert');
   document.body.classList.toggle('theme-candy', th === 'candy');
   document.body.classList.toggle('theme-reef', th === 'reef');
+  document.body.classList.toggle('theme-castle', th === 'castle');
+  document.body.classList.toggle('theme-neon', th === 'neon');
 }
 
 // ---------------- Bola ----------------
@@ -269,7 +281,7 @@ function renderLevels() {
   WORLDS.forEach((w, wi) => {
     const unlocked = worldUnlocked(wi);
     const b = document.createElement('button');
-    const thCls = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert' || w.theme === 'candy' || w.theme === 'reef') ? ' ' + w.theme : '';
+    const thCls = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert' || w.theme === 'candy' || w.theme === 'reef' || w.theme === 'castle' || w.theme === 'neon') ? ' ' + w.theme : '';
     b.className = 'world-tab' + (wi === G.selectedWorld ? ' on' : '') + thCls + (unlocked ? '' : ' locked');
     b.textContent = unlocked ? `${wi + 1}. ${w.name}` : `🔒 ${w.name}`;
     b.onclick = () => {
@@ -288,7 +300,7 @@ function renderLevels() {
     const unlocked = prevDone && worldUnlocked(G.selectedWorld);
     const st = (save.levels[i] && save.levels[i].stars) || [false, false, false];
     const b = document.createElement('button');
-    const lth = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert' || w.theme === 'candy' || w.theme === 'reef') ? ' ' + w.theme : '';
+    const lth = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert' || w.theme === 'candy' || w.theme === 'reef' || w.theme === 'castle' || w.theme === 'neon') ? ' ' + w.theme : '';
     b.className = 'lvl' + (unlocked ? '' : ' locked') + lth;
     b.innerHTML = `<div class="n">${unlocked ? li + 1 : '🔒'}</div><div class="nm">${unlocked ? L.name : 'Bloqueado'}</div><div class="st">${st.map(s => `<span class="${s ? 'on' : ''}">★</span>`).join('')}</div>`;
     b.dataset.level = i;
@@ -459,12 +471,16 @@ function toTitle() {
   const doneW4 = save.levels[31] && save.levels[31].done;
   const doneW5 = save.levels[39] && save.levels[39].done;
   const doneW6 = save.levels[47] && save.levels[47].done;
-  $('title-world').textContent = doneW6 ? 'Mundos · Ruinas → Arrecife'
+  const doneW7 = save.levels[55] && save.levels[55].done;
+  const doneW8 = save.levels[63] && save.levels[63].done;
+  $('title-world').textContent = doneW8 ? 'Mundos · Ruinas → Neón'
+    : (doneW7 ? 'Mundos · Ruinas → Castillo'
+    : (doneW6 ? 'Mundos · Ruinas → Arrecife'
     : (doneW5 ? 'Mundos · Ruinas → Dulces'
     : (doneW4 ? 'Mundos · Ruinas → Desierto'
     : (doneW3 ? 'Mundos · Ruinas → Selva'
     : (doneW2 ? 'Mundos · Ruinas, Volcán y Glaciar'
-    : (doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')))));
+    : (doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')))))));
   applyTheme('sky');
 }
 
@@ -557,14 +573,25 @@ function fixedStep(dt) {
       stepBall(ball, L.colliders, mv, dt);
       // viento (zonas del glaciar)
       for (const e of L.entities) {
-        if (e.type === 'wind' && e.contains(ball.pos)) {
+        if ((e.type === 'wind' || e.type === 'magnet') && e.contains(ball.pos)) {
           ball.vel.x += e.force.x * dt; ball.vel.z += e.force.z * dt;
         }
         if (e.type === 'bubbleColumn' && e.contains(ball.pos)) {
           ball.vel.y += e.force * dt;
           if (ball.vel.y > 12) ball.vel.y = 12;
-          // frena menos en XZ para que el bot pueda esperar dentro de la columna
           ball.vel.x *= Math.exp(-1.2 * dt); ball.vel.z *= Math.exp(-1.2 * dt);
+        }
+        if (e.type === 'boostPad' && e.contains(ball.pos)) {
+          // turbo hacia -Z (avance)
+          ball.vel.z -= e.force * dt;
+          if (ball.vel.z < -16) ball.vel.z = -16;
+        }
+        if (e.type === 'teleport' && e.link && e.cool <= 0 && e.contains(ball.pos)) {
+          const dest = e.link;
+          ball.pos.set(dest.g.position.x, dest.g.position.y + 0.7, dest.g.position.z);
+          ball.vel.set(0, 3.5, ball.vel.z * 0.25);
+          e.cool = 1.2; dest.cool = 1.2;
+          if (cooldown('teleport', 0.3)) sfx.play('spring');
         }
       }
       handleEvents();
@@ -829,12 +856,15 @@ showScreen('scr-title');
 const _d1 = save.levels[7] && save.levels[7].done, _d2 = save.levels[15] && save.levels[15].done;
 const _d3 = save.levels[23] && save.levels[23].done, _d4 = save.levels[31] && save.levels[31].done;
 const _d5 = save.levels[39] && save.levels[39].done, _d6 = save.levels[47] && save.levels[47].done;
-if ($('title-world')) $('title-world').textContent = _d6 ? 'Mundos · Ruinas → Arrecife'
+const _d7 = save.levels[55] && save.levels[55].done, _d8 = save.levels[63] && save.levels[63].done;
+if ($('title-world')) $('title-world').textContent = _d8 ? 'Mundos · Ruinas → Neón'
+  : (_d7 ? 'Mundos · Ruinas → Castillo'
+  : (_d6 ? 'Mundos · Ruinas → Arrecife'
   : (_d5 ? 'Mundos · Ruinas → Dulces'
   : (_d4 ? 'Mundos · Ruinas → Desierto'
   : (_d3 ? 'Mundos · Ruinas → Selva'
   : (_d2 ? 'Mundos · Ruinas, Volcán y Glaciar'
-  : (_d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')))));
+  : (_d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')))))));
 notifyAchievements();
 grantUnlockSkins(); persist();
 $('loading').classList.add('hidden');
