@@ -179,6 +179,16 @@ body.theme-jungle { background: #4a9848; }
 .lvl.desert:active:not(.locked) { box-shadow: 0 2px 0 #a07828; }
 body.theme-desert { background: #4a78a8; }
 
+.world-tab.candy.on { background: linear-gradient(#ff80c0, #e04898); box-shadow: 0 3px 0 #a02868; }
+.lvl.candy { background: linear-gradient(#ff90c8, #e050a0); box-shadow: 0 5px 0 #a02868; }
+.lvl.candy:active:not(.locked) { box-shadow: 0 2px 0 #a02868; }
+body.theme-candy { background: #e070a8; }
+
+.world-tab.reef.on { background: linear-gradient(#40d0e8, #1890b0); box-shadow: 0 3px 0 #0a6078; }
+.lvl.reef { background: linear-gradient(#48d8f0, #1898b8); box-shadow: 0 5px 0 #0a6078; }
+.lvl.reef:active:not(.locked) { box-shadow: 0 2px 0 #0a6078; }
+body.theme-reef { background: #0a7898; }
+
 
 .btn.purple { background: linear-gradient(#c9a0ff, #8a5cff); box-shadow: 0 6px 0 #5a38b0; }
 .btn.purple:active { box-shadow: 0 2px 0 #5a38b0; transform: translateY(4px); }

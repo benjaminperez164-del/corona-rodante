@@ -1,7 +1,7 @@
 // Construcción de niveles: geometría estática fusionada (pocas draw calls),
 // entidades dinámicas (martillos, molinetes, plataformas móviles...) y colliders.
 import * as THREE from 'three';
-import { Collider } from './physics.js?v=22';
+import { Collider } from './physics.js?v=30';
 
 export const PAL = {
   grass: 0x7ddc5a, grassSide: 0xf0d9a8, stoneBottom: 0xc9a777,
@@ -35,6 +35,17 @@ export const PAL = {
   sandEdge: 0xb85820, canyon: 0x3a2814,
   quicksand: 0x6a4820, pyramid: 0xf0d090, pyramidSide: 0x8a4820,
   sandstone: 0xf5d890, sandstoneSide: 0x8a5028, scarab: 0x18e8f8, cactus: 0x2a9a40,
+  // Fábrica de Dulces
+  candy: 0xffb0d8, candySide: 0xe068a8, candyDark: 0xc04080,
+  jelly: 0xff6ad4, gum: 0xff9040, gumSide: 0xd06020,
+  chocolate: 0x6a3a18, chocolateSide: 0x4a2810, chocConvey: 0x8a5028,
+  lolliStick: 0xfff0d0, lolliHead: 0xff4d8a, donut: 0xffc070, donutIcing: 0xff80c0,
+  crusher: 0xe05090, crusherBand: 0xffe066,
+  // Arrecife Profundo
+  coral: 0x5ad8c8, coralSide: 0x2a9088, coralDark: 0x1a6860,
+  reefSand: 0xf0e0a8, bubble: 0xa8e8ff, current: 0x40b0e0,
+  jellyFish: 0xff80d0, clam: 0xffd080, clamIn: 0xffa060,
+  anchor: 0x708090, urchin: 0x6030a0, urchinSpike: 0xd0a0ff,
 };
 
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
@@ -87,6 +98,10 @@ const STYLE = {
   mud: [PAL.mudTop, PAL.mudSide, PAL.mudSide],
   sand: [PAL.sand, PAL.sandSide, PAL.sandDark],
   pyramid: [PAL.pyramid, PAL.pyramidSide, PAL.sandDark],
+  candy: [PAL.candy, PAL.candySide, PAL.candyDark],
+  chocolate: [PAL.chocolate, PAL.chocolateSide, PAL.chocolateSide],
+  coral: [PAL.coral, PAL.coralSide, PAL.coralDark],
+  reefSand: [PAL.reefSand, PAL.coralSide, PAL.coralDark],
 };
 
 let glowTex = null;
@@ -113,7 +128,9 @@ export class Level {
     this.defaultPlat = this.theme === 'lava' ? 'basalt'
       : (this.theme === 'ice' ? 'ice'
         : (this.theme === 'jungle' ? 'jungle'
-          : (this.theme === 'desert' ? 'sand' : 'stone')));
+          : (this.theme === 'desert' ? 'sand'
+            : (this.theme === 'candy' ? 'candy'
+              : (this.theme === 'reef' ? 'coral' : 'stone')))));
     def.build(this);
     this.finish();
   }
@@ -958,6 +975,208 @@ export class Level {
     c.owner = e; e.reset(); this.entities.push(e); return e;
   }
 
+
+  // ---------- Fábrica de Dulces ----------
+  jellyPad(x, y, z, o = {}) {
+    const r = o.r || 1.1, power = o.power || 15;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const blob = new THREE.Mesh(new THREE.SphereGeometry(r, 12, 8), new THREE.MeshLambertMaterial({ color: PAL.jelly, transparent: true, opacity: 0.88, emissive: 0x661144, emissiveIntensity: 0.25 }));
+    blob.scale.set(1.15, 0.55, 1.15); blob.position.y = r * 0.25; blob.castShadow = true; g.add(blob);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + r * 0.2, z), r: r * 0.95, h: r * 0.3, kind: 'spring' });
+    this.colliders.push(c);
+    const e = { type: 'jellyPad', c, g, blob, power, hit: 0,
+      update(t, dt) { this.hit = Math.max(0, this.hit - dt * 3); const s = 1 + Math.sin(this.hit * 10) * this.hit * 0.25; blob.scale.set(1.15 * s, 0.55 / s, 1.15 * s); } };
+    c.owner = e; this.entities.push(e); return e;
+  }
+  gumPad(x, y, z, w = 4, d = 4, o = {}) {
+    const h = o.h || 0.35;
+    const geo = new THREE.BoxGeometry(w, h, d); colorGeo(geo, PAL.gum, PAL.gumSide);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.receiveShadow = true; this.group.add(mesh);
+    const base = new THREE.Vector3(x, y - h / 2, z); mesh.position.copy(base);
+    const c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2) });
+    c.gum = true;
+    this.colliders.push(c); this.bounds.expandByPoint(base);
+    for (let i = 0; i < 5; i++) {
+      const b = new THREE.Mesh(new THREE.SphereGeometry(0.15 + Math.random() * 0.12, 6, 6), new THREE.MeshLambertMaterial({ color: 0xffb060 }));
+      b.position.set((Math.random() - 0.5) * w * 0.6, h / 2 + 0.05, (Math.random() - 0.5) * d * 0.6);
+      mesh.add(b);
+    }
+    return c;
+  }
+  chocConvey(x, y, z, w, d, o = {}) {
+    // cinta de chocolate: siempre empuja EN CONTRA del avance (+Z)
+    const e = this.convey(x, y, z, w, d, { dir: o.dir || [0, 0, 1], speed: o.speed || 3.6, h: o.h || 0.45 });
+    // recolorear malla a chocolate
+    if (e.mesh) {
+      const geo = e.mesh.geometry;
+      colorGeo(geo, PAL.chocConvey, PAL.chocolateSide);
+      e.mesh.geometry = geo;
+    }
+    return e;
+  }
+  candyCrusher(x, y, z, o = {}) {
+    // prensa que baja y sube (peligro cuando está abajo)
+    const period = o.period || 3.2, phase = o.phase || 0, hMax = o.h || 2.8, w = o.w || 2.4, d = o.d || 2.4;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.35, hMax + 1.2, 0.35), new THREE.MeshLambertMaterial({ color: PAL.lolliStick }));
+    post.position.y = (hMax + 1.2) / 2; g.add(post);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(w, 0.55, d), new THREE.MeshLambertMaterial({ color: PAL.crusher, emissive: 0x440022, emissiveIntensity: 0.2 }));
+    head.castShadow = true; g.add(head);
+    const band = new THREE.Mesh(new THREE.BoxGeometry(w * 1.05, 0.12, d * 1.05), new THREE.MeshLambertMaterial({ color: PAL.crusherBand }));
+    band.position.y = -0.28; head.add(band);
+    const c = new Collider('box', { pos: new THREE.Vector3(x, y + 1, z), half: new THREE.Vector3(w / 2, 0.3, d / 2), kind: 'kill', kinematic: true });
+    this.colliders.push(c);
+    const e = { type: 'candyCrusher', c, g, head, period, phase, hMax,
+      safe(lead = 0) {
+        let u = ((this._u || 0) + lead / this.period) % 1; if (u < 0) u += 1;
+        return u < 0.32 || u > 0.68; // arriba = seguro (ventana un poco más amplia)
+      },
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1; this._u = u;
+        let h = this.hMax;
+        if (u < 0.25) h = this.hMax;
+        else if (u < 0.4) h = this.hMax * (1 - (u - 0.25) / 0.15);
+        else if (u < 0.55) h = 0.35;
+        else if (u < 0.7) h = 0.35 + (u - 0.55) / 0.15 * (this.hMax - 0.35);
+        else h = this.hMax;
+        head.position.y = h;
+        c.pos.set(x, y + h, z); c.active = h < this.hMax * 0.55; c.commit();
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  lolliArm(x, y, z, o = {}) {
+    // brazo de piruleta que gira (como molinete suave)
+    return this.turnstile(x, y, z, { len: o.len || 3.6, speed: o.speed || 0.9, arms: o.arms || 3, ...o });
+  }
+  donutRing(x, y, z, o = {}) {
+    const r = o.r || 1.35, power = o.power || 16;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const tor = new THREE.Mesh(new THREE.TorusGeometry(r * 0.7, r * 0.32, 10, 18), new THREE.MeshLambertMaterial({ color: PAL.donut }));
+    tor.rotation.x = Math.PI / 2; tor.position.y = 0.35; tor.castShadow = true; g.add(tor);
+    const icing = new THREE.Mesh(new THREE.TorusGeometry(r * 0.7, r * 0.18, 8, 18), new THREE.MeshLambertMaterial({ color: PAL.donutIcing, emissive: 0x441133, emissiveIntensity: 0.2 }));
+    icing.rotation.x = Math.PI / 2; icing.position.y = 0.5; g.add(icing);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + 0.4, z), r: r * 0.85, h: 0.35, kind: 'spring' });
+    this.colliders.push(c);
+    const e = { type: 'donutRing', c, g, tor, power, hit: 0,
+      update(t, dt) { this.hit = Math.max(0, this.hit - dt * 3); tor.rotation.z = t * 0.8; const s = 1 + this.hit * 0.15; g.scale.setScalar(s); } };
+    c.owner = e; this.entities.push(e); return e;
+  }
+  _chocFloor() {
+    const b = this.bounds.clone(); b.expandByScalar(28);
+    const ww = Math.max(70, b.max.x - b.min.x + 40), dd = Math.max(90, b.max.z - b.min.z + 40);
+    const y = this.minY - 4.0;
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry(ww, dd), new THREE.MeshLambertMaterial({ color: 0x5a2a10 }));
+    sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
+    this.group.add(sea);
+  }
+
+  // ---------- Arrecife Profundo ----------
+  bubbleColumn(x, y, z, w, d, o = {}) {
+    // columna de burbujas: empuja hacia ARRIBA (+ resorte suave en el fondo del hueco)
+    const force = o.force || 18;
+    const power = o.power || 14;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const bubbles = [];
+    for (let i = 0; i < 10; i++) {
+      const b = new THREE.Mesh(new THREE.SphereGeometry(0.15 + Math.random() * 0.18, 6, 6), new THREE.MeshBasicMaterial({ color: PAL.bubble, transparent: true, opacity: 0.45 }));
+      b.position.set((Math.random() - 0.5) * w * 0.7, Math.random() * 3, (Math.random() - 0.5) * d * 0.7);
+      g.add(b); bubbles.push(b);
+    }
+    // plataforma-resorte invisible/cian en el fondo: garantiza el salto vertical
+    const spring = new Collider('cyl', { pos: new THREE.Vector3(x, y - 1.2, z), r: Math.min(w, d) * 0.45, h: 0.35, kind: 'spring' });
+    this.colliders.push(spring);
+    const e = { type: 'bubbleColumn', g, bubbles, force, power, c: spring,
+      min: new THREE.Vector3(x - w / 2, y - 3.5, z - d / 2),
+      max: new THREE.Vector3(x + w / 2, y + 5.5, z + d / 2),
+      contains(p) { return p.x >= this.min.x && p.x <= this.max.x && p.y >= this.min.y && p.y <= this.max.y && p.z >= this.min.z && p.z <= this.max.z; },
+      update(t) {
+        for (let i = 0; i < bubbles.length; i++) {
+          const b = bubbles[i];
+          b.position.y = ((t * 1.2 + i * 0.35) % 4);
+          b.material.opacity = 0.25 + (b.position.y / 4) * 0.4;
+        }
+      } };
+    spring.owner = e;
+    this.entities.push(e); this.bounds.expandByPoint(new THREE.Vector3(x, y, z)); return e;
+  }
+  waterCurrent(x, y, z, w, d, o = {}) {
+    return this.wind(x, y, z, w, d, { dir: o.dir || [1, 0, 0], force: o.force || 4 });
+  }
+  jellyFish(x, y, z, o = {}) {
+    const r = o.r || 0.75;
+    const g = new THREE.Group(); g.position.set(x, y + r * 0.5, z); this.group.add(g);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(r, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: PAL.jellyFish, emissive: 0x661144, emissiveIntensity: 0.35, transparent: true, opacity: 0.9 }));
+    head.castShadow = true; g.add(head);
+    for (let i = 0; i < 5; i++) {
+      const tent = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.02, 1.1, 4), new THREE.MeshLambertMaterial({ color: 0xffa0d0, transparent: true, opacity: 0.7 }));
+      const a = i / 5 * Math.PI * 2;
+      tent.position.set(Math.cos(a) * r * 0.4, -0.5, Math.sin(a) * r * 0.4); g.add(tent);
+    }
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + r * 0.4, z), r: r * 1.05, h: r * 0.5, kind: 'bumper' });
+    this.colliders.push(c);
+    const to = o.to || [3.5, 0, 0], period = o.period || 3.4, phase = o.phase || 0;
+    const base = new THREE.Vector3(x, y + r * 0.4, z);
+    const dest = new THREE.Vector3(to[0], to[1], to[2]);
+    const e = { type: 'jellyFish', c, g, head, base, dest, period, phase, hit: 0,
+      update(t, dt) {
+        this.hit = Math.max(0, this.hit - dt * 4);
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1;
+        const k = u < 0.5 ? u * 2 : 2 - u * 2;
+        c.pos.copy(this.base).addScaledVector(this.dest, k);
+        c.pos.y = this.base.y + Math.sin(t * 2 + this.phase) * 0.25;
+        c.commit(); g.position.copy(c.pos);
+        const s = 1 + Math.sin(this.hit * 12) * this.hit * 0.25; g.scale.set(s, 1 / s, s);
+      } };
+    c.owner = e; e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  clam(x, y, z, o = {}) {
+    // almeja: suelo siempre sólido; cuando se CIERRA la tapa es kill (como prensa)
+    const ww = o.w || 3.4, dd = o.d || 2.8, period = o.period || 3.6, phase = o.phase || 0;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const lower = new THREE.Mesh(new THREE.SphereGeometry(ww * 0.45, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: PAL.clam }));
+    lower.scale.set(1, 0.4, dd / ww); lower.position.y = 0.02; g.add(lower);
+    const upper = new THREE.Mesh(new THREE.SphereGeometry(ww * 0.45, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: PAL.clamIn }));
+    upper.scale.set(1, 0.4, dd / ww); upper.position.y = 0.12; g.add(upper);
+    // suelo coral siempre activo bajo la almeja
+    this.plat(x, y, z, ww, dd, { type: 'coral', h: 0.5, rock: false });
+    const kill = new Collider('box', { pos: new THREE.Vector3(x, y + 0.7, z), half: new THREE.Vector3(ww * 0.45, 0.35, dd * 0.45), kind: 'kill', kinematic: true });
+    this.colliders.push(kill);
+    const e = { type: 'clam', c: kill, g, upper, lower, period, phase,
+      open(lead = 0) {
+        let u = ((this._u || 0) + lead / this.period) % 1; if (u < 0) u += 1;
+        // abierta = segura (tapa arriba, kill inactivo)
+        return u < 0.42 || u > 0.78;
+      },
+      safe(lead = 0) { return this.open(lead); },
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1; this._u = u;
+        const open = u < 0.42 || u > 0.78;
+        upper.rotation.x = open ? -0.05 : -1.05;
+        upper.position.y = open ? 1.15 : 0.35;
+        kill.active = !open; kill.pos.set(x, y + (open ? 1.4 : 0.55), z); kill.commit();
+      } };
+    e.update(0); kill.savePrev(); this.entities.push(e); return e;
+  }
+  swingingAnchor(x, y, z, o = {}) {
+    return this.hammer(x, y, z, { speed: o.speed || 1.5, phase: o.phase || 0, len: o.len || 3.2, ...o });
+  }
+  urchin(x, y, z, o = {}) {
+    // erizo: spikes compactos
+    const r = o.r || 0.9;
+    this.spikes(x, y, z, r * 2.2, r * 2.2);
+    const body = new THREE.Mesh(new THREE.IcosahedronGeometry(r * 0.55, 0), new THREE.MeshLambertMaterial({ color: PAL.urchin, emissive: 0x220044, emissiveIntensity: 0.3 }));
+    body.position.set(x, y + r * 0.4, z); this.group.add(body);
+    return body;
+  }
+  _reefFloor() {
+    const b = this.bounds.clone(); b.expandByScalar(28);
+    const ww = Math.max(70, b.max.x - b.min.x + 40), dd = Math.max(90, b.max.z - b.min.z + 40);
+    const y = this.minY - 3.8;
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry(ww, dd), new THREE.MeshLambertMaterial({ color: 0x0a4868, transparent: true, opacity: 0.92 }));
+    sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
+    this.group.add(sea); this.reefFloor = sea;
+  }
+
   // ---------- finalizar ----------
   finish() {
     const mesh = this.merge.build(this.mat); mesh.castShadow = true; mesh.receiveShadow = true; this.group.add(mesh);
@@ -969,10 +1188,12 @@ export class Level {
     this.coinMesh = new THREE.InstancedMesh(cg, new THREE.MeshLambertMaterial({ color: 0xffd23a, emissive: 0xffa000, emissiveIntensity: 0.5 }), Math.max(1, this.coins.length));
     this.coinMesh.castShadow = true; this.group.add(this.coinMesh);
     this.coinMesh.count = this.coins.length;
-    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : (this.theme === 'desert' ? 8 : 14)));
+    this.killY = this.minY - (this.theme === 'lava' ? 6 : (this.theme === 'ice' ? 10 : (this.theme === 'desert' ? 8 : (this.theme === 'candy' ? 10 : (this.theme === 'reef' ? 8 : 14)))));
     if (this.theme === 'lava') this._lavaSea();
     if (this.theme === 'ice') this._snowFloor();
     if (this.theme === 'desert') this._sandFloor();
+    if (this.theme === 'candy') this._chocFloor();
+    if (this.theme === 'reef') this._reefFloor();
     this.updateCoins(0);
   }
   _lavaSea() {
@@ -1010,6 +1231,7 @@ export class Level {
     const b = this.bounds.clone(); b.expandByScalar(4);
     const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, sz = Math.max(b.max.z - b.min.z, 30);
     const lava = this.theme === 'lava', ice = this.theme === 'ice', jungle = this.theme === 'jungle', desert = this.theme === 'desert';
+    const candy = this.theme === 'candy', reef = this.theme === 'reef';
     for (let i = 0; i < 16; i++) {
       const side = i % 2 ? 1 : -1;
       const x = cx + side * (18 + this.rand() * 26), z = b.min.z + this.rand() * sz, y = -6 + this.rand() * 14;
@@ -1053,6 +1275,22 @@ export class Level {
           _m.compose(_v.set(x + 0.3, y + 0.3 + h / 2, z), _q.identity(), _s);
           this.decor.add(new THREE.CylinderGeometry(0.2, 0.28, h, 6), _m, PAL.cactus, PAL.cactus);
         }
+      } else if (candy) {
+        this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.7, 8), _m, PAL.candy, PAL.candySide);
+        if (this.rand() < 0.65) {
+          const h = 2 + this.rand() * 4;
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.CylinderGeometry(0.12, 0.12, h, 6), _m, PAL.lolliStick, PAL.lolliStick);
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h + 0.55, z), _q.identity(), _s);
+          this.decor.add(new THREE.SphereGeometry(0.7, 8, 8), _m, PAL.lolliHead, PAL.candySide);
+        }
+      } else if (reef) {
+        this.decor.add(new THREE.CylinderGeometry(r, r * 1.05, 0.6, 7), _m, PAL.coral, PAL.coralSide);
+        if (this.rand() < 0.7) {
+          const h = 1.2 + this.rand() * 3;
+          _m.compose(_v.set(x + 0.2, y + 0.3 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.ConeGeometry(0.45, h, 5), _m, PAL.coralSide, PAL.coralDark);
+        }
       } else {
         this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.8, 7), _m, PAL.grass, PAL.grassSide);
         _m.compose(_v.set(x, y - 0.4 - r * 0.7, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
@@ -1064,7 +1302,7 @@ export class Level {
         }
       }
     }
-    if (!lava && !ice) {
+    if (!lava && !ice && !reef) {
       for (let i = 0; i < 14; i++) {
         const x = cx + (this.rand() - 0.5) * 90, z = b.min.z + this.rand() * sz, y = -16 + this.rand() * 8;
         for (let k = 0; k < 3; k++) {

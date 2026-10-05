@@ -1,13 +1,13 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=22';
-import { Level } from './world.js?v=22';
-import { LEVELS, WORLDS } from './levels.js?v=22';
-import { Input } from './input.js?v=22';
-import { Sfx } from './audio.js?v=22';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=22';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=22';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=22';
+import { Ball, stepBall } from './physics.js?v=30';
+import { Level } from './world.js?v=30';
+import { LEVELS, WORLDS } from './levels.js?v=30';
+import { Input } from './input.js?v=30';
+import { Sfx } from './audio.js?v=30';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=30';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=30';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=30';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -115,6 +115,16 @@ const THEMES = {
     sun: 0xffe8c0, sunI: 1.65, skyTop: 0x0a4aa0, skyMid: 0x2a78d0, skyHor: 0x68a8e0, skyBot: 0xa88850,
     fogNear: 45, fogFar: 140,
   },
+  candy: {
+    fog: 0xf0a0c8, hemiSky: 0xffd0e8, hemiGround: 0xc06890, hemiI: 1.55,
+    sun: 0xfff0d8, sunI: 1.7, skyTop: 0xd060a0, skyMid: 0xf090c0, skyHor: 0xffc0e0, skyBot: 0xffe8f0,
+    fogNear: 35, fogFar: 120,
+  },
+  reef: {
+    fog: 0x1a7898, hemiSky: 0x60d0e8, hemiGround: 0x0a4860, hemiI: 1.4,
+    sun: 0xc8f0ff, sunI: 1.55, skyTop: 0x045878, skyMid: 0x0a88a8, skyHor: 0x40c0d8, skyBot: 0x88e0f0,
+    fogNear: 28, fogFar: 100,
+  },
 };
 let currentTheme = 'sky';
 function rebuildSky(th) {
@@ -141,6 +151,8 @@ function applyTheme(th) {
   document.body.classList.toggle('theme-ice', th === 'ice');
   document.body.classList.toggle('theme-jungle', th === 'jungle');
   document.body.classList.toggle('theme-desert', th === 'desert');
+  document.body.classList.toggle('theme-candy', th === 'candy');
+  document.body.classList.toggle('theme-reef', th === 'reef');
 }
 
 // ---------------- Bola ----------------
@@ -257,7 +269,7 @@ function renderLevels() {
   WORLDS.forEach((w, wi) => {
     const unlocked = worldUnlocked(wi);
     const b = document.createElement('button');
-    const thCls = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert') ? ' ' + w.theme : '';
+    const thCls = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert' || w.theme === 'candy' || w.theme === 'reef') ? ' ' + w.theme : '';
     b.className = 'world-tab' + (wi === G.selectedWorld ? ' on' : '') + thCls + (unlocked ? '' : ' locked');
     b.textContent = unlocked ? `${wi + 1}. ${w.name}` : `🔒 ${w.name}`;
     b.onclick = () => {
@@ -276,7 +288,7 @@ function renderLevels() {
     const unlocked = prevDone && worldUnlocked(G.selectedWorld);
     const st = (save.levels[i] && save.levels[i].stars) || [false, false, false];
     const b = document.createElement('button');
-    const lth = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert') ? ' ' + w.theme : '';
+    const lth = (w.theme === 'lava' || w.theme === 'ice' || w.theme === 'jungle' || w.theme === 'desert' || w.theme === 'candy' || w.theme === 'reef') ? ' ' + w.theme : '';
     b.className = 'lvl' + (unlocked ? '' : ' locked') + lth;
     b.innerHTML = `<div class="n">${unlocked ? li + 1 : '🔒'}</div><div class="nm">${unlocked ? L.name : 'Bloqueado'}</div><div class="st">${st.map(s => `<span class="${s ? 'on' : ''}">★</span>`).join('')}</div>`;
     b.dataset.level = i;
@@ -445,10 +457,14 @@ function toTitle() {
   const doneW2 = save.levels[15] && save.levels[15].done;
   const doneW3 = save.levels[23] && save.levels[23].done;
   const doneW4 = save.levels[31] && save.levels[31].done;
-  $('title-world').textContent = doneW4 ? 'Mundos · Ruinas → Desierto'
+  const doneW5 = save.levels[39] && save.levels[39].done;
+  const doneW6 = save.levels[47] && save.levels[47].done;
+  $('title-world').textContent = doneW6 ? 'Mundos · Ruinas → Arrecife'
+    : (doneW5 ? 'Mundos · Ruinas → Dulces'
+    : (doneW4 ? 'Mundos · Ruinas → Desierto'
     : (doneW3 ? 'Mundos · Ruinas → Selva'
     : (doneW2 ? 'Mundos · Ruinas, Volcán y Glaciar'
-    : (doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')));
+    : (doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')))));
   applyTheme('sky');
 }
 
@@ -543,6 +559,12 @@ function fixedStep(dt) {
       for (const e of L.entities) {
         if (e.type === 'wind' && e.contains(ball.pos)) {
           ball.vel.x += e.force.x * dt; ball.vel.z += e.force.z * dt;
+        }
+        if (e.type === 'bubbleColumn' && e.contains(ball.pos)) {
+          ball.vel.y += e.force * dt;
+          if (ball.vel.y > 12) ball.vel.y = 12;
+          // frena menos en XZ para que el bot pueda esperar dentro de la columna
+          ball.vel.x *= Math.exp(-1.2 * dt); ball.vel.z *= Math.exp(-1.2 * dt);
         }
       }
       handleEvents();
@@ -806,10 +828,13 @@ G.state = 'title';
 showScreen('scr-title');
 const _d1 = save.levels[7] && save.levels[7].done, _d2 = save.levels[15] && save.levels[15].done;
 const _d3 = save.levels[23] && save.levels[23].done, _d4 = save.levels[31] && save.levels[31].done;
-if ($('title-world')) $('title-world').textContent = _d4 ? 'Mundos · Ruinas → Desierto'
+const _d5 = save.levels[39] && save.levels[39].done, _d6 = save.levels[47] && save.levels[47].done;
+if ($('title-world')) $('title-world').textContent = _d6 ? 'Mundos · Ruinas → Arrecife'
+  : (_d5 ? 'Mundos · Ruinas → Dulces'
+  : (_d4 ? 'Mundos · Ruinas → Desierto'
   : (_d3 ? 'Mundos · Ruinas → Selva'
   : (_d2 ? 'Mundos · Ruinas, Volcán y Glaciar'
-  : (_d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')));
+  : (_d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes')))));
 notifyAchievements();
 grantUnlockSkins(); persist();
 $('loading').classList.add('hidden');

@@ -1187,15 +1187,414 @@ const WORLD5_LEVELS = [
 
 
 
+const WORLD6_LEVELS = [
+  {
+    name: 'Pasillo Pastel', target: 38,
+    hint: '¡Bienvenido a la fábrica! El chicle te frena.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -8, 5, 10, { type: 'candy' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
+      b.gumPad(0, 0, -18, 5, 10); b.coin(0, 0, -18);
+      b.plat(0, 0, -28, 5.5, 10, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -28);
+      b.plat(0, 0, -36, 4.5, 10, { type: 'candy' });
+      b.gumPad(0, 0, -46, 4.5, 10);
+      b.plat(0, 0, -56, 5.5, 10, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -56);
+      b.plat(0, 0, -64, 4.5, 10, { type: 'candy' }); b.coin(0, 0, -64);
+      b.plat(0, 0, -74, 8, 10, { type: 'candy', pillars: true });
+      b.crown(0, 0, -75);
+      b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -18); b.wp(0, 0, -28);
+      b.wp(0, 0, -36); b.wp(0, 0, -46); b.wp(0, 0, -56); b.wp(0, 0, -64); b.wp(0, 0, -75);
+    },
+  },
+  {
+    name: 'Gelatina Saltarina', target: 45,
+    hint: 'La gelatina te lanza. ¡Boing rosa!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -10, 4.5, 14, { type: 'candy' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
+      b.jellyPad(0, 0, -14, { power: 14 });
+      b.coin(0, 3.8, -17);
+      b.plat(0, 3.5, -22, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -22);
+      b.plat(0, 3.5, -30, 4.5, 14, { type: 'candy' });
+      b.jellyPad(0, 3.5, -34, { power: 14 });
+      b.coin(0, 7.0, -37);
+      b.plat(0, 6.8, -42, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 6.8, -42);
+      b.plat(0, 6.8, -50, 4.5, 14, { type: 'candy' });
+      b.jellyPad(0, 6.8, -54, { power: 13 });
+      b.plat(0, 9.5, -62, 8, 8, { type: 'candy', pillars: true });
+      b.crown(0, 9.5, -63);
+      b.wp(0, 0, -2); b.wp(0, 0, -14, '', 4); b.wp(0, 3.5, -22);
+      b.wp(0, 3.5, -34, '', 4); b.wp(0, 6.8, -42);
+      b.wp(0, 6.8, -54, '', 4); b.wp(0, 9.5, -63);
+    },
+  },
+  {
+    name: 'Prensas Dulces', target: 50,
+    hint: '¡Las prensas bajan! Pasa cuando están arriba.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'candy', pillars: true });
+      b.plat(0, 0, -20, 5, 34, { type: 'candy' }); b.coinRow(0, 0, -5, 0, 0, -28, 4);
+      const c1 = b.candyCrusher(0, 0, -14, { period: 3.4, w: 2.0, d: 2.0 });
+      const c2 = b.candyCrusher(0, 0, -24, { period: 3.4, phase: 0.5, w: 2.0, d: 2.0 });
+      b.plat(0, 0, -42, 6, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -60, 5, 28, { type: 'candy' });
+      const c3 = b.candyCrusher(0, 0, -52, { period: 3.2, phase: 0.2, w: 2.0, d: 2.0 });
+      const c4 = b.candyCrusher(0, 0, -62, { period: 3.2, phase: 0.7, w: 2.0, d: 2.0 });
+      b.coin(0, 0, -55); b.coin(0, 0, -65);
+      b.plat(0, 0, -80, 8, 10, { type: 'candy', pillars: true });
+      b.crown(0, 0, -81);
+      const W = (c, lead) => ({ cond: () => c.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -10);
+      b.wp(0, 0, -11.5, 'w', 0, W(c1, 0.1)); b.wp(0, 0, -18, '', 7);
+      b.wp(0, 0, -21.5, 'w', 0, W(c2, 0.1)); b.wp(0, 0, -32); b.wp(0, 0, -42);
+      b.wp(0, 0, -49.5, 'w', 0, W(c3, 0.1)); b.wp(0, 0, -57, '', 7);
+      b.wp(0, 0, -59.5, 'w', 0, W(c4, 0.1)); b.wp(0, 0, -70); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Piruletas Giratorias', target: 50,
+    hint: 'Brazos de piruleta. ¡Esquívalos o wait!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -40, 12, 72, { type: 'candy' }); // suelo continuo
+      b.plat(0, 0, -20, 8, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -20);
+      const t1 = b.lolliArm(0, 0, -32, { len: 3.2, speed: 0.7, arms: 3 });
+      b.coin(4.5, 0, -32); b.coin(-4.5, 0, -32);
+      b.plat(0, 0, -46, 8, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -46);
+      const t2 = b.lolliArm(0, 0, -58, { len: 3.2, speed: 0.75, arms: 3 });
+      b.coin(4.5, 0, -58);
+      b.plat(0, 0, -72, 8, 10, { type: 'candy', pillars: true });
+      b.crown(0, 0, -73);
+      void t1; void t2;
+      b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -20);
+      b.wp(4.5, 0, -28); b.wp(4.5, 0, -32, 't'); b.wp(4.5, 0, -38); b.wp(0, 0, -46);
+      b.wp(-4.5, 0, -52); b.wp(-4.5, 0, -58, 't'); b.wp(-4.5, 0, -64); b.wp(0, 0, -73);
+    },
+  },
+  {
+    name: 'Río de Chocolate', target: 52,
+    hint: '¡El chocolate empuja hacia atrás! Rema fuerte.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'candy', pillars: true });
+      b.plat(0, 0, -6, 4.5, 6, { type: 'candy' });
+      b.chocConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, 1], speed: 3.6 });
+      b.coinRow(0, 0, -10, 0, 0, -20, 3);
+      b.plat(0, 0, -25, 5, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -25);
+      b.chocConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, 1], speed: 3.6 });
+      b.coin(0, 0, -30); b.coin(0, 0, -38);
+      b.plat(0, 0, -44, 5, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -44);
+      b.chocConvey(0, 0, -52, 4.5, 12, { dir: [0, 0, 1], speed: 3.8 });
+      b.plat(0, 0, -61, 5, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -61);
+      b.chocConvey(0, 0, -69, 4.5, 12, { dir: [0, 0, 1], speed: 3.8 });
+      b.coin(0, 0, -69);
+      b.plat(0, 0, -78, 8, 8, { type: 'candy', pillars: true });
+      b.crown(0, 0, -79);
+      b.wp(0, 0, -2); b.wp(0, 0, -15); b.wp(0, 0, -25);
+      b.wp(0, 0, -34); b.wp(0, 0, -44); b.wp(0, 0, -52);
+      b.wp(0, 0, -61); b.wp(0, 0, -69); b.wp(0, 0, -79);
+    },
+  },
+  {
+    name: 'Donuts Lanzadores', target: 48,
+    hint: 'Salta en el donut para salir volando.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -10, 4.5, 14, { type: 'candy' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
+      b.donutRing(0, 0, -14, { power: 14 });
+      b.coin(0, 3.8, -17);
+      b.plat(0, 3.5, -22, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -22);
+      b.plat(0, 3.5, -30, 4.5, 14, { type: 'candy' });
+      b.donutRing(0, 3.5, -34, { power: 14 });
+      b.coin(0, 7.0, -37);
+      b.plat(0, 6.8, -42, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 6.8, -42);
+      b.plat(0, 6.8, -50, 4.5, 14, { type: 'candy' });
+      b.donutRing(0, 6.8, -54, { power: 13 });
+      b.plat(0, 9.5, -62, 8, 8, { type: 'candy', pillars: true });
+      b.crown(0, 9.5, -63);
+      b.wp(0, 0, -2); b.wp(0, 0, -14, '', 4); b.wp(0, 3.5, -22);
+      b.wp(0, 3.5, -34, '', 4); b.wp(0, 6.8, -42);
+      b.wp(0, 6.8, -54, '', 4); b.wp(0, 9.5, -63);
+    },
+  },
+  {
+    name: 'Mezcla Azucarada', target: 58,
+    hint: 'Chicle, gelatina y prensas juntos.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -9, 5, 12, { type: 'candy' });
+      // chicle con laterales sólidos (no atascar bot)
+      b.plat(-3.2, 0, -20, 2.2, 12, { type: 'candy' });
+      b.plat(3.2, 0, -20, 2.2, 12, { type: 'candy' });
+      b.gumPad(0, 0, -20, 4.0, 12); b.coin(0, 0, -20);
+      b.plat(0, 0, -30, 6, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -30);
+      b.plat(0, 0, -38, 4.5, 12, { type: 'candy' });
+      b.jellyPad(0, 0, -42, { power: 14 });
+      b.plat(0, 3.5, -50, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -50);
+      b.plat(0, 3.5, -64, 5, 24, { type: 'candy' });
+      const c1 = b.candyCrusher(0, 3.5, -60, { period: 3.4, w: 2.0, d: 2.0 });
+      b.coin(0, 3.5, -66);
+      b.plat(0, 3.5, -80, 8, 8, { type: 'candy', pillars: true });
+      b.crown(0, 3.5, -81);
+      const W = (c, lead) => ({ cond: () => c.safe(lead) });
+      b.wp(0, 0, -2); b.wp(3.0, 0, -20); b.wp(0, 0, -30);
+      b.wp(0, 0, -42, '', 4); b.wp(0, 3.5, -50);
+      b.wp(0, 3.5, -57.5, 'w', 0, W(c1, 0.1)); b.wp(0, 3.5, -66, '', 7); b.wp(0, 3.5, -81);
+    },
+  },
+  {
+    name: 'Corona de Caramelo', target: 80,
+    hint: '¡La gran fábrica! Combina todos los dulces.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -9, 5, 12, { type: 'candy' });
+      b.plat(-3.2, 0, -20, 2.2, 12, { type: 'candy' });
+      b.plat(3.2, 0, -20, 2.2, 12, { type: 'candy' });
+      b.gumPad(0, 0, -20, 4.0, 12); b.coin(0, 0, -20);
+      b.plat(0, 0, -30, 6, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -30);
+      b.chocConvey(0, 0, -40, 4.5, 14, { dir: [0, 0, 1], speed: 3.4 });
+      b.plat(0, 0, -50, 6, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -50);
+      b.plat(0, 0, -58, 4.5, 12, { type: 'candy' });
+      b.donutRing(0, 0, -62, { power: 14 });
+      b.plat(0, 3.5, -70, 6, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -70);
+      b.plat(0, 3.5, -82, 5, 20, { type: 'candy' });
+      const c1 = b.candyCrusher(0, 3.5, -78, { period: 3.4, w: 2.0, d: 2.0 });
+      b.plat(0, 3.5, -94, 12, 16, { type: 'candy' });
+      const t1 = b.lolliArm(0, 3.5, -94, { len: 3.2, speed: 0.7, arms: 3 });
+      b.plat(0, 3.5, -106, 6, 6, { type: 'candy' });
+      b.jellyPad(0, 3.5, -110, { power: 14 });
+      b.plat(0, 6.8, -118, 10, 10, { type: 'candy', pillars: true });
+      b.pillar(-3.2, 6.8, -121, 3); b.pillar(3.2, 6.8, -121, 3);
+      b.crown(0, 6.8, -120);
+      void t1;
+      const W = (c, lead) => ({ cond: () => c.safe(lead) });
+      b.wp(0, 0, -2); b.wp(3.0, 0, -20); b.wp(0, 0, -30);
+      b.wp(0, 0, -40); b.wp(0, 0, -50);
+      b.wp(0, 0, -62, '', 4); b.wp(0, 3.5, -70);
+      b.wp(0, 3.5, -75.5, 'w', 0, W(c1, 0.1)); b.wp(0, 3.5, -84, '', 7);
+      b.wp(4.2, 3.5, -90); b.wp(4.2, 3.5, -94, 't'); b.wp(4.2, 3.5, -100); b.wp(0, 3.5, -106);
+      b.wp(0, 3.5, -110, '', 4); b.wp(0, 6.8, -120);
+    },
+  },
+];
+
+const WORLD7_LEVELS = [
+  {
+    name: 'Arrecife Suave', target: 38,
+    hint: '¡Bajo el mar! Las corrientes empujan de lado.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
+      b.plat(0, 0, -14, 5.5, 22, { type: 'coral' });
+      b.plat(-3.6, 0, -14, 2.8, 22, { type: 'coral' });
+      b.plat(3.6, 0, -14, 2.8, 22, { type: 'coral' });
+      b.waterCurrent(0, 0, -14, 5, 16, { dir: [1, 0, 0], force: 3.5 });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      b.plat(0, 0, -28, 7, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -28);
+      b.plat(0, 0, -42, 5.5, 22, { type: 'coral' });
+      b.plat(-3.6, 0, -42, 2.8, 22, { type: 'coral' });
+      b.plat(3.6, 0, -42, 2.8, 22, { type: 'coral' });
+      b.waterCurrent(0, 0, -42, 5, 16, { dir: [-1, 0, 0], force: 3.5 });
+      b.coin(0, 0, -36); b.coin(0, 0, -48);
+      b.plat(0, 0, -56, 7, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -56);
+      b.plat(0, 0, -68, 6, 14, { type: 'coral' });
+      b.plat(0, 0, -80, 8, 8, { type: 'coral', pillars: true });
+      b.crown(0, 0, -81);
+      b.wp(0, 0, -2); b.wp(-1.8, 0, -14); b.wp(0, 0, -24); b.wp(0, 0, -28);
+      b.wp(1.8, 0, -42); b.wp(0, 0, -52); b.wp(0, 0, -56);
+      b.wp(0, 0, -68); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Columnas de Burbujas', target: 48,
+    hint: 'Las burbujas te levantan. ¡Flota hacia arriba!',
+    build(b) {
+      // huecos con columnas de burbujas (sin suelo debajo para poder flotar)
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
+      b.plat(0, 0, -8, 4.5, 8, { type: 'coral' });
+      b.bubbleColumn(0, 0, -14, 4.5, 4.5, { force: 24 });
+      b.coin(0, 2.5, -14);
+      b.plat(0, 3.5, -22, 5.5, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 3.5, -22);
+      b.plat(0, 3.5, -28, 4.5, 6, { type: 'coral' });
+      b.bubbleColumn(0, 3.5, -34, 4.5, 4.5, { force: 24 });
+      b.coin(0, 6.0, -34);
+      b.plat(0, 6.8, -42, 5.5, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 6.8, -42);
+      b.plat(0, 6.8, -48, 4.5, 6, { type: 'coral' });
+      b.bubbleColumn(0, 6.8, -54, 4.5, 4.5, { force: 22 });
+      b.plat(0, 9.5, -62, 8, 8, { type: 'coral', pillars: true });
+      b.crown(0, 9.5, -63);
+      const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
+      b.wp(0, 0, -2); b.wp(0, 0, -10);
+      b.wp(0, 3.2, -14, 'w', 0, Hi(3.0)); b.wp(0, 3.5, -22);
+      b.wp(0, 3.5, -30); b.wp(0, 6.5, -34, 'w', 0, Hi(6.3)); b.wp(0, 6.8, -42);
+      b.wp(0, 6.8, -50); b.wp(0, 9.2, -54, 'w', 0, Hi(9.0)); b.wp(0, 9.5, -63);
+    },
+  },
+  {
+    name: 'Medusas Rebotonas', target: 50,
+    hint: '¡Medusas! Empujan si las tocas.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'coral', pillars: true });
+      b.plat(0, 0, -45, 12, 84, { type: 'coral' });
+      b.coinRow(4.5, 0, -8, 4.5, 0, -30, 4);
+      b.jellyFish(0, 0, -18, { to: [0, 0, -12], period: 6.5 });
+      b.checkpoint(0, 0, -36);
+      b.coin(-4.5, 0, -46); b.coin(4.5, 0, -58);
+      b.jellyFish(-3.5, 0, -50, { to: [7, 0, 0], period: 6.0 });
+      b.jellyFish(3.5, 0, -60, { to: [-7, 0, 0], period: 6.0, phase: 0.5 });
+      b.checkpoint(0, 0, -72);
+      b.coin(4.5, 0, -80); b.coin(-4.5, 0, -84);
+      b.plat(0, 0, -92, 8, 10, { type: 'coral', pillars: true });
+      b.crown(0, 0, -93);
+      b.wp(0, 0, -2); b.wp(4.5, 0, -18, 't'); b.wp(4.5, 0, -30); b.wp(0, 0, -36);
+      b.wp(-4.5, 0, -52, 't'); b.wp(4.5, 0, -62, 't'); b.wp(0, 0, -72);
+      b.wp(4.5, 0, -82); b.wp(0, 0, -93);
+    },
+  },
+  {
+    name: 'Almejas Abiertas', target: 52,
+    hint: 'Salta a la almeja cuando esté abierta.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'coral', pillars: true });
+      b.plat(0, 0, -40, 8, 76, { type: 'coral' });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      const a1 = b.clam(0, 0, -18, { period: 3.6 });
+      b.checkpoint(0, 0, -28);
+      const a2 = b.clam(-2.0, 0, -40, { period: 3.4, phase: 0.25 });
+      const a3 = b.clam(2.0, 0, -50, { period: 3.4, phase: 0.55 });
+      b.coin(0, 0, -44);
+      b.checkpoint(0, 0, -60);
+      const a4 = b.clam(0, 0, -70, { period: 3.2 });
+      b.plat(0, 0, -84, 8, 10, { type: 'coral', pillars: true });
+      b.crown(0, 0, -85);
+      const O = (a) => ({ cond: () => a.open(0.15) });
+      b.wp(0, 0, -2); b.wp(0, 0, -14);
+      b.wp(0, 0, -16.5, 'w', 0, O(a1)); b.wp(0, 0, -22); b.wp(0, 0, -28);
+      b.wp(-2.0, 0, -38.5, 'w', 0, O(a2)); b.wp(-2.0, 0, -44);
+      b.wp(2.0, 0, -48.5, 'w', 0, O(a3)); b.wp(2.0, 0, -54);
+      b.wp(0, 0, -60);
+      b.wp(0, 0, -68.5, 'w', 0, O(a4)); b.wp(0, 0, -76); b.wp(0, 0, -85);
+    },
+  },
+  {
+    name: 'Anclas Oscilantes', target: 50,
+    hint: 'Anclas que se balancean. ¡Pasa con timing!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'coral', pillars: true });
+      b.plat(0, 0, -12, 3.4, 18, { type: 'coral' }); b.coinRow(0, 0, -5, 0, 0, -16, 3);
+      const h1 = b.swingingAnchor(0, 0, -8, { speed: 1.6, phase: 0, len: 4.2 });
+      const h2 = b.swingingAnchor(0, 0, -13, { speed: 1.6, phase: Math.PI * 0.6, len: 4.2 });
+      b.plat(0, 0, -22, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -22);
+      b.plat(0, 0, -38, 3.4, 24, { type: 'coral' });
+      const h3 = b.swingingAnchor(0, 0, -32, { speed: 1.7, phase: 0, len: 4.2 });
+      const h4 = b.swingingAnchor(0, 0, -38, { speed: 1.7, phase: 2.1, len: 4.2 });
+      b.coin(0, 0, -35);
+      b.plat(0, 0, -52, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -52);
+      b.plat(0, 0, -64, 5, 20, { type: 'coral' });
+      b.plat(0, 0, -78, 8, 10, { type: 'coral', pillars: true });
+      b.crown(0, 0, -79);
+      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      b.wp(0, 0, -2);
+      b.wp(0, 0, -5.5, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -10.5, 'w', 0, W(h2, 0.25));
+      b.wp(0, 0, -18); b.wp(0, 0, -22);
+      b.wp(0, 0, -29.5, 'w', 0, W(h3, 0.25)); b.wp(0, 0, -35.5, 'w', 0, W(h4, 0.25));
+      b.wp(0, 0, -46); b.wp(0, 0, -52);
+      b.wp(0, 0, -64); b.wp(0, 0, -79);
+    },
+  },
+  {
+    name: 'Erizos Punzantes', target: 48,
+    hint: 'Erizos de mar. ¡Pasa por los lados!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
+      b.plat(0, 0, -48, 12, 92, { type: 'coral' }); // continuo hasta el final
+      b.coinRow(4.2, 0, -8, 4.2, 0, -28, 4);
+      b.urchin(0, 0, -16, { r: 0.55 }); b.urchin(0, 0, -26, { r: 0.55 });
+      b.checkpoint(0, 0, -36);
+      b.urchin(0, 0, -48, { r: 0.55 }); b.urchin(0, 0, -58, { r: 0.55 });
+      b.coin(4.2, 0, -52);
+      b.checkpoint(0, 0, -68);
+      b.urchin(0, 0, -76, { r: 0.55 });
+      b.plat(0, 0, -92, 8, 10, { type: 'coral', pillars: true });
+      b.crown(0, 0, -93);
+      b.wp(0, 0, -2); b.wp(4.2, 0, -16, 't'); b.wp(4.2, 0, -26, 't'); b.wp(0, 0, -36);
+      b.wp(4.2, 0, -48, 't'); b.wp(4.2, 0, -58, 't'); b.wp(0, 0, -68);
+      b.wp(4.2, 0, -76, 't'); b.wp(0, 0, -93);
+    },
+  },
+  {
+    name: 'Corriente Profunda', target: 58,
+    hint: 'Burbujas, corrientes y medusas.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
+      b.plat(0, 0, -12, 6, 16, { type: 'coral' });
+      b.plat(0, 0, -28, 10, 20, { type: 'coral' });
+      b.plat(-4.0, 0, -28, 2.5, 20, { type: 'coral' });
+      b.plat(4.0, 0, -28, 2.5, 20, { type: 'coral' });
+      b.waterCurrent(0, 0, -28, 5, 14, { dir: [1, 0, 0], force: 2.8 });
+      b.jellyFish(0, 0, -30, { to: [4, 0, 0], period: 5.0 });
+      b.plat(0, 0, -42, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -48, 4.5, 6, { type: 'coral' });
+      b.bubbleColumn(0, 0, -54, 4.5, 4.5, { force: 20, power: 15 });
+      b.plat(0, 3.5, -62, 5.5, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 3.5, -62);
+      b.plat(0, 3.5, -72, 10, 14, { type: 'coral' });
+      b.urchin(0, 3.5, -72, { r: 0.55 });
+      b.plat(0, 3.5, -84, 8, 8, { type: 'coral', pillars: true });
+      b.crown(0, 3.5, -85);
+      const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
+      b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(-2.2, 0, -28); b.wp(-2.2, 0, -34, 't');
+      b.wp(0, 0, -42); b.wp(0, 0, -48); b.wp(0, 3.2, -54, 'w', 0, Hi(3.0)); b.wp(0, 3.5, -62);
+      b.wp(4.5, 3.5, -72, 't'); b.wp(0, 3.5, -85);
+    },
+  },
+  {
+    name: 'Corona del Arrecife', target: 80,
+    hint: '¡El gran arrecife! Usa todo lo aprendido.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
+      b.plat(0, 0, -12, 6, 16, { type: 'coral' });
+      b.plat(0, 0, -28, 10, 20, { type: 'coral' });
+      b.plat(-4.0, 0, -28, 2.5, 20, { type: 'coral' });
+      b.plat(4.0, 0, -28, 2.5, 20, { type: 'coral' });
+      b.waterCurrent(0, 0, -28, 5, 14, { dir: [1, 0, 0], force: 2.6 });
+      b.plat(0, 0, -42, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -48, 4.5, 6, { type: 'coral' });
+      b.bubbleColumn(0, 0, -54, 4.5, 4.5, { force: 20, power: 15 });
+      b.plat(0, 3.5, -62, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 3.5, -62);
+      b.plat(0, 3.5, -90, 10, 52, { type: 'coral' });
+      const a1 = b.clam(0, 3.5, -70, { period: 3.6 });
+      const a2 = b.clam(0, 3.5, -80, { period: 3.6, phase: 0.4 });
+      b.checkpoint(0, 3.5, -90);
+      b.urchin(0, 3.5, -100, { r: 0.55 });
+      // pasillo continuo bajo el ancla hasta la corona
+      b.plat(0, 3.5, -118, 4, 28, { type: 'coral' });
+      const h1 = b.swingingAnchor(0, 3.5, -116, { speed: 1.5, len: 4.2 });
+      b.plat(0, 3.5, -136, 10, 10, { type: 'coral', pillars: true });
+      b.pillar(-3.2, 3.5, -139, 3); b.pillar(3.2, 3.5, -139, 3);
+      b.crown(0, 3.5, -138);
+      const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
+      const O = (a) => ({ cond: () => a.open(0.15) });
+      const Wh = (h, lead) => ({ cond: () => h.safe(lead) });
+      b.wp(0, 0, -2); b.wp(-2.2, 0, -28); b.wp(0, 0, -42);
+      b.wp(0, 0, -48); b.wp(0, 3.2, -54, 'w', 0, Hi(3.0)); b.wp(0, 3.5, -62);
+      b.wp(0, 3.5, -67.5, 'w', 0, O(a1)); b.wp(0, 3.5, -74, '', 7);
+      b.wp(0, 3.5, -77.5, 'w', 0, O(a2)); b.wp(0, 3.5, -86, '', 7); b.wp(0, 3.5, -90);
+      b.wp(4.2, 3.5, -100, 't'); b.wp(0, 3.5, -110);
+      b.wp(0, 3.5, -113, 'w', 0, Wh(h1, 0.25)); b.wp(0, 3.5, -124, '', 7); b.wp(0, 3.5, -138);
+    },
+  },
+];
+
 // Futuros mundos (arquitectura lista, no activos aún):
-// W6 Fábrica de Dulces · W7 Arrecife Profundo · W8 Castillo Encantado · W9 Ciudad Neón · W10 Cosmos
+// W8 Castillo Encantado · W9 Ciudad Neón · W10 Cosmos
 export const WORLDS = [
   { id: 'ruinas', name: 'Ruinas Flotantes', theme: 'sky', levels: WORLD1_LEVELS },
   { id: 'volcan', name: 'Volcán Ardiente', theme: 'lava', unlockIndex: 7, levels: WORLD2_LEVELS },
   { id: 'glaciar', name: 'Glaciar Resbaloso', theme: 'ice', unlockIndex: 15, levels: WORLD3_LEVELS },
   { id: 'selva', name: 'Selva Esmeralda', theme: 'jungle', unlockIndex: 23, levels: WORLD4_LEVELS },
   { id: 'desierto', name: 'Desierto Dorado', theme: 'desert', unlockIndex: 31, levels: WORLD5_LEVELS },
+  { id: 'dulces', name: 'Fábrica de Dulces', theme: 'candy', unlockIndex: 39, levels: WORLD6_LEVELS },
+  { id: 'arrecife', name: 'Arrecife Profundo', theme: 'reef', unlockIndex: 47, levels: WORLD7_LEVELS },
 ];
+
 
 
 // Lista plana (índices 0-7 Mundo 1, 8-15 Mundo 2) — compatible con partidas guardadas

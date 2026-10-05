@@ -23,6 +23,10 @@ export const SKINS = [
   { id: 'coco', name: 'Coco', price: 320 },
   { id: 'arena', name: 'Arena', price: 290 },
   { id: 'escarabajo', name: 'Escarabajo', unlock: 'achieve:desierto_listo' },
+  { id: 'chicle', name: 'Chicle', price: 300 },
+  { id: 'piruleta', name: 'Piruleta', unlock: 'achieve:dulces_listo' },
+  { id: 'coral', name: 'Coral', price: 310 },
+  { id: 'medusa', name: 'Medusa', unlock: 'achieve:arrecife_listo' },
   // desbloqueos por logros / racha (no se compran)
   { id: 'emoji', name: 'Carita', unlock: 'achieve:primera_corona' },
   { id: 'fantasma', name: 'Fantasma', unlock: 'achieve:sin_caer' },
@@ -189,6 +193,32 @@ export function skinCanvas(id) {
       x.fillStyle = '#ffe14d'; for (let i = 0; i < 10; i++) { x.beginPath(); x.arc(rnd() * W, rnd() * H, 3, 0, 7); x.fill(); }
       break;
     }
+    case 'chicle': {
+      x.fillStyle = '#ff80c0'; x.fillRect(0, 0, W, H);
+      for (let i = 0; i < 30; i++) { x.fillStyle = rnd() < 0.5 ? '#ffb0d8' : '#e04898'; x.beginPath(); x.arc(rnd() * W, rnd() * H, 4 + rnd() * 10, 0, 7); x.fill(); }
+      x.fillStyle = '#fff'; x.fillRect(0, H * 0.45, W, 8);
+      break;
+    }
+    case 'piruleta': {
+      const cols = ['#ff4d8a', '#ffe14d', '#ff80c0', '#fff', '#ff4d8a', '#ffe14d'];
+      for (let i = 0; i < 12; i++) { x.fillStyle = cols[i % cols.length]; x.beginPath(); x.moveTo(W/2, H/2); x.arc(W/2, H/2, 90, i/12*Math.PI*2, (i+1)/12*Math.PI*2); x.fill(); }
+      x.fillStyle = '#fff0d0'; x.fillRect(W*0.45, H*0.5, W*0.1, H*0.5);
+      break;
+    }
+    case 'coral': {
+      x.fillStyle = '#5ad8c8'; x.fillRect(0, 0, W, H);
+      x.fillStyle = '#2a9088';
+      for (let i = 0; i < 8; i++) { x.beginPath(); x.moveTo(i*W/8+10, H); x.lineTo(i*W/8+20, H*0.3); x.lineTo(i*W/8+30, H); x.fill(); }
+      for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(255,255,255,${0.2+rnd()*0.5})`; x.beginPath(); x.arc(rnd()*W, rnd()*H, 1+rnd()*3, 0, 7); x.fill(); }
+      break;
+    }
+    case 'medusa': {
+      x.fillStyle = '#ff80d0'; x.fillRect(0, 0, W, H);
+      x.globalAlpha = 0.5; x.fillStyle = '#ffa0e0'; x.fillRect(0, 0, W, H*0.45); x.globalAlpha = 1;
+      x.strokeStyle = '#ffc0e8'; x.lineWidth = 4;
+      for (let i = 0; i < 6; i++) { x.beginPath(); x.moveTo(20+i*35, H*0.5); for (let k=0;k<5;k++) x.lineTo(20+i*35+Math.sin(k)*8, H*0.5+k*12); x.stroke(); }
+      break;
+    }
     case 'emoji': {
       x.fillStyle = '#ffe14d'; x.fillRect(0, 0, W, H);
       x.fillStyle = '#333'; x.beginPath(); x.arc(W * 0.32, H * 0.38, 8, 0, 7); x.arc(W * 0.68, H * 0.38, 8, 0, 7); x.fill();
@@ -232,6 +262,8 @@ export function skinMaterial(id) {
   if (id === 'fantasma') return new THREE.MeshLambertMaterial({ map: tex, transparent: true, opacity: 0.82 });
   if (id === 'escarabajo') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x226633, emissiveIntensity: 0.35 });
   if (id === 'hoja' || id === 'liana') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x114411, emissiveIntensity: 0.15 });
+  if (id === 'chicle' || id === 'piruleta' || id === 'medusa') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x441133, emissiveIntensity: 0.25 });
+  if (id === 'coral') return new THREE.MeshLambertMaterial({ map: tex, emissive: 0x084848, emissiveIntensity: 0.2 });
   return new THREE.MeshLambertMaterial({ map: tex });
 }
 
