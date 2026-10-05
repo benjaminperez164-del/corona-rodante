@@ -1,0 +1,1 @@
+{ "name": "Corona Rodante", "short_name": "Corona Rodante", "start_url": "./", "display": "fullscreen", "orientation": "landscape", "background_color": "#62c6ff", "theme_color": "#62c6ff", "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml" }] }

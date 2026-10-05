@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#62c6ff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Corona Rodante: rueda por las Ruinas Flotantes hasta la corona. Juego de plataformas 3D para el navegador del móvil.">
+<title>Corona Rodante</title>
+<link rel="icon" href="icon.svg?v=1" type="image/svg+xml">
+<link rel="manifest" href="manifest.json?v=1">
+<link rel="stylesheet" href="css/style.css?v=1">
+<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=1" } }</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<!-- HUD de juego -->
+<div id="hud" class="hidden">
+  <div class="hud-left">
+    <div class="pill" id="hud-level">1 · Primeros Pasos</div>
+  </div>
+  <div class="hud-center">
+    <div class="pill big"><span class="coin-ico"></span><span id="hud-coins">0/0</span></div>
+    <div class="pill big" id="hud-time">0:00</div>
+  </div>
+  <div class="hud-right">
+    <button class="round" id="btn-mute" aria-label="Sonido">🔊</button>
+    <button class="round" id="btn-pause" aria-label="Pausa">❚❚</button>
+  </div>
+</div>
+<div id="joy-zone"><div id="joy-base"><div id="joy-knob"></div></div><div id="joy-hint">Arrastra aquí para rodar</div></div>
+<button id="btn-jump" aria-label="Saltar">SALTAR</button>
+<div id="toast"></div>
+<div id="flash"></div>
+
+<!-- Título -->
+<section class="screen" id="scr-title">
+  <div class="title-wrap">
+    <h1 class="logo"><span class="l1">Corona</span><span class="l2">Rodante</span></h1>
+    <div class="sub">Mundo 1 · Ruinas Flotantes</div>
+    <div class="menu">
+      <button class="btn yellow big" id="btn-play">▶ Jugar</button>
+      <div class="row">
+        <button class="btn pink" id="btn-shop">🎱 Bolas</button>
+        <button class="btn blue" id="btn-options">⚙ Opciones</button>
+      </div>
+    </div>
+    <div class="wallet"><span class="coin-ico"></span><span class="wallet-n">0</span></div>
+  </div>
+</section>
+
+<!-- Selección de nivel -->
+<section class="screen hidden" id="scr-levels">
+  <div class="panel wide">
+    <div class="panel-head"><button class="btn small blue back" data-back>◀</button><h2>Ruinas Flotantes</h2><div class="wallet small"><span class="coin-ico"></span><span class="wallet-n">0</span></div></div>
+    <div class="level-grid" id="level-grid"></div>
+  </div>
+</section>
+
+<!-- Tienda de bolas -->
+<section class="screen hidden" id="scr-shop">
+  <div class="panel wide">
+    <div class="panel-head"><button class="btn small blue back" data-back>◀</button><h2>Bolas</h2><div class="wallet small"><span class="coin-ico"></span><span class="wallet-n">0</span></div></div>
+    <div class="skin-grid" id="skin-grid"></div>
+  </div>
+</section>
+
+<!-- Opciones -->
+<section class="screen hidden" id="scr-options">
+  <div class="panel wide">
+    <div class="panel-head"><button class="btn small blue back" data-back>◀</button><h2>Opciones</h2><div></div></div>
+    <div class="opt-body">
+      <div class="opt-col">
+        <div class="opt-label">Controles</div>
+        <div class="seg" id="seg-control">
+          <button data-v="joystick">🕹️ Joystick</button>
+          <button data-v="tilt">📱 Inclinar</button>
+        </div>
+        <div id="tilt-panel">
+          <div class="row">
+            <button class="btn small green" id="btn-tilt-enable">Activar sensor</button>
+            <button class="btn small yellow" id="btn-calib">Calibrar</button>
+          </div>
+          <div class="opt-label">Sensibilidad <span id="sens-val">1.0</span></div>
+          <input type="range" id="sens" min="0.5" max="2" step="0.1" value="1">
+          <label class="check"><input type="checkbox" id="tilt-invert"> Invertir adelante/atrás</label>
+          <div class="tilt-status" id="tilt-status">Sostén el teléfono cómodo y pulsa «Calibrar».</div>
+        </div>
+        <div id="joy-panel" class="opt-note">Joystick a la izquierda (aparece donde tocas) y botón SALTAR a la derecha. En ordenador: WASD / flechas + Espacio.</div>
+      </div>
+      <div class="opt-col">
+        <div id="tilt-preview"><div id="tilt-dot"></div></div>
+        <div class="opt-label">Sonido</div>
+        <div class="row">
+          <button class="toggle" id="tg-music">🎵 Música</button>
+          <button class="toggle" id="tg-sfx">🔔 Efectos</button>
+        </div>
+        <div class="opt-label">Gráficos</div>
+        <div class="row">
+          <button class="toggle" id="tg-shadows">🌓 Sombras</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pausa -->
+<section class="screen hidden dim" id="scr-pause">
+  <div class="panel">
+    <h2>Pausa</h2>
+    <div class="menu">
+      <button class="btn yellow" id="btn-resume">▶ Reanudar</button>
+      <button class="btn blue" id="btn-restart">↺ Reiniciar</button>
+      <button class="btn pink" id="btn-levels">☰ Niveles</button>
+      <button class="btn green" id="btn-pause-opts">⚙ Opciones</button>
+    </div>
+  </div>
+</section>
+
+<!-- Victoria -->
+<section class="screen hidden dim" id="scr-win">
+  <div class="panel">
+    <h2 class="win-title">¡Corona conseguida!</h2>
+    <div class="stars" id="win-stars"><span>★</span><span>★</span><span>★</span></div>
+    <div class="win-info" id="win-info"></div>
+    <div class="menu">
+      <button class="btn yellow" id="btn-next">Siguiente ▶</button>
+      <div class="row">
+        <button class="btn blue" id="btn-again">↺ Repetir</button>
+        <button class="btn pink" id="btn-win-levels">☰ Niveles</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Girar teléfono -->
+<div id="rotate" class="hidden">
+  <div class="rot-phone">📱</div>
+  <div class="rot-text">Gira tu teléfono</div>
+  <div class="rot-sub">Se juega mejor en horizontal</div>
+  <button class="btn small blue" id="btn-portrait">Jugar en vertical</button>
+</div>
+
+<div id="loading">Cargando…</div>
+<noscript>Este juego necesita JavaScript.</noscript>
+<script type="module" src="js/main.js?v=1"></script>
+</body>
+</html>
