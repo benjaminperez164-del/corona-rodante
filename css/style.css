@@ -172,20 +172,58 @@ body.theme-ice { background: #4a8ec8; }
 
 .btn.purple { background: linear-gradient(#c9a0ff, #8a5cff); box-shadow: 0 6px 0 #5a38b0; }
 .btn.purple:active { box-shadow: 0 2px 0 #5a38b0; transform: translateY(4px); }
-.ver-badge { margin-top: 14px; display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 900; font-size: 13px;
+.title-foot { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.wallet { margin-top: 0; }
+.ver-badge { margin-top: 0; display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 900; font-size: 13px;
   background: rgba(255,255,255,.85); color: #2d6ea8; box-shadow: 0 2px 0 rgba(0,0,0,.08); letter-spacing: .04em; }
-.daily-body { padding: 8px 4px 16px; text-align: center; }
+.daily-body { padding: 8px 4px 16px; text-align: center; min-height: 120px; }
 .daily-card { background: #e8f6ff; border-radius: 18px; padding: 16px; box-shadow: 0 4px 0 #9fc3dc; margin-bottom: 12px; }
 .daily-card h3 { margin: 0 0 6px; font-size: 22px; color: #1e5a90; }
 .daily-meta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
 .daily-pill { background: #fff; border-radius: 999px; padding: 6px 12px; font-weight: 800; color: #2d6ea8; box-shadow: 0 2px 0 #c5d8e8; font-size: 14px; }
 .daily-hint { color: #4a6a88; font-size: 14px; margin: 8px 0 14px; }
-.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 4px 2px 16px; max-height: min(62vh, 520px); overflow: auto; }
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; padding: 4px 2px 16px; max-height: min(70vh, 560px); overflow: auto; -webkit-overflow-scrolling: touch; }
 .ach-card { background: #f0f6fc; border-radius: 14px; padding: 12px; box-shadow: 0 3px 0 #b8cde0; display: flex; gap: 10px; align-items: flex-start; opacity: .55; }
 .ach-card.on { opacity: 1; background: linear-gradient(#fff8d0, #ffe8a0); box-shadow: 0 3px 0 #d4a820; }
 .ach-card .ico { font-size: 28px; line-height: 1; }
 .ach-card .nm { font-weight: 900; color: #2d5080; font-size: 15px; }
 .ach-card .ds { font-size: 12px; color: #5a7090; margin-top: 2px; }
+.ach-card .st { font-size: 11px; font-weight: 900; margin-top: 4px; color: #8a9bb0; }
+.ach-card.on .st { color: #2f8a3a; }
+.ach-progress { grid-column: 1 / -1; font-weight: 900; color: #2d6ea8; font-size: 15px; padding: 4px 2px 8px; text-align: left; }
 .skin.locked { opacity: .7; }
 .skin .lock-note { font-size: 11px; color: #6a5080; font-weight: 800; margin-top: 4px; }
 .toast-ach { background: linear-gradient(#ffe066, #ffb703) !important; color: #403010 !important; font-weight: 900; }
+
+
+/* Menú compacto en apaisado / pantallas bajas */
+@media (max-height: 560px) {
+  #scr-title.screen { align-items: center; justify-content: center; padding: max(4px, env(safe-area-inset-top)) 10px max(4px, env(safe-area-inset-bottom)); overflow-y: auto; }
+  .title-wrap { width: min(920px, 100%); margin: 0 auto; padding: 0; }
+  .logo { font-size: clamp(32px, 12vh, 58px); margin: 0; line-height: .85; }
+  .logo span { -webkit-text-stroke-width: 2px; text-shadow: 0 3px 0 #b4570b, 0 5px 8px rgba(0,0,0,.2); }
+  .logo .l2 { text-shadow: 0 3px 0 #a22a68, 0 5px 8px rgba(0,0,0,.2); }
+  .sub { font-size: 13px; margin-top: 2px; padding: 2px 10px; }
+  .menu { gap: 6px; margin-top: 4px; }
+  .btn.big { font-size: 18px; padding: 7px 18px; min-width: 180px; }
+  .btn { font-size: 15px; padding: 7px 12px; min-width: 96px; }
+  .row { gap: 8px; }
+  .title-foot { margin-top: 6px; gap: 8px; }
+  .wallet { font-size: 15px; padding: 2px 10px; }
+  .ver-badge { font-size: 11px; padding: 2px 10px; }
+}
+@media (max-height: 420px) {
+  .logo { font-size: clamp(26px, 11vh, 44px); }
+  .menu { gap: 5px; margin-top: 2px; }
+  .btn.big { font-size: 16px; padding: 5px 14px; min-width: 150px; border-radius: 14px; }
+  .btn { font-size: 13px; padding: 5px 10px; border-radius: 12px; }
+  .sub { font-size: 11px; margin-top: 1px; }
+  .title-foot { margin-top: 4px; }
+  .wallet { font-size: 13px; }
+}
+@media (max-height: 360px) {
+  .logo { font-size: clamp(22px, 10vh, 36px); transform: rotate(-2deg); }
+  .menu { gap: 4px; }
+  .btn.big { font-size: 14px; padding: 4px 12px; min-width: 130px; }
+  .btn { font-size: 12px; padding: 4px 8px; }
+}

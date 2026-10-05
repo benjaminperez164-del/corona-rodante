@@ -1,7 +1,7 @@
 // Construcción de niveles: geometría estática fusionada (pocas draw calls),
 // entidades dinámicas (martillos, molinetes, plataformas móviles...) y colliders.
 import * as THREE from 'three';
-import { Collider } from './physics.js?v=7';
+import { Collider } from './physics.js?v=8';
 
 export const PAL = {
   grass: 0x7ddc5a, grassSide: 0xf0d9a8, stoneBottom: 0xc9a777,

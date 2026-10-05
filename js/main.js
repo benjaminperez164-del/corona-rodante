@@ -1,13 +1,13 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=7';
-import { Level } from './world.js?v=7';
-import { LEVELS, WORLDS } from './levels.js?v=7';
-import { Input } from './input.js?v=7';
-import { Sfx } from './audio.js?v=7';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=7';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=7';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=7';
+import { Ball, stepBall } from './physics.js?v=8';
+import { Level } from './world.js?v=8';
+import { LEVELS, WORLDS } from './levels.js?v=8';
+import { Input } from './input.js?v=8';
+import { Sfx } from './audio.js?v=8';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=8';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=8';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=8';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -190,6 +190,8 @@ function showScreen(id) {
   if (id === 'scr-levels') renderLevels();
   if (id === 'scr-shop') renderShop();
   if (id === 'scr-options') renderOptions();
+  if (id === 'scr-daily') renderDaily();
+  if (id === 'scr-achievements') renderAchievements();
   updateWallet();
 }
 function updateWallet() { document.querySelectorAll('.wallet-n').forEach(e => e.textContent = save.coins); }
@@ -352,14 +354,23 @@ function renderDaily() {
   };
 }
 function renderAchievements() {
-  const grid = $('ach-grid'); grid.innerHTML = '';
+  notifyAchievements();
+  const grid = $('ach-grid'); if (!grid) return;
+  grid.innerHTML = '';
+  const total = ACHIEVEMENTS.length;
+  let got = 0;
   for (const a of ACHIEVEMENTS) {
     const on = !!(save.achievements?.unlocked?.[a.id]);
+    if (on) got++;
     const d = document.createElement('div');
     d.className = 'ach-card' + (on ? ' on' : '');
-    d.innerHTML = `<div class="ico">${a.icon}</div><div><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div>`;
+    d.innerHTML = `<div class="ico">${on ? a.icon : '🔒'}</div><div><div class="nm">${a.name}</div><div class="ds">${a.desc}</div><div class="st">${on ? '✓ Conseguido' : 'Sin desbloquear'}</div></div>`;
     grid.appendChild(d);
   }
+  const head = document.createElement('div');
+  head.className = 'ach-progress';
+  head.textContent = `Progreso: ${got}/${total}`;
+  grid.prepend(head);
 }
 function notifyAchievements(extra = {}) {
   const newly = evaluateAchievements(save, LEVELS, extra);
