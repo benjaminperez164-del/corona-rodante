@@ -1,13 +1,13 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=18';
-import { Level } from './world.js?v=18';
-import { LEVELS, WORLDS } from './levels.js?v=18';
-import { Input } from './input.js?v=18';
-import { Sfx } from './audio.js?v=18';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=18';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=18';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=18';
+import { Ball, stepBall } from './physics.js?v=22';
+import { Level } from './world.js?v=22';
+import { LEVELS, WORLDS } from './levels.js?v=22';
+import { Input } from './input.js?v=22';
+import { Sfx } from './audio.js?v=22';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=22';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=22';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=22';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -111,9 +111,9 @@ const THEMES = {
     fogNear: 30, fogFar: 110,
   },
   desert: {
-    fog: 0xe8c878, hemiSky: 0xffe8b0, hemiGround: 0xc89840, hemiI: 1.65,
-    sun: 0xfff0d0, sunI: 1.9, skyTop: 0x4a90d0, skyMid: 0x90c0e8, skyHor: 0xf0d090, skyBot: 0xf8e0a8,
-    fogNear: 32, fogFar: 115,
+    fog: 0x3a78b8, hemiSky: 0x98c8f0, hemiGround: 0x6a4820, hemiI: 1.35,
+    sun: 0xffe8c0, sunI: 1.65, skyTop: 0x0a4aa0, skyMid: 0x2a78d0, skyHor: 0x68a8e0, skyBot: 0xa88850,
+    fogNear: 45, fogFar: 140,
   },
 };
 let currentTheme = 'sky';

@@ -177,7 +177,7 @@ body.theme-jungle { background: #4a9848; }
 .world-tab.desert.on { background: linear-gradient(#f0d078, #d0a040); box-shadow: 0 3px 0 #a07828; }
 .lvl.desert { background: linear-gradient(#f0d078, #d0a040); box-shadow: 0 5px 0 #a07828; }
 .lvl.desert:active:not(.locked) { box-shadow: 0 2px 0 #a07828; }
-body.theme-desert { background: #d0a050; }
+body.theme-desert { background: #4a78a8; }
 
 
 .btn.purple { background: linear-gradient(#c9a0ff, #8a5cff); box-shadow: 0 6px 0 #5a38b0; }
