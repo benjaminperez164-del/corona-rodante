@@ -153,3 +153,13 @@ body.playing.joy #joy-zone { display: block; }
   .tut-text { font-size: 15px; }
   .tut-jump { font-size: 13px; padding: 6px 10px; margin-top: 6px; }
 }
+
+/* ---------- selector de mundos ---------- */
+.world-tabs { display: flex; gap: 8px; justify-content: center; margin: 0 0 12px; flex-wrap: wrap; }
+.world-tab { flex: 1; min-width: 140px; max-width: 280px; padding: 10px 12px; border-radius: 14px; font-weight: 900; font-size: 15px;
+  background: #d8ecfa; color: #2d6ea8; box-shadow: 0 3px 0 #9fc3dc; }
+.world-tab.on { background: linear-gradient(#ffe066, #ffb703); color: #fff; text-shadow: 0 2px 0 rgba(0,0,0,.2); box-shadow: 0 3px 0 #d48a00; }
+.world-tab.locked { opacity: .65; filter: grayscale(.3); }
+.world-tab.lava.on { background: linear-gradient(#ff8c3a, #e04810); box-shadow: 0 3px 0 #a03008; }
+.lvl.lava { background: linear-gradient(#ff8c4a, #d94512); box-shadow: 0 5px 0 #9a2e08; }
+.lvl.lava:active:not(.locked) { box-shadow: 0 2px 0 #9a2e08; }

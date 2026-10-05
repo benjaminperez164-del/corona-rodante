@@ -7,12 +7,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="Corona Rodante: rueda por las Ruinas Flotantes hasta la corona. Juego de plataformas 3D para el navegador del móvil.">
+<meta name="description" content="Corona Rodante: rueda por las Ruinas Flotantes y el Volcán Ardiente hasta la corona. Juego de plataformas 3D para el navegador del móvil.">
 <title>Corona Rodante</title>
-<link rel="icon" href="icon.svg?v=2" type="image/svg+xml">
-<link rel="manifest" href="manifest.json?v=2">
-<link rel="stylesheet" href="css/style.css?v=2">
-<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=2" } }</script>
+<link rel="icon" href="icon.svg?v=3" type="image/svg+xml">
+<link rel="manifest" href="manifest.json?v=3">
+<link rel="stylesheet" href="css/style.css?v=3">
+<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=3" } }</script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -40,7 +40,7 @@
 <section class="screen" id="scr-title">
   <div class="title-wrap">
     <h1 class="logo"><span class="l1">Corona</span><span class="l2">Rodante</span></h1>
-    <div class="sub">Mundo 1 · Ruinas Flotantes</div>
+    <div class="sub" id="title-world">Mundo 1 · Ruinas Flotantes</div>
     <div class="menu">
       <button class="btn yellow big" id="btn-play">▶ Jugar</button>
       <div class="row">
@@ -55,7 +55,8 @@
 <!-- Selección de nivel -->
 <section class="screen hidden" id="scr-levels">
   <div class="panel wide">
-    <div class="panel-head"><button class="btn small blue back" data-back>◀</button><h2>Ruinas Flotantes</h2><div class="wallet small"><span class="coin-ico"></span><span class="wallet-n">0</span></div></div>
+    <div class="panel-head"><button class="btn small blue back" data-back>◀</button><h2 id="levels-title">Ruinas Flotantes</h2><div class="wallet small"><span class="coin-ico"></span><span class="wallet-n">0</span></div></div>
+    <div class="world-tabs" id="world-tabs"></div>
     <div class="level-grid" id="level-grid"></div>
   </div>
 </section>
@@ -143,6 +144,6 @@
 
 <div id="loading">Cargando…</div>
 <noscript>Este juego necesita JavaScript.</noscript>
-<script type="module" src="js/main.js?v=2"></script>
+<script type="module" src="js/main.js?v=3"></script>
 </body>
 </html>

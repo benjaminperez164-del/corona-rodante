@@ -118,6 +118,13 @@ export function stepBall(ball, colliders, input, dt) {
     ball.groundVel.copy(_pv).multiplyScalar(1 / dt);
   }
   const grounded = ball.sinceGround < 0.001;
+  // 1b) Cinta transportadora
+  if (grounded && ball.ground && ball.ground.convey) {
+    const cv = ball.ground.convey;
+    const k = Math.min(1, 5 * dt);
+    ball.vel.x += (cv.x - ball.vel.x) * k;
+    ball.vel.z += (cv.z - ball.vel.z) * k;
+  }
   // 2) Control
   let ix = input.x, iz = input.z;
   const mag = Math.hypot(ix, iz);

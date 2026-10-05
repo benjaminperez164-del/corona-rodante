@@ -1,6 +1,6 @@
-// Mundo 1: Ruinas Flotantes. El camino avanza hacia -Z (lejos de la cámara).
+// Niveles por mundo. El camino avanza hacia -Z (lejos de la cámara).
 // wp() = puntos de ruta para el piloto automático de pruebas ('j' = saltar aquí, 't' = giro).
-export const LEVELS = [
+const WORLD1_LEVELS = [
   {
     name: 'Primeros Pasos', target: 32,
     hint: 'Mueve el joystick para rodar. ¡Llega a la corona!',
@@ -251,4 +251,247 @@ export const LEVELS = [
       b.wp(0, 4, -95.6, 'w', 0, W(h3, 0.25)); b.wp(0, 4, -101.6, 'w', 0, W(h4, 0.25)); b.wp(0, 4, -114);
     },
   },
+
 ];
+
+const WORLD2_LEVELS = [
+  {
+    name: 'Orillas Ardientes', target: 35,
+    hint: '¡Cuidado con la lava! Si caes, vuelves al punto de control.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
+      b.plat(0, 0, -9, 4, 12); b.coinRow(0, 0, -4, 0, 0, -14, 4);
+      b.plat(0, 0, -18, 5, 6, { pillars: true }); b.checkpoint(0, 0, -18);
+      b.plat(0, 0, -26, 3.5, 10, { type: 'lavaWood' }); b.coinRow(0, 0, -22, 0, 0, -30, 3);
+      b.plat(0, 0, -34, 6, 6, { pillars: true }); b.checkpoint(0, 0, -34);
+      b.ramp(0, 0, -37, 0, 1.8, -44, 4);
+      b.plat(0, 1.8, -48, 5, 6); b.coin(0, 1.8, -48);
+      b.plat(0, 1.8, -56, 3.5, 10); b.coinRow(0, 1.8, -52, 0, 1.8, -60, 3);
+      b.plat(0, 1.8, -64, 8, 8, { pillars: true });
+      b.crown(0, 1.8, -65);
+      b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -18); b.wp(0, 0, -30); b.wp(0, 0, -34);
+      b.wp(0, 1.8, -44); b.wp(0, 1.8, -56); b.wp(0, 1.8, -65);
+    },
+  },
+  {
+    name: 'Baldosas Hundidas', target: 42,
+    hint: 'Las baldosas naranjas se hunden en la lava. ¡No te quedes quieto!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
+      b.plat(0, 0, -7, 4, 8); b.coinRow(0, 0, -4, 0, 0, -10, 2);
+      // solape con la plataforma anterior (termina ~-11)
+      for (let i = 0; i < 6; i++) b.sink(0, 0, -12.2 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
+      b.plat(0, 0, -26, 5, 6, { pillars: true }); b.checkpoint(0, 0, -26); b.coin(0, 0, -26);
+      for (let i = 0; i < 6; i++) b.sink(0, 0, -31.2 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
+      b.plat(0, 0, -45, 5, 6, { pillars: true }); b.checkpoint(0, 0, -45);
+      for (let i = 0; i < 5; i++) b.sink(0, 0, -50.2 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
+      b.plat(0, 0, -63, 8, 8, { pillars: true });
+      b.crown(0, 0, -64);
+      b.wp(0, 0, -2); b.wp(0, 0, -10);
+      for (let i = 0; i < 6; i++) b.wp(0, 0, -12.2 - i * 1.85, '', 8);
+      b.wp(0, 0, -26);
+      for (let i = 0; i < 6; i++) b.wp(0, 0, -31.2 - i * 1.85, '', 8);
+      b.wp(0, 0, -45);
+      for (let i = 0; i < 5; i++) b.wp(0, 0, -50.2 - i * 1.85, '', 8);
+      b.wp(0, 0, -64);
+    },
+  },
+  {
+    name: 'Géiseres de Fuego', target: 48,
+    hint: 'Los géiseres escupen lava. ¡Espera el momento y cruza!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
+      // un solo pasillo largo continuo
+      b.plat(0, 0, -20, 4.5, 34); b.coinRow(0, 0, -5, 0, 0, -30, 5);
+      const j1 = b.fireJet(0, 0, -14, { period: 3.4, phase: 0, h: 3.0 });
+      const j2 = b.fireJet(0, 0, -24, { period: 3.4, phase: 0.5, h: 3.0 });
+      b.plat(0, 0, -42, 6, 8, { pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -60, 4.5, 28);
+      const j3 = b.fireJet(0, 0, -52, { period: 3.2, phase: 0.2, h: 2.8 });
+      const j4 = b.fireJet(0, 0, -62, { period: 3.2, phase: 0.7, h: 2.8 });
+      b.coin(0, 0, -55); b.coin(0, 0, -65);
+      b.plat(0, 0, -80, 8, 10, { pillars: true });
+      b.crown(0, 0, -81);
+      const W = (j, lead) => ({ cond: () => j.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -10);
+      b.wp(0, 0, -11.5, 'w', 0, W(j1, 0.1)); b.wp(0, 0, -18, '', 7);
+      b.wp(0, 0, -21.5, 'w', 0, W(j2, 0.1)); b.wp(0, 0, -32); b.wp(0, 0, -42);
+      b.wp(0, 0, -49.5, 'w', 0, W(j3, 0.1)); b.wp(0, 0, -57, '', 7);
+      b.wp(0, 0, -59.5, 'w', 0, W(j4, 0.1)); b.wp(0, 0, -70); b.wp(0, 0, -81);
+    },
+  },
+  {
+    name: 'Puentes sobre Lava', target: 50,
+    hint: 'Plataformas que se mueven sobre el magma. ¡Salta con calma!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
+      // suelo continuo + tramos móviles encima del hueco controlado
+      b.plat(0, 0, -10, 4.5, 14); b.coinRow(0, 0, -5, 0, 0, -15, 3);
+      b.plat(0, 0, -20, 5, 5, { pillars: true }); b.checkpoint(0, 0, -20);
+      // hueco corto cubierto por movers laterales (como Saltos y Resortes)
+      const m1 = b.mover(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
+      const m2 = b.mover(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      b.coin(0, 0.4, -25); b.coin(0, 0.4, -30);
+      b.plat(0, 0, -36, 5, 6, { pillars: true }); b.checkpoint(0, 0, -36);
+      const m3 = b.mover(-2.0, 0, -42, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
+      const m4 = b.mover(-2.0, 0, -47, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      b.coin(0, 0.4, -42); b.coin(0, 0.4, -47);
+      b.plat(0, 0, -54, 5, 6, { pillars: true }); b.checkpoint(0, 0, -54);
+      b.plat(0, 0, -62, 4, 12); b.coinRow(0, 0, -58, 0, 0, -66, 2);
+      b.plat(0, 0, -72, 8, 8, { pillars: true });
+      b.crown(0, 0, -73);
+      b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -20);
+      b.wp(0, 0, -22.2, 'w', 0, { cond: () => Math.abs(m1.c.pos.x) < 0.4 });
+      b.wp(0, 0, -23.0, 'j', 5);
+      b.wp(0, 0, -25, 'r', 0, { follow: m1 });
+      b.wp(0, 0, -27.5, 'j', 6, { follow: m1, oz: -1.0 });
+      b.wp(0, 0, -30, 'r', 0, { follow: m2 });
+      b.wp(0, 0, -32.5, 'j', 6, { follow: m2, oz: -1.0 });
+      b.wp(0, 0, -36);
+      b.wp(0, 0, -39.2, 'w', 0, { cond: () => Math.abs(m3.c.pos.x) < 0.4 });
+      b.wp(0, 0, -40.0, 'j', 5);
+      b.wp(0, 0, -42, 'r', 0, { follow: m3 });
+      b.wp(0, 0, -44.5, 'j', 6, { follow: m3, oz: -1.0 });
+      b.wp(0, 0, -47, 'r', 0, { follow: m4 });
+      b.wp(0, 0, -49.5, 'j', 6, { follow: m4, oz: -1.0 });
+      b.wp(0, 0, -54); b.wp(0, 0, -64); b.wp(0, 0, -73);
+    },
+  },
+  {
+    name: 'Rocas Rodantes', target: 45,
+    hint: '¡Rocas gigantes! Pásalas por los lados con calma.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
+      b.plat(0, 0, -45, 12, 84); // suelo continuo muy ancho
+      b.coinRow(4.5, 0, -8, 4.5, 0, -30, 4);
+      b.boulder(0, 0, -18, { to: [0, 0, -12], period: 6.5, r: 0.6 });
+      b.checkpoint(0, 0, -36);
+      b.coin(-4.5, 0, -46); b.coin(4.5, 0, -58);
+      b.boulder(-3.5, 0, -50, { to: [7, 0, 0], period: 6.0, r: 0.6 });
+      b.boulder(3.5, 0, -60, { to: [-7, 0, 0], period: 6.0, r: 0.6, phase: 0.5 });
+      b.checkpoint(0, 0, -72);
+      b.coin(4.5, 0, -80); b.coin(-4.5, 0, -84);
+      b.plat(0, 0, -92, 8, 10, { pillars: true });
+      b.crown(0, 0, -93);
+      b.wp(0, 0, -2); b.wp(4.5, 0, -18, 't'); b.wp(4.5, 0, -30); b.wp(0, 0, -36);
+      b.wp(-4.5, 0, -52, 't'); b.wp(4.5, 0, -62, 't'); b.wp(0, 0, -72);
+      b.wp(4.5, 0, -82); b.wp(0, 0, -93);
+    },
+  },
+  {
+    name: 'Cintas Ardientes', target: 48,
+    hint: 'Las cintas te empujan. ¡Úsalas a tu favor!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
+      // todo el camino es cinta o plataforma, sin huecos
+      b.plat(0, 0, -6, 4.5, 6);
+      b.convey(0, 0, -15, 4.5, 14, { dir: [0, 0, -1], speed: 5.5 });
+      b.coinRow(0, 0, -10, 0, 0, -20, 3);
+      b.plat(0, 0, -25, 5, 6, { pillars: true }); b.checkpoint(0, 0, -25);
+      b.convey(0, 0, -34, 4.5, 14, { dir: [0, 0, -1], speed: 5.5 });
+      b.coin(0, 0, -30); b.coin(0, 0, -38);
+      b.plat(0, 0, -44, 5, 6, { pillars: true }); b.checkpoint(0, 0, -44);
+      b.convey(0, 0, -52, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.plat(0, 0, -61, 5, 6, { pillars: true }); b.checkpoint(0, 0, -61);
+      b.convey(0, 0, -69, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.coin(0, 0, -69);
+      b.plat(0, 0, -78, 8, 8, { pillars: true });
+      b.crown(0, 0, -79);
+      b.wp(0, 0, -2); b.wp(0, 0, -15); b.wp(0, 0, -25);
+      b.wp(0, 0, -34); b.wp(0, 0, -44); b.wp(0, 0, -52);
+      b.wp(0, 0, -61); b.wp(0, 0, -69); b.wp(0, 0, -79);
+    },
+  },
+  {
+    name: 'Cráteres Gemelos', target: 58,
+    hint: 'Hundibles, géiseres y cintas juntos. ¡Concéntrate!',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
+      b.plat(0, 0, -7, 4.5, 8); b.coin(0, 0, -7);
+      for (let i = 0; i < 5; i++) b.sink(0, 0, -12.2 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
+      b.plat(0, 0, -26, 5, 12);
+      const j1 = b.fireJet(0, 0, -26, { period: 3.4, phase: 0.1, h: 3 });
+      b.plat(0, 0, -36, 5, 6, { pillars: true }); b.checkpoint(0, 0, -36);
+      b.convey(0, 0, -44, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.coin(0, 0, -44);
+      b.plat(0, 0, -53, 5, 6, { pillars: true }); b.checkpoint(0, 0, -53);
+      b.convey(0, 0, -61, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.coin(0, 0, -61);
+      b.plat(0, 0, -70, 5, 6);
+      for (let i = 0; i < 4; i++) b.sink(0, 0, -74.0 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
+      b.plat(0, 0, -85, 5, 10);
+      const j2 = b.fireJet(0, 0, -85, { period: 3.2, phase: 0.3, h: 2.8 });
+      b.plat(0, 0, -95, 8, 8, { pillars: true });
+      b.crown(0, 0, -96);
+      const W = (j, lead) => ({ cond: () => j.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -10);
+      for (let i = 0; i < 5; i++) b.wp(0, 0, -12.2 - i * 1.85, '', 8);
+      b.wp(0, 0, -23.5, 'w', 0, W(j1, 0.1)); b.wp(0, 0, -32); b.wp(0, 0, -36);
+      b.wp(0, 0, -44); b.wp(0, 0, -53); b.wp(0, 0, -61); b.wp(0, 0, -70);
+      for (let i = 0; i < 4; i++) b.wp(0, 0, -74.0 - i * 1.85, '', 8);
+      b.wp(0, 0, -82.5, 'w', 0, W(j2, 0.1)); b.wp(0, 0, -90); b.wp(0, 0, -96);
+    },
+  },
+  {
+    name: 'Corona del Volcán', target: 75,
+    hint: '¡La cima del volcán! Usa todo lo aprendido para la corona.',
+    build(b) {
+      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { pillars: true });
+      b.plat(0, 0, -6, 4.5, 6);
+      b.convey(0, 0, -14, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.coinRow(0, 0, -10, 0, 0, -18, 3);
+      b.plat(0, 0, -23, 5, 6, { pillars: true }); b.checkpoint(0, 0, -23);
+      b.plat(0, 0, -40, 4.5, 28); b.coinRow(0, 0, -28, 0, 0, -48, 3);
+      const j1 = b.fireJet(0, 0, -32, { period: 3.4, phase: 0, h: 3 });
+      const j2 = b.fireJet(0, 0, -44, { period: 3.4, phase: 0.5, h: 3 });
+      b.plat(0, 0, -58, 5, 6, { pillars: true }); b.checkpoint(0, 0, -58);
+      for (let i = 0; i < 5; i++) b.sink(0, 0, -62.2 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
+      b.plat(0, 0, -74, 5, 8, { pillars: true }); b.checkpoint(0, 0, -74);
+      const m1 = b.mover(-2.0, 0, -80, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
+      const m2 = b.mover(-2.0, 0, -85, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      b.coin(0, 0.4, -80); b.coin(0, 0.4, -85);
+      b.plat(0, 0, -91, 5, 6, { pillars: true }); b.checkpoint(0, 0, -91);
+      b.plat(0, 0, -102, 12, 16);
+      b.coin(4.5, 0, -100); b.coin(-4.5, 0, -108);
+      b.boulder(0, 0, -104, { to: [0, 0, -8], period: 6.0, r: 0.55 });
+      b.plat(0, 0, -114, 5, 6);
+      b.spring(0, 0, -115.5, { power: 16.5 });
+      b.coin(0, 3.8, -118.5);
+      b.plat(0, 3.5, -123, 5, 6, { pillars: true }); b.checkpoint(0, 3.5, -123);
+      b.convey(0, 3.5, -131, 4.5, 12, { dir: [0, 0, -1], speed: 5.5 });
+      b.plat(0, 3.5, -140, 5, 6);
+      for (let i = 0; i < 3; i++) b.sink(0, 3.5, -144.0 - i * 1.85, 2.6, 2.1, { delay: 1.0 });
+      b.plat(0, 3.5, -154, 10, 10, { pillars: true });
+      b.pillar(-3.2, 3.5, -157, 3.2); b.pillar(3.2, 3.5, -157, 3.2);
+      b.crown(0, 3.5, -156);
+      const W = (j, lead) => ({ cond: () => j.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -23);
+      b.wp(0, 0, -29.5, 'w', 0, W(j1, 0.1)); b.wp(0, 0, -37, '', 7);
+      b.wp(0, 0, -41.5, 'w', 0, W(j2, 0.1)); b.wp(0, 0, -52); b.wp(0, 0, -58);
+      for (let i = 0; i < 5; i++) b.wp(0, 0, -62.2 - i * 1.85, '', 8);
+      b.wp(0, 0, -74);
+      b.wp(0, 0, -77.2, 'w', 0, { cond: () => Math.abs(m1.c.pos.x) < 0.4 });
+      b.wp(0, 0, -78.0, 'j', 5);
+      b.wp(0, 0, -80, 'r', 0, { follow: m1 });
+      b.wp(0, 0, -82.5, 'j', 6, { follow: m1, oz: -1.0 });
+      b.wp(0, 0, -85, 'r', 0, { follow: m2 });
+      b.wp(0, 0, -87.5, 'j', 6, { follow: m2, oz: -1.0 });
+      b.wp(0, 0, -91); b.wp(4.5, 0, -104, 't'); b.wp(0, 0, -114);
+      b.wp(0, 0, -115.5, '', 4); b.wp(0, 3.5, -123);
+      b.wp(0, 3.5, -131); b.wp(0, 3.5, -140);
+      for (let i = 0; i < 3; i++) b.wp(0, 3.5, -144.0 - i * 1.85, '', 8);
+      b.wp(0, 3.5, -156);
+    },
+  },
+];
+
+
+export const WORLDS = [
+  { id: 'ruinas', name: 'Ruinas Flotantes', theme: 'sky', levels: WORLD1_LEVELS },
+  { id: 'volcan', name: 'Volcán Ardiente', theme: 'lava', unlockIndex: 7, levels: WORLD2_LEVELS },
+];
+
+// Lista plana (índices 0-7 Mundo 1, 8-15 Mundo 2) — compatible con partidas guardadas
+export const LEVELS = WORLDS.flatMap((w, wi) => w.levels.map((L, li) => ({
+  ...L, world: w.id, worldIndex: wi, theme: w.theme, localIndex: li,
+})));

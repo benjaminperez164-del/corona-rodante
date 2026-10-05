@@ -1,7 +1,7 @@
 // Construcción de niveles: geometría estática fusionada (pocas draw calls),
 // entidades dinámicas (martillos, molinetes, plataformas móviles...) y colliders.
 import * as THREE from 'three';
-import { Collider } from './physics.js?v=2';
+import { Collider } from './physics.js?v=3';
 
 export const PAL = {
   grass: 0x7ddc5a, grassSide: 0xf0d9a8, stoneBottom: 0xc9a777,
@@ -15,6 +15,13 @@ export const PAL = {
   pillar: 0xfff7ea, gold: 0xffc93c,
   hammerHead: 0xef4f5f, hammerBand: 0xffd447, hammerArm: 0x9a6a3e,
   turn: 0xa66bff, bumper: 0xff6fb7, spring: 0xffd23f, cloud: 0xffffff,
+  // Volcán Ardiente
+  basalt: 0x4a3f3a, basaltSide: 0x2e2622, basaltBottom: 0x1a1512,
+  basaltTop: 0x5c4a42, magma: 0xff6a1a, magmaDeep: 0xc4220a,
+  ash: 0x6a5a52, ember: 0xff8c2a, scorched: 0x3a2a22,
+  lavaCrumb: 0xff7a28, lavaCrumbSide: 0xb83a10,
+  convey: 0xff9a3a, conveySide: 0xc45a12,
+  lavaMover: 0xff7040, lavaMoverSide: 0xc04020,
 };
 
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
@@ -57,6 +64,9 @@ const STYLE = {
   wood: [PAL.wood, PAL.woodSide, PAL.woodSide],
   marble: [PAL.marble, PAL.marbleSide, PAL.marbleSide],
   gold: [PAL.gold, 0xe8a92a, 0xe8a92a],
+  basalt: [PAL.basaltTop, PAL.basaltSide, PAL.basaltBottom],
+  scorched: [PAL.ash, PAL.scorched, PAL.basaltBottom],
+  lavaWood: [PAL.convey, PAL.conveySide, PAL.basaltBottom],
 };
 
 let glowTex = null;
@@ -72,6 +82,7 @@ function getGlowTex() {
 export class Level {
   constructor(scene, def, index) {
     this.scene = scene; this.def = def; this.index = index;
+    this.theme = def.theme || 'sky';
     this.group = new THREE.Group(); scene.add(this.group);
     this.colliders = []; this.entities = []; this.coins = []; this.checkpoints = []; this.waypoints = [];
     this.spawn = new THREE.Vector3(0, 1, 0); this.crownPos = null; this.time = 0;
@@ -79,6 +90,7 @@ export class Level {
     this.mat = new THREE.MeshLambertMaterial({ vertexColors: true });
     this.minY = 0; this.bounds = new THREE.Box3();
     this.rand = rng(index * 97 + 13);
+    this.defaultPlat = this.theme === 'lava' ? 'basalt' : 'stone';
     def.build(this);
     this.finish();
   }
@@ -96,7 +108,7 @@ export class Level {
     return c;
   }
   plat(x, y, z, w, d, o = {}) {
-    const h = o.h || 1, type = o.type || 'stone';
+    const h = o.h || 1, type = o.type || this.defaultPlat;
     const c = this._staticBox(new THREE.Vector3(x, y - h / 2, z), new THREE.Quaternion(), new THREE.Vector3(w / 2, h / 2, d / 2), type);
     if (type === 'wood') this._planks(x, y, z, w, d);
     if (o.rock !== false && type !== 'wood' && w * d >= 6) this._rockUnder(x, y - h, z, w, d);
@@ -119,7 +131,9 @@ export class Level {
     const geo = new THREE.ConeGeometry(r, hgt, 7, 1);
     _q.setFromEuler(_e.set(Math.PI, this.rand() * 6, 0));
     _m.compose(_v.set(x, y - hgt / 2 + 0.02, z), _q, _s.set(w / (2 * r) * 0.95, 1, d / (2 * r) * 0.95));
-    this.decor.add(geo, _m, PAL.rock, PAL.rock, PAL.rockDark);
+    const rk = this.theme === 'lava' ? PAL.basaltSide : PAL.rock;
+    const rkd = this.theme === 'lava' ? PAL.basaltBottom : PAL.rockDark;
+    this.decor.add(geo, _m, rk, rk, rkd);
     _s.set(1, 1, 1);
   }
   _cornerPillars(x, y, z, w, d) {
@@ -132,9 +146,11 @@ export class Level {
     const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + h / 2, z), r, h: h / 2 });
     this.colliders.push(c);
     _m.compose(_v.set(x, y + h / 2, z), _q.identity(), _s);
-    this.merge.add(new THREE.CylinderGeometry(r * 0.9, r, h, 8), _m, PAL.pillar, PAL.pillar);
+    const pc = this.theme === 'lava' ? PAL.basaltTop : PAL.pillar;
+    const pb = this.theme === 'lava' ? PAL.basaltSide : PAL.marbleSide;
+    this.merge.add(new THREE.CylinderGeometry(r * 0.9, r, h, 8), _m, pc, pc);
     _m.compose(_v.set(x, y + 0.12, z), _q.identity(), _s);
-    this.merge.add(new THREE.BoxGeometry(r * 2.6, 0.24, r * 2.6), _m, PAL.marbleSide, PAL.marbleSide);
+    this.merge.add(new THREE.BoxGeometry(r * 2.6, 0.24, r * 2.6), _m, pb, pb);
   }
   ramp(x1, y1, z1, x2, y2, z2, w, o = {}) {
     const p1 = new THREE.Vector3(x1, y1, z1), p2 = new THREE.Vector3(x2, y2, z2);
@@ -145,14 +161,14 @@ export class Level {
     const quat = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(xa, ya, dir));
     const h = o.h || 1;
     const mid = p1.clone().add(p2).multiplyScalar(0.5).addScaledVector(ya, -h / 2);
-    this._staticBox(mid, quat, new THREE.Vector3(w / 2, h / 2, L / 2 + 0.05), o.type || 'stone');
+    this._staticBox(mid, quat, new THREE.Vector3(w / 2, h / 2, L / 2 + 0.05), o.type || this.defaultPlat);
   }
   hex(x, y, z, r = 1.1, o = {}) {
     const h = o.h || 0.8;
     const c = new Collider('cyl', { pos: new THREE.Vector3(x, y - h / 2, z), r: r * 0.93, h: h / 2 });
     this.colliders.push(c); this.bounds.expandByPoint(c.pos);
     _m.compose(_v.set(x, y - h / 2, z), _q.setFromEuler(_e.set(0, Math.PI / 6, 0)), _s);
-    this.merge.add(new THREE.CylinderGeometry(r, r, h, 6), _m, PAL.hex, PAL.hexSide);
+    this.merge.add(new THREE.CylinderGeometry(r, r, h, 6), _m, this.theme === 'lava' ? PAL.ember : PAL.hex, this.theme === 'lava' ? PAL.magmaDeep : PAL.hexSide);
     _m.compose(_v.set(x, y - h - 0.6, z), _q.setFromEuler(_e.set(Math.PI, 0.3, 0)), _s);
     this.decor.add(new THREE.ConeGeometry(r * 0.8, 1.2, 6), _m, PAL.rock, PAL.rock);
     return c;
@@ -208,7 +224,7 @@ export class Level {
     const c = new Collider('cyl', { pos: new THREE.Vector3(x, y - h / 2, z), r, h: h / 2 });
     this.colliders.push(c); this.bounds.expandByPoint(c.pos);
     _m.compose(_v.set(x, y - h / 2, z), _q.identity(), _s);
-    const [t, sd, bt] = STYLE[o.type || 'stone'];
+    const [t, sd, bt] = STYLE[o.type || this.defaultPlat];
     this.merge.add(new THREE.CylinderGeometry(r, r, h, 24), _m, t, sd, bt);
     // anillo decorativo de baldosas
     _m.compose(_v.set(x, y + 0.004, z), _q.identity(), _s);
@@ -235,7 +251,7 @@ export class Level {
       geo = new THREE.BoxGeometry(w, h, d);
       c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2), kinematic: true });
     }
-    colorGeo(geo, o.color || PAL.mover, o.side || PAL.moverSide);
+    colorGeo(geo, o.color || (this.theme === 'lava' ? PAL.lavaMover : PAL.mover), o.side || (this.theme === 'lava' ? PAL.lavaMoverSide : PAL.moverSide));
     const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
     this.colliders.push(c); this.bounds.expandByPoint(base);
     const to = new THREE.Vector3(...(o.to || [0, 0, 0]));
@@ -382,6 +398,130 @@ export class Level {
     c.owner = e; this.entities.push(e); return e;
   }
 
+
+  // ---------- obstáculos Mundo 2 (lava) ----------
+  sink(x, y, z, w = 2.4, d = 2.4, o = {}) {
+    // Plataforma que se hunde en la lava al pisarla
+    const h = o.h || 0.55;
+    const geo = new THREE.BoxGeometry(w * 0.96, h, d * 0.96);
+    colorGeo(geo, PAL.lavaCrumb, PAL.lavaCrumbSide);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
+    const glow = new THREE.Mesh(new THREE.BoxGeometry(w * 0.7, 0.04, d * 0.7), new THREE.MeshBasicMaterial({ color: 0xff6a1a, transparent: true, opacity: 0.55 }));
+    glow.position.y = h / 2 + 0.01; mesh.add(glow);
+    const base = new THREE.Vector3(x, y - h / 2, z);
+    const c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2), kinematic: true });
+    this.colliders.push(c); this.bounds.expandByPoint(base);
+    const delay = o.delay || 0.85, sinkSpeed = o.speed || 2.8;
+    const e = { type: 'sink', c, mesh, base, state: 'idle', t: 0,
+      touch() { if (this.state === 'idle') { this.state = 'warn'; this.t = 0; return true; } return false; },
+      reset() { this.state = 'idle'; this.t = 0; c.active = true; mesh.visible = true; c.pos.copy(base); c.commit(true); mesh.position.copy(base); mesh.rotation.set(0, 0, 0); mesh.scale.setScalar(1); glow.material.opacity = 0.55; },
+      update(t, dt) {
+        this.t += dt;
+        if (this.state === 'warn') {
+          mesh.position.set(base.x + (Math.random() - 0.5) * 0.06, base.y, base.z + (Math.random() - 0.5) * 0.06);
+          glow.material.opacity = 0.55 + Math.sin(this.t * 20) * 0.35;
+          if (this.t > delay) { this.state = 'sink'; this.t = 0; }
+        } else if (this.state === 'sink') {
+          c.pos.y -= sinkSpeed * dt; c.commit(); mesh.position.copy(c.pos);
+          if (this.t > 0.15) c.active = false;
+          if (c.pos.y < base.y - 4) { this.state = 'gone'; this.t = 0; mesh.visible = false; }
+        } else if (this.state === 'gone') {
+          if (this.t > 2.8) { this.reset(); mesh.scale.setScalar(0.01); this.state = 'grow'; this.t = 0; }
+        } else if (this.state === 'grow') {
+          mesh.scale.setScalar(Math.min(1, this.t * 3)); if (this.t > 0.34) { mesh.scale.setScalar(1); this.state = 'idle'; }
+        }
+      } };
+    c.owner = e; e.reset(); this.entities.push(e); return e;
+  }
+  fireJet(x, y, z, o = {}) {
+    // Pilar/géiser de lava que sube y baja a ritmo
+    const period = o.period || 2.8, phase = o.phase || 0, hMax = o.h || 3.2, r = o.r || 0.55;
+    const g = new THREE.Group(); g.position.set(x, y, z); this.group.add(g);
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.4, r * 1.6, 0.25, 10), new THREE.MeshLambertMaterial({ color: PAL.basaltSide }));
+    base.position.y = 0.12; g.add(base);
+    const jetMat = new THREE.MeshLambertMaterial({ color: 0xff5510, emissive: 0xff3300, emissiveIntensity: 0.85 });
+    const jet = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.7, r, 1, 10), jetMat);
+    jet.position.y = 0.5; g.add(jet);
+    const tip = new THREE.Mesh(new THREE.ConeGeometry(r * 0.85, 0.55, 8), new THREE.MeshLambertMaterial({ color: 0xffe066, emissive: 0xff8800, emissiveIntensity: 0.7 }));
+    tip.position.y = 1.1; g.add(tip);
+    const c = new Collider('cyl', { pos: new THREE.Vector3(x, y + 0.5, z), r: r * 0.85, h: 0.5, kind: 'kill', kinematic: true });
+    this.colliders.push(c);
+    const e = { type: 'fireJet', c, g, jet, tip, period, phase, hMax, r,
+      safe(lead = 0) {
+        let u = ((this._u || 0) + lead / this.period) % 1;
+        if (u < 0) u += 1;
+        // solo seguro cuando está abajo del todo
+        return u < 0.30 || u > 0.90;
+      },
+      update(t) {
+        const u = ((t / this.period + this.phase) % 1 + 1) % 1; this._u = u;
+        // 0-0.35 down, 0.35-0.45 rising, 0.45-0.7 up, 0.7-0.85 falling
+        let h = 0.15;
+        if (u < 0.35) h = 0.15;
+        else if (u < 0.45) h = 0.15 + (u - 0.35) / 0.1 * this.hMax;
+        else if (u < 0.7) h = this.hMax;
+        else if (u < 0.85) h = this.hMax * (1 - (u - 0.7) / 0.15);
+        else h = 0.15;
+        jet.scale.y = Math.max(0.08, h);
+        jet.position.y = h / 2;
+        tip.position.y = h + 0.15;
+        tip.visible = h > 0.4;
+        c.pos.set(x, y + h / 2, z); c.h = Math.max(0.08, h / 2); c.r = this.r * 0.85; c.active = h > 0.55; c.commit();
+        jetMat.emissiveIntensity = 0.5 + Math.sin(t * 10) * 0.25;
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  boulder(x, y, z, o = {}) {
+    // Roca rodante que va y vuelve; empuja la bola
+    const r = o.r || 0.85, to = new THREE.Vector3(...(o.to || [0, 0, -10]));
+    const period = o.period || 5, phase = o.phase || 0;
+    const base = new THREE.Vector3(x, y + r, z);
+    const geo = new THREE.IcosahedronGeometry(r, 1);
+    colorGeo(geo, PAL.basaltTop, PAL.basaltSide);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = true; this.group.add(mesh);
+    const c = new Collider('cyl', { pos: base.clone(), r: r * 0.92, h: r * 0.92, kinematic: true, restitution: 0.4 });
+    this.colliders.push(c);
+    const e = { type: 'boulder', c, mesh, base, to, period, phase, r,
+      update(t) {
+        const k = 0.5 - 0.5 * Math.cos((t / this.period + this.phase) * Math.PI * 2);
+        c.pos.copy(base).addScaledVector(to, k);
+        c.commit(); mesh.position.copy(c.pos);
+        const dist = to.length() * Math.sin((t / this.period + this.phase) * Math.PI * 2) * Math.PI / this.period;
+        mesh.rotation.x = (c.pos.z - base.z) / r; mesh.rotation.z = -(c.pos.x - base.x) / r;
+        void dist;
+      } };
+    e.update(0); c.savePrev(); this.entities.push(e); return e;
+  }
+  convey(x, y, z, w, d, o = {}) {
+    // Cinta transportadora: empuja la bola en dirección dir
+    const h = o.h || 0.45;
+    const dir = o.dir || [0, 0, -1];
+    const speed = o.speed || 5.5;
+    const len = Math.hypot(dir[0], dir[2]) || 1;
+    const vx = dir[0] / len * speed, vz = dir[2] / len * speed;
+    const geo = new THREE.BoxGeometry(w, h, d);
+    colorGeo(geo, PAL.convey, PAL.conveySide);
+    const mesh = new THREE.Mesh(geo, this.mat); mesh.castShadow = mesh.receiveShadow = true; this.group.add(mesh);
+    // flechas decorativas
+    const arrows = new THREE.Group(); mesh.add(arrows);
+    const nArr = Math.max(1, Math.floor(Math.max(w, d) / 1.6));
+    for (let i = 0; i < nArr; i++) {
+      const a = new THREE.Mesh(new THREE.ConeGeometry(0.22, 0.4, 3), new THREE.MeshBasicMaterial({ color: 0xffe08a }));
+      a.rotation.x = Math.PI / 2;
+      const t = (i + 0.5) / nArr - 0.5;
+      if (Math.abs(dir[2]) >= Math.abs(dir[0])) a.position.set(0, h / 2 + 0.02, t * d * 0.7);
+      else { a.rotation.z = -Math.PI / 2; a.position.set(t * w * 0.7, h / 2 + 0.02, 0); }
+      arrows.add(a);
+    }
+    const base = new THREE.Vector3(x, y - h / 2, z);
+    mesh.position.copy(base);
+    const c = new Collider('box', { pos: base, half: new THREE.Vector3(w / 2, h / 2, d / 2) });
+    c.convey = { x: vx, z: vz };
+    this.colliders.push(c); this.bounds.expandByPoint(base);
+    const e = { type: 'convey', c, mesh, arrows, update(t) { arrows.position.z = Math.sin(t * 3) * 0.05; } };
+    this.entities.push(e); return e;
+  }
+
   // ---------- finalizar ----------
   finish() {
     const mesh = this.merge.build(this.mat); mesh.castShadow = true; mesh.receiveShadow = true; this.group.add(mesh);
@@ -393,35 +533,81 @@ export class Level {
     this.coinMesh = new THREE.InstancedMesh(cg, new THREE.MeshLambertMaterial({ color: 0xffd23a, emissive: 0xffa000, emissiveIntensity: 0.5 }), Math.max(1, this.coins.length));
     this.coinMesh.castShadow = true; this.group.add(this.coinMesh);
     this.coinMesh.count = this.coins.length;
-    this.killY = this.minY - 14;
+    this.killY = this.minY - (this.theme === 'lava' ? 6 : 14);
+    if (this.theme === 'lava') this._lavaSea();
     this.updateCoins(0);
   }
+  _lavaSea() {
+    const b = this.bounds.clone(); b.expandByScalar(30);
+    const w = Math.max(80, b.max.x - b.min.x + 40), d = Math.max(100, b.max.z - b.min.z + 50);
+    const y = this.minY - 3.2;
+    const geo = new THREE.PlaneGeometry(w, d, 1, 1);
+    const mat = new THREE.MeshBasicMaterial({ color: 0xff3a0a, transparent: true, opacity: 0.92 });
+    const sea = new THREE.Mesh(geo, mat);
+    sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
+    this.group.add(sea); this.lavaSea = sea;
+    // brillo / capa superior
+    const glow = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.98, d * 0.98), new THREE.MeshBasicMaterial({
+      color: 0xffb020, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false
+    }));
+    glow.rotation.x = -Math.PI / 2; glow.position.set(sea.position.x, y + 0.08, sea.position.z);
+    this.group.add(glow); this.lavaGlow = glow;
+    // islas de escoria flotantes en la lava (decor)
+    for (let i = 0; i < 10; i++) {
+      const x = sea.position.x + (this.rand() - 0.5) * w * 0.7;
+      const z = sea.position.z + (this.rand() - 0.5) * d * 0.7;
+      _m.compose(_v.set(x, y + 0.15, z), _q.identity(), _s);
+      this.decor.add(new THREE.CylinderGeometry(0.8 + this.rand(), 1.1 + this.rand(), 0.35, 6), _m, PAL.basalt, PAL.basaltSide);
+    }
+  }
   _decorScenery() {
-    // islas lejanas y nubes para dar profundidad (todo fusionado en una malla)
     const b = this.bounds.clone(); b.expandByScalar(4);
     const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, sz = Math.max(b.max.z - b.min.z, 30);
+    const lava = this.theme === 'lava';
     for (let i = 0; i < 16; i++) {
       const side = i % 2 ? 1 : -1;
       const x = cx + side * (18 + this.rand() * 26), z = b.min.z + this.rand() * sz, y = -6 + this.rand() * 14;
       const r = 1.5 + this.rand() * 3;
       _m.compose(_v.set(x, y, z), _q.identity(), _s);
-      this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.8, 7), _m, PAL.grass, PAL.grassSide);
-      _m.compose(_v.set(x, y - 0.4 - r * 0.7, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
-      this.decor.add(new THREE.ConeGeometry(r * 0.9, r * 1.4, 7), _m, PAL.rock, PAL.rock, PAL.rockDark);
-      if (this.rand() < 0.6) {
-        const h = 1 + this.rand() * 3;
-        _m.compose(_v.set(x + 0.3, y + 0.4 + h / 2, z), _q.identity(), _s);
-        this.decor.add(new THREE.CylinderGeometry(0.35, 0.4, h, 8), _m, PAL.pillar, PAL.pillar);
+      if (lava) {
+        this.decor.add(new THREE.CylinderGeometry(r, r * 0.85, 0.9, 7), _m, PAL.basaltTop, PAL.basaltSide);
+        _m.compose(_v.set(x, y - 0.4 - r * 0.9, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
+        this.decor.add(new THREE.ConeGeometry(r * 0.95, r * 1.6, 7), _m, PAL.basaltSide, PAL.basaltSide, PAL.basaltBottom);
+        if (this.rand() < 0.45) {
+          const h = 2 + this.rand() * 5;
+          _m.compose(_v.set(x + 0.2, y + 0.4 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.ConeGeometry(0.55, h, 6), _m, PAL.basalt, PAL.basaltSide);
+        }
+      } else {
+        this.decor.add(new THREE.CylinderGeometry(r, r * 0.9, 0.8, 7), _m, PAL.grass, PAL.grassSide);
+        _m.compose(_v.set(x, y - 0.4 - r * 0.7, z), _q.setFromEuler(_e.set(Math.PI, 0, 0)), _s);
+        this.decor.add(new THREE.ConeGeometry(r * 0.9, r * 1.4, 7), _m, PAL.rock, PAL.rock, PAL.rockDark);
+        if (this.rand() < 0.6) {
+          const h = 1 + this.rand() * 3;
+          _m.compose(_v.set(x + 0.3, y + 0.4 + h / 2, z), _q.identity(), _s);
+          this.decor.add(new THREE.CylinderGeometry(0.35, 0.4, h, 8), _m, PAL.pillar, PAL.pillar);
+        }
       }
     }
-    for (let i = 0; i < 14; i++) {
-      const x = cx + (this.rand() - 0.5) * 90, z = b.min.z + this.rand() * sz, y = -16 + this.rand() * 8;
-      for (let k = 0; k < 3; k++) {
-        const r = 1.6 + this.rand() * 1.8;
-        _m.compose(_v.set(x + k * 1.8 - 1.8, y + (k === 1 ? 0.6 : 0), z + this.rand()), _q.identity(), _s.set(1.3, 0.7, 1));
-        this.decor.add(new THREE.IcosahedronGeometry(r, 0), _m, PAL.cloud, 0xf3f8ff, 0xdfe9f5);
+    if (!lava) {
+      for (let i = 0; i < 14; i++) {
+        const x = cx + (this.rand() - 0.5) * 90, z = b.min.z + this.rand() * sz, y = -16 + this.rand() * 8;
+        for (let k = 0; k < 3; k++) {
+          const r = 1.6 + this.rand() * 1.8;
+          _m.compose(_v.set(x + k * 1.8 - 1.8, y + (k === 1 ? 0.6 : 0), z + this.rand()), _q.identity(), _s.set(1.3, 0.7, 1));
+          this.decor.add(new THREE.IcosahedronGeometry(r, 0), _m, PAL.cloud, 0xf3f8ff, 0xdfe9f5);
+        }
+        _s.set(1, 1, 1);
       }
-      _s.set(1, 1, 1);
+    } else {
+      // humo / ceniza lejana
+      for (let i = 0; i < 12; i++) {
+        const x = cx + (this.rand() - 0.5) * 80, z = b.min.z + this.rand() * sz, y = 8 + this.rand() * 18;
+        const r = 1.4 + this.rand() * 2.2;
+        _m.compose(_v.set(x, y, z), _q.identity(), _s.set(1.4, 0.8, 1.2));
+        this.decor.add(new THREE.IcosahedronGeometry(r, 0), _m, 0x5a4a42, 0x3a3028, 0x2a2018);
+        _s.set(1, 1, 1);
+      }
     }
   }
   updateCoins(t) {
@@ -439,8 +625,14 @@ export class Level {
   update(dt) {
     this.time += dt;
     for (const e of this.entities) e.update(this.time, dt);
+    if (this.lavaGlow) this.lavaGlow.material.opacity = 0.28 + Math.sin(this.time * 2.2) * 0.12;
+    if (this.lavaSea) this.lavaSea.material.color.setRGB(1, 0.18 + Math.sin(this.time * 1.5) * 0.06, 0.04);
   }
-  resetDynamic() { for (const e of this.entities) if (e.type === 'crumble') { e.reset(); e.mesh.rotation.x = 0; e.mesh.scale.setScalar(1); } }
+  resetDynamic() {
+    for (const e of this.entities) {
+      if (e.type === 'crumble' || e.type === 'sink') { e.reset(); if (e.mesh) { e.mesh.rotation.x = 0; e.mesh.scale.setScalar(1); } }
+    }
+  }
   dispose() {
     this.scene.remove(this.group);
     this.group.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material && o.material !== this.mat) o.material.dispose(); });

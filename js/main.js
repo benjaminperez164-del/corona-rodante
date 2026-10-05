@@ -1,11 +1,11 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=2';
-import { Level } from './world.js?v=2';
-import { LEVELS } from './levels.js?v=2';
-import { Input } from './input.js?v=2';
-import { Sfx } from './audio.js?v=2';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=2';
+import { Ball, stepBall } from './physics.js?v=3';
+import { Level } from './world.js?v=3';
+import { LEVELS, WORLDS } from './levels.js?v=3';
+import { Input } from './input.js?v=3';
+import { Sfx } from './audio.js?v=3';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=3';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -64,6 +64,40 @@ Object.assign(sunLight.shadow.camera, { left: -16, right: 16, top: 16, bottom: -
 sunLight.shadow.bias = -0.0006; sunLight.shadow.normalBias = 0.03;
 scene.add(sunLight); scene.add(sunLight.target);
 
+const THEMES = {
+  sky: {
+    fog: 0xd4f0ff, hemiSky: 0xeaf7ff, hemiGround: 0xffd9a0, hemiI: 1.9,
+    sun: 0xfff4e0, sunI: 2.1, skyTop: 0x2fa8ff, skyMid: 0x9fdcff, skyHor: 0xe4f6ff, skyBot: 0xffe7c4,
+  },
+  lava: {
+    fog: 0x4a2010, hemiSky: 0xffb080, hemiGround: 0x3a1810, hemiI: 1.55,
+    sun: 0xffc090, sunI: 1.85, skyTop: 0x1a0a08, skyMid: 0x5a2010, skyHor: 0xc45018, skyBot: 0xff6a20,
+  },
+};
+let currentTheme = 'sky';
+function rebuildSky(th) {
+  const t = THEMES[th] || THEMES.sky;
+  const geo = sky.geometry; const cols = geo.attributes.color;
+  const top = new THREE.Color(t.skyTop), mid = new THREE.Color(t.skyMid), hor = new THREE.Color(t.skyHor), bot = new THREE.Color(t.skyBot);
+  const c = new THREE.Color(); const pos = geo.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i) / 300;
+    if (y > 0.35) c.copy(mid).lerp(top, (y - 0.35) / 0.65); else if (y > 0) c.copy(hor).lerp(mid, y / 0.35); else c.copy(hor).lerp(bot, Math.min(1, -y * 2.5));
+    cols.setXYZ(i, c.r, c.g, c.b);
+  }
+  cols.needsUpdate = true;
+}
+function applyTheme(th) {
+  if (th === currentTheme) return;
+  currentTheme = th;
+  const t = THEMES[th] || THEMES.sky;
+  scene.fog.color.set(t.fog); scene.background.set(t.fog);
+  hemi.color.set(t.hemiSky); hemi.groundColor.set(t.hemiGround); hemi.intensity = t.hemiI;
+  sunLight.color.set(t.sun); sunLight.intensity = t.sunI;
+  rebuildSky(th);
+  document.body.classList.toggle('theme-lava', th === 'lava');
+}
+
 // ---------------- Bola ----------------
 const ball = new Ball();
 const ballMesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 28, 18), skinMaterial(save.skin));
@@ -111,7 +145,7 @@ const sfx = new Sfx(); sfx.music = save.opts.music && !save.muted; sfx.sfx = sav
 const G = {
   state: 'title', level: null, levelIndex: 0, checkpoint: new THREE.Vector3(), coins: 0, time: 0, timerOn: false,
   deaths: 0, dead: false, deadT: 0, deadKind: '', winT: 0, shake: 0, lastGroundY: 0, cool: {}, t: 0, returnTo: 'title',
-  camPos: new THREE.Vector3(0, 6, 10), camLook: new THREE.Vector3(), followY: 0, bot: null, hintT: 0, hintShowing: false,
+  camPos: new THREE.Vector3(0, 6, 10), camLook: new THREE.Vector3(), followY: 0, bot: null, hintT: 0, hintShowing: false, selectedWorld: 0,
 };
 const DT = 1 / 120;
 
@@ -160,13 +194,41 @@ function updateHUD() {
   $('btn-mute').textContent = save.muted ? '🔇' : '🔊';
 }
 
+function worldUnlocked(wi) {
+  const w = WORLDS[wi];
+  if (!w) return false;
+  if (wi === 0) return true;
+  const need = w.unlockIndex != null ? w.unlockIndex : (wi * 8 - 1);
+  return !!(save.levels[need] && save.levels[need].done);
+}
+function globalIndex(wi, li) {
+  let g = 0; for (let k = 0; k < wi; k++) g += WORLDS[k].levels.length; return g + li;
+}
 function renderLevels() {
+  const tabs = $('world-tabs'); tabs.innerHTML = '';
+  WORLDS.forEach((w, wi) => {
+    const unlocked = worldUnlocked(wi);
+    const b = document.createElement('button');
+    b.className = 'world-tab' + (wi === G.selectedWorld ? ' on' : '') + (w.theme === 'lava' ? ' lava' : '') + (unlocked ? '' : ' locked');
+    b.textContent = unlocked ? `${wi + 1}. ${w.name}` : `🔒 ${w.name}`;
+    b.onclick = () => {
+      sfx.play('click');
+      if (!unlocked) { toast('Completa el Mundo 1 para desbloquear'); return; }
+      G.selectedWorld = wi; renderLevels();
+    };
+    tabs.appendChild(b);
+  });
+  const w = WORLDS[G.selectedWorld] || WORLDS[0];
+  $('levels-title').textContent = w.name;
   const grid = $('level-grid'); grid.innerHTML = '';
-  LEVELS.forEach((L, i) => {
-    const unlocked = i === 0 || (save.levels[i - 1] && save.levels[i - 1].done);
+  w.levels.forEach((L, li) => {
+    const i = globalIndex(G.selectedWorld, li);
+    const prevDone = li === 0 ? (G.selectedWorld === 0 || worldUnlocked(G.selectedWorld)) : !!(save.levels[i - 1] && save.levels[i - 1].done);
+    const unlocked = prevDone && worldUnlocked(G.selectedWorld);
     const st = (save.levels[i] && save.levels[i].stars) || [false, false, false];
-    const b = document.createElement('button'); b.className = 'lvl' + (unlocked ? '' : ' locked');
-    b.innerHTML = `<div class="n">${unlocked ? i + 1 : '🔒'}</div><div class="nm">${unlocked ? L.name : 'Bloqueado'}</div><div class="st">${st.map(s => `<span class="${s ? 'on' : ''}">★</span>`).join('')}</div>`;
+    const b = document.createElement('button');
+    b.className = 'lvl' + (unlocked ? '' : ' locked') + (w.theme === 'lava' ? ' lava' : '');
+    b.innerHTML = `<div class="n">${unlocked ? li + 1 : '🔒'}</div><div class="nm">${unlocked ? L.name : 'Bloqueado'}</div><div class="st">${st.map(s => `<span class="${s ? 'on' : ''}">★</span>`).join('')}</div>`;
     b.dataset.level = i;
     b.onclick = () => { if (!unlocked) { sfx.play('click'); toast('Termina el nivel anterior para desbloquear'); return; } sfx.play('click'); startLevel(i, true); };
     grid.appendChild(b);
@@ -201,6 +263,7 @@ function renderOptions() {
 function loadLevel(i) {
   if (G.level) G.level.dispose();
   G.levelIndex = i; G.level = new Level(scene, LEVELS[i], i);
+  applyTheme(LEVELS[i].theme || 'sky');
   resetRun();
 }
 function resetRun() {
@@ -212,7 +275,8 @@ function resetRun() {
   ballMesh.visible = true; ballMesh.scale.setScalar(1);
   if (L.crownObj) { L.crownObj.position.copy(L.crownPos); L.crownObj.scale.setScalar(1); }
   G.followY = ball.pos.y; snapCamera();
-  $('hud-level').textContent = `${G.levelIndex + 1} · ${LEVELS[G.levelIndex].name}`;
+  const Ld = LEVELS[G.levelIndex];
+  $('hud-level').textContent = `${(Ld.localIndex != null ? Ld.localIndex : G.levelIndex) + 1} · ${Ld.name}`;
   updateHUD();
   if (G.bot) G.bot.i = 0;
 }
@@ -229,7 +293,12 @@ async function startLevel(i, fromMenu) {
 }
 function pause() { if (G.state !== 'play') return; G.state = 'pause'; setPlayingUI(false); $('hud').classList.remove('hidden'); showScreen('scr-pause'); }
 function resume() { G.state = 'play'; showScreen(null); setPlayingUI(true); }
-function toTitle() { G.state = 'title'; setPlayingUI(false); showScreen('scr-title'); sfx.musicOn = true; }
+function toTitle() {
+  G.state = 'title'; setPlayingUI(false); showScreen('scr-title'); sfx.musicOn = true;
+  const doneW1 = save.levels[7] && save.levels[7].done;
+  $('title-world').textContent = doneW1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes';
+  applyTheme('sky');
+}
 
 // ---------------- Lógica de juego ----------------
 function cooldown(k, t) { if ((G.cool[k] || 0) > G.t) return false; G.cool[k] = G.t + t; return true; }
@@ -283,7 +352,9 @@ function showWin(stars, earned) {
     <div class="${stars[2] ? 'ok' : 'no'}">★ Tiempo: ${fmtTime(G.time)} (meta ${fmtTime(L.target)})</div>
     <div>+${earned} <span class="coin-ico" style="vertical-align:-4px"></span></div>`;
   $('btn-next').classList.toggle('hidden', G.levelIndex >= LEVELS.length - 1);
-  if (G.levelIndex >= LEVELS.length - 1) toast('¡Has completado las Ruinas Flotantes! 👑', 4);
+  const Ld = LEVELS[G.levelIndex];
+  const w = WORLDS[Ld.worldIndex || 0];
+  if (Ld.localIndex === w.levels.length - 1) toast(`¡Has completado ${w.name}! 👑`, 4);
 }
 
 function fixedStep(dt) {
@@ -407,6 +478,11 @@ function render(dt) {
   if (ballMesh.scale.x < 1) ballMesh.scale.setScalar(Math.min(1, ballMesh.scale.x + dt * 5));
   for (const cp of (L ? L.checkpoints : [])) { cp.flag.rotation.y = Math.sin(L.time * 3 + cp.pos.z) * 0.25; cp.ring.material.opacity = cp.active ? 0.85 : 0.45 + Math.sin(L.time * 4) * 0.15; }
   fx.update(dt);
+  if (currentTheme === 'lava' && (G.state === 'play' || G.state === 'won') && Math.random() < dt * 8) {
+    const bp = ball.pos;
+    fx.burst(_v.set(bp.x + (Math.random() - 0.5) * 14, bp.y - 2 + Math.random() * 4, bp.z + (Math.random() - 0.5) * 18 - 4),
+      1, [0xff6a1a, 0xffb020, 0xff3a0a], { speed: 0.8, up: 2.5, life: 1.4, g: -1.5, size: 0.7, spread: 2 });
+  }
   updateCamera(dt);
   // luz y sombra siguen a la bola
   const focus = G.state === 'title' ? L.spawn : ball.pos;
@@ -427,9 +503,12 @@ addEventListener('resize', resize); addEventListener('orientationchange', () => 
 function on(id, fn) { $(id).addEventListener('click', (e) => { sfx.init(); fn(e); }); }
 on('btn-play', () => {
   sfx.play('click');
-  // primer nivel sin terminar
   let i = 0; while (i < LEVELS.length - 1 && save.levels[i] && save.levels[i].done) i++;
-  if (!save.levels[0] || !save.levels[0].done) startLevel(0, true); else { G.returnTo = 'scr-title'; showScreen('scr-levels'); }
+  if (!save.levels[0] || !save.levels[0].done) startLevel(0, true);
+  else {
+    G.selectedWorld = LEVELS[i].worldIndex || 0;
+    G.returnTo = 'scr-title'; showScreen('scr-levels');
+  }
 });
 on('btn-shop', () => { sfx.play('click'); showScreen('scr-shop'); });
 on('btn-options', () => { sfx.play('click'); G.returnTo = 'scr-title'; showScreen('scr-options'); });
@@ -516,7 +595,7 @@ const _bt = new THREE.Vector3();
 
 // ---------------- API de depuración / pruebas ----------------
 window.__game = {
-  G, ball, input, LEVELS, get save() { return save; },
+  G, ball, input, LEVELS, WORLDS, get save() { return save; },
   state: () => ({ state: G.state, level: G.levelIndex, pos: ball.pos.toArray().map(v => +v.toFixed(2)), coins: G.coins, total: G.level ? G.level.coins.length : 0, time: +G.time.toFixed(2), deaths: G.deaths, dead: G.dead, grounded: ball.sinceGround < 0.02, savedCoins: save.coins }),
   start: (i) => startLevel(i, true),
   step(n, mv) { if (mv) input.override = mv; for (let k = 0; k < n; k++) fixedStep(DT); return this.state(); },
@@ -537,5 +616,7 @@ resize();
 loadLevel(0);
 G.state = 'title';
 showScreen('scr-title');
+const _d1 = save.levels[7] && save.levels[7].done;
+if ($('title-world')) $('title-world').textContent = _d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes';
 $('loading').classList.add('hidden');
 requestAnimationFrame((t) => { last = t; frame(t); });
