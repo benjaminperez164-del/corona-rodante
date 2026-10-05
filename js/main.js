@@ -1,13 +1,13 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=44';
-import { Level } from './world.js?v=44';
-import { LEVELS, WORLDS } from './levels.js?v=44';
-import { Input } from './input.js?v=44';
-import { Sfx } from './audio.js?v=44';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=44';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=44';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=44';
+import { Ball, stepBall } from './physics.js?v=48';
+import { Level } from './world.js?v=48';
+import { LEVELS, WORLDS } from './levels.js?v=48';
+import { Input } from './input.js?v=48';
+import { Sfx } from './audio.js?v=48';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=48';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=48';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=48';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -905,7 +905,7 @@ loadLevel(0);
 G.state = 'title';
 showScreen('scr-title');
 function updateTitleBadge() {
-  if ($('ver-badge')) $('ver-badge').textContent = 'v0.4';
+  if ($('ver-badge')) $('ver-badge').textContent = 'v0.4.1';
   if (!$('title-world')) return;
   const marks = [7, 15, 23, 31, 39, 47, 55, 63, 71];
   const labels = [

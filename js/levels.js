@@ -734,36 +734,38 @@ const WORLD3_LEVELS = [
 
 const WORLD4_LEVELS = [
   {
-    name: 'Sendero Verde', target: 38,
-    hint: '¡Bienvenido a la selva! El barro te frena.',
+    name: 'Sendero Verde', target: 44,
+    hint: '¡Selva densa! Barro, troncos y monedas arriesgadas.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'jungle', pillars: true });
-      b.plat(0, 0, -8, 5, 10, { type: 'jungle' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
-      b.mudPad(0, 0, -18, 5, 10); b.coin(0, 0, -18);
-      b.plat(0, 0, -28, 5.5, 10, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -28);
-      b.plat(0, 0, -36, 4.5, 10, { type: 'jungle' });
-      b.mudPad(0, 0, -46, 4.5, 10);
-      b.plat(0, 0, -56, 5.5, 10, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -64, 4.5, 10, { type: 'jungle' }); b.coin(0, 0, -64);
-      b.plat(0, 0, -74, 8, 10, { type: 'jungle', pillars: true });
-      b.crown(0, 0, -75);
-      b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -18); b.wp(0, 0, -28);
-      b.wp(0, 0, -36); b.wp(0, 0, -46); b.wp(0, 0, -56); b.wp(0, 0, -64); b.wp(0, 0, -75);
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'jungle', pillars: true });
+      b.plat(0, 0, -42, 4.4, 76, { type: 'jungle' });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      b.mudPad(0, 0, -16, 4.4, 10);
+      b.rollingLog(0, 0, -26, { to: [3.2, 0, 0], period: 2.9 });
+      b.coin(1.7, 0, -26);
+      b.checkpoint(0, 0, -38);
+      b.mudPad(0, 0, -48, 4.4, 10);
+      b.rollingLog(0, 0, -58, { to: [-3.2, 0, 0], period: 2.7, phase: 0.4 });
+      b.coin(-1.7, 0, -58);
+      b.plat(0, 0, -78, 5.6, 10, { type: 'jungle', pillars: true });
+      b.crown(0, 0, -79);
+      b.wp(0, 0, -2); b.wp(0, 0, -16);
+      b.wp(-1.6, 0, -26, 't'); b.wp(0, 0, -38);
+      b.wp(0, 0, -48); b.wp(1.6, 0, -58, 't'); b.wp(0, 0, -70); b.wp(0, 0, -79);
     },
   },
   {
-    name: 'Troncos Rodantes', target: 45,
+    name: 'Troncos Rodantes', target: 52,
     hint: '¡Cuidado con los troncos que ruedan!',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'jungle', pillars: true });
       b.plat(0, 0, -45, 12, 84, { type: 'jungle' }); // suelo continuo ancho
       b.coinRow(4.5, 0, -8, 4.5, 0, -30, 4);
-      b.rollingLog(0, 0, -18, { to: [0, 0, -12], period: 6.5, len: 3.2 });
+      b.rollingLog(0, 0, -18, { to: [0, 0, -12], period: 6.04, len: 3.2 });
       b.checkpoint(0, 0, -36);
       b.coin(-4.5, 0, -46); b.coin(4.5, 0, -58);
-      b.rollingLog(-3.5, 0, -50, { to: [7, 0, 0], period: 6.0, len: 3.0 });
-      b.rollingLog(3.5, 0, -60, { to: [-7, 0, 0], period: 6.0, phase: 0.5, len: 3.0 });
-      b.checkpoint(0, 0, -72);
+      b.rollingLog(-3.5, 0, -50, { to: [7, 0, 0], period: 5.58, len: 3.0 });
+      b.rollingLog(3.5, 0, -60, { to: [-7, 0, 0], period: 5.58, phase: 0.5, len: 3.0 });
       b.coin(4.5, 0, -80); b.coin(-4.5, 0, -84);
       b.plat(0, 0, -92, 8, 10, { type: 'jungle', pillars: true });
       b.crown(0, 0, -93);
@@ -772,27 +774,21 @@ const WORLD4_LEVELS = [
       b.wp(4.5, 0, -82); b.wp(0, 0, -93);
     },
   },
-
-
-
-
   {
-    name: 'Lianas Colgantes', target: 52,
+    name: 'Lianas Colgantes', target: 58,
     hint: 'Salta a las plataformas que se balancean.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'jungle', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 6, { type: 'jungle', pillars: true });
       b.plat(0, 0, -10, 4.5, 14, { type: 'jungle' }); b.coinRow(0, 0, -5, 0, 0, -15, 3);
-      b.plat(0, 0, -20, 5, 5, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -20);
-      const v1 = b.mover(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
-      const v2 = b.mover(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
+      b.plat(0, 0, -20, 4.6, 5, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -20);
+      const v1 = b.mover(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.68, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
+      const v2 = b.mover(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.68, phase: 0.5, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
       b.coin(0, 0.4, -25); b.coin(0, 0.4, -30);
-      b.plat(0, 0, -36, 5, 6, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -36);
-      const v3 = b.mover(-2.0, 0, -42, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
-      const v4 = b.mover(-2.0, 0, -47, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
+      b.plat(0, 0, -36, 4.6, 6, { type: 'jungle', pillars: true }); const v3 = b.mover(-2.0, 0, -42, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.68, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
+      const v4 = b.mover(-2.0, 0, -47, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.68, phase: 0.5, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
       b.coin(0, 0.4, -42); b.coin(0, 0.4, -47);
-      b.plat(0, 0, -54, 5, 6, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -54);
-      b.plat(0, 0, -62, 4, 12, { type: 'jungle' }); b.coinRow(0, 0, -58, 0, 0, -66, 2);
-      b.plat(0, 0, -72, 8, 8, { type: 'jungle', pillars: true });
+      b.plat(0, 0, -54, 5.8, 6, { type: 'jungle', pillars: true }); b.plat(0, 0, -62, 4, 12, { type: 'jungle' }); b.coinRow(0, 0, -58, 0, 0, -66, 2);
+      b.plat(0, 0, -72, 5.8, 8, { type: 'jungle', pillars: true });
       b.crown(0, 0, -73);
       b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -20);
       b.wp(0, 0, -22.2, 'w', 0, { cond: () => Math.abs(v1.c.pos.x) < 0.4 });
@@ -811,27 +807,21 @@ const WORLD4_LEVELS = [
       b.wp(0, 0, -54); b.wp(0, 0, -64); b.wp(0, 0, -73);
     },
   },
-
-
-
-
   {
-    name: 'Troncos Giratorios', target: 50,
+    name: 'Troncos Giratorios', target: 56,
     hint: 'Las plataformas giran. ¡Mantén el equilibrio!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'jungle', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 6, { type: 'jungle', pillars: true });
       b.plat(0, 0, -10, 4.5, 14, { type: 'jungle' }); b.coinRow(0, 0, -5, 0, 0, -15, 3);
-      b.plat(0, 0, -20, 5, 5, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -20);
-      const r1 = b.mover(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, spin: 0.55, color: 0x8a5a2a, side: 0xd4b078, h: 0.55 });
-      const r2 = b.mover(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5, spin: -0.55, color: 0x8a5a2a, side: 0xd4b078, h: 0.55 });
+      b.plat(0, 0, -20, 4.6, 5, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -20);
+      const r1 = b.mover(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.68, spin: 0.55, color: 0x8a5a2a, side: 0xd4b078, h: 0.55 });
+      const r2 = b.mover(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.68, phase: 0.5, spin: -0.55, color: 0x8a5a2a, side: 0xd4b078, h: 0.55 });
       b.coin(0, 0.4, -25); b.coin(0, 0.4, -30);
-      b.plat(0, 0, -36, 5, 6, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -36);
-      const r3 = b.mover(-2.0, 0, -42, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, spin: 0.6, color: 0x8a5a2a, side: 0xd4b078, h: 0.55 });
-      const r4 = b.mover(-2.0, 0, -47, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5, spin: -0.6, color: 0x8a5a2a, side: 0xd4b078, h: 0.55 });
+      b.plat(0, 0, -36, 4.6, 6, { type: 'jungle', pillars: true }); const r3 = b.mover(-2.0, 0, -42, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.68, spin: 0.6, color: 0x8a5a2a, side: 0xd4b078, h: 0.55 });
+      const r4 = b.mover(-2.0, 0, -47, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.68, phase: 0.5, spin: -0.6, color: 0x8a5a2a, side: 0xd4b078, h: 0.55 });
       b.coin(0, 0.4, -42); b.coin(0, 0.4, -47);
-      b.plat(0, 0, -54, 5, 6, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -54);
-      b.plat(0, 0, -62, 4, 12, { type: 'jungle' });
-      b.plat(0, 0, -72, 8, 8, { type: 'jungle', pillars: true });
+      b.plat(0, 0, -54, 5.8, 6, { type: 'jungle', pillars: true }); b.plat(0, 0, -62, 4, 12, { type: 'jungle' });
+      b.plat(0, 0, -72, 5.8, 8, { type: 'jungle', pillars: true });
       b.crown(0, 0, -73);
       b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -20);
       b.wp(0, 0, -22.2, 'w', 0, { cond: () => Math.abs(r1.c.pos.x) < 0.4 });
@@ -851,21 +841,20 @@ const WORLD4_LEVELS = [
     },
   },
   {
-    name: 'Hojas Rebotadoras', target: 48,
+    name: 'Hojas Rebotadoras', target: 54,
     hint: 'Las hojas grandes te lanzan. ¡Boing verde!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'jungle', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'jungle', pillars: true });
       b.plat(0, 0, -10, 4.5, 14, { type: 'jungle' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
       b.leafTramp(0, 0, -14, { power: 14 });
       b.coin(0, 3.8, -17);
-      b.plat(0, 3.5, -22, 5.5, 8, { type: 'jungle', pillars: true }); b.checkpoint(0, 3.5, -22);
+      b.plat(0, 3.5, -22, 4.6, 8, { type: 'jungle', pillars: true }); b.checkpoint(0, 3.5, -22);
       b.plat(0, 3.5, -30, 4.5, 14, { type: 'jungle' });
       b.leafTramp(0, 3.5, -34, { power: 14 });
       b.coin(0, 7.0, -37);
-      b.plat(0, 6.8, -42, 5.5, 8, { type: 'jungle', pillars: true }); b.checkpoint(0, 6.8, -42);
-      b.plat(0, 6.8, -50, 4.5, 14, { type: 'jungle' });
+      b.plat(0, 6.8, -42, 4.6, 8, { type: 'jungle', pillars: true }); b.plat(0, 6.8, -50, 4.5, 14, { type: 'jungle' });
       b.leafTramp(0, 6.8, -54, { power: 13 });
-      b.plat(0, 9.5, -62, 8, 8, { type: 'jungle', pillars: true });
+      b.plat(0, 9.5, -62, 5.8, 8, { type: 'jungle', pillars: true });
       b.crown(0, 9.5, -63);
       b.wp(0, 0, -2); b.wp(0, 0, -14, '', 4); b.wp(0, 3.5, -22);
       b.wp(0, 3.5, -34, '', 4); b.wp(0, 6.8, -42);
@@ -873,18 +862,17 @@ const WORLD4_LEVELS = [
     },
   },
   {
-    name: 'Barro y Troncos', target: 52,
+    name: 'Barro y Troncos', target: 58,
     hint: 'Barro + troncos. ¡Pasa con calma!',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'jungle', pillars: true });
       b.mudPad(0, 0, -10, 5, 12); b.coin(0, 0, -10);
       b.plat(0, 0, -20, 6, 8, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -20);
       b.plat(0, 0, -40, 10, 36, { type: 'jungle' });
-      b.rollingLog(0, 0, -30, { to: [5, 0, 0], period: 5.5, len: 3.0 });
+      b.rollingLog(0, 0, -30, { to: [5, 0, 0], period: 5.12, len: 3.0 });
       b.coin(4, 0, -34);
-      b.rollingLog(0, 0, -44, { to: [-5, 0, 0], period: 5.2, len: 3.0, phase: 0.4 });
-      b.plat(0, 0, -56, 5.5, 8, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -56);
-      b.mudPad(0, 0, -66, 4.5, 10);
+      b.rollingLog(0, 0, -44, { to: [-5, 0, 0], period: 4.84, len: 3.0, phase: 0.4 });
+      b.plat(0, 0, -56, 5.5, 8, { type: 'jungle', pillars: true }); b.mudPad(0, 0, -66, 4.5, 10);
       b.plat(0, 0, -76, 8, 8, { type: 'jungle', pillars: true });
       b.crown(0, 0, -77);
       b.wp(0, 0, -2); b.wp(0, 0, -10); b.wp(0, 0, -20);
@@ -892,28 +880,23 @@ const WORLD4_LEVELS = [
       b.wp(0, 0, -66); b.wp(0, 0, -77);
     },
   },
-
-
-
   {
-    name: 'Canopy Salvaje', target: 58,
+    name: 'Canopy Salvaje', target: 64,
     hint: 'Lianas, hojas y barro juntos.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'jungle', pillars: true });
-      b.plat(0, 0, -10, 5, 12, { type: 'jungle' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'jungle', pillars: true });
+      b.plat(0, 0, -10, 4.6, 12, { type: 'jungle' });
       // barro en el centro; laterales sólidos para no atascarse
       b.plat(-3.2, 0, -18, 2.2, 10, { type: 'jungle' });
       b.plat(3.2, 0, -18, 2.2, 10, { type: 'jungle' });
       b.mudPad(0, 0, -18, 4, 10); b.coin(0, 0, -18);
-      b.plat(0, 0, -26, 6, 6, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -26);
-      const v1 = b.mover(-1.8, 0, -31.2, 3.2, 3.2, { to: [3.6, 0, 0], period: 4.4, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
-      const v2 = b.mover(-1.8, 0, -35.6, 3.2, 3.2, { to: [3.6, 0, 0], period: 4.4, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
-      b.plat(0, 0, -41, 6, 4, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -41);
-      b.plat(0, 0, -48, 4.5, 12, { type: 'jungle' });
+      b.plat(0, 0, -26, 4.6, 6, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -26);
+      const v1 = b.mover(-1.8, 0, -31.2, 3.2, 3.2, { to: [3.6, 0, 0], period: 4.05, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
+      const v2 = b.mover(-1.8, 0, -35.6, 3.2, 3.2, { to: [3.6, 0, 0], period: 4.05, color: 0x5ecf4a, side: 0x2e8a30, h: 0.5 });
+      b.plat(0, 0, -41, 4.6, 4, { type: 'jungle', pillars: true }); b.plat(0, 0, -48, 4.5, 12, { type: 'jungle' });
       b.leafTramp(0, 0, -52, { power: 13 });
-      b.plat(0, 3.2, -60, 6, 8, { type: 'jungle', pillars: true }); b.checkpoint(0, 3.2, -60);
-      b.plat(0, 3.2, -70, 5, 12, { type: 'jungle' }); b.coin(0, 3.2, -70);
-      b.plat(0, 3.2, -82, 8, 10, { type: 'jungle', pillars: true });
+      b.plat(0, 3.2, -60, 5.8, 8, { type: 'jungle', pillars: true }); b.plat(0, 3.2, -70, 4.6, 12, { type: 'jungle' }); b.coin(0, 3.2, -70);
+      b.plat(0, 3.2, -82, 5.8, 10, { type: 'jungle', pillars: true });
       b.crown(0, 3.2, -83);
       b.wp(0, 0, -2); b.wp(3.0, 0, -18); b.wp(0, 0, -26);
       b.wp(0, 0, -28.4, 'w', 0, { cond: () => Math.abs(v1.c.pos.x) < 0.4 });
@@ -926,9 +909,8 @@ const WORLD4_LEVELS = [
       b.wp(0, 3.2, -70); b.wp(0, 3.2, -83);
     },
   },
-
   {
-    name: 'Corona de la Selva', target: 75,
+    name: 'Corona de la Selva', target: 88,
     hint: '¡La corona entre lianas! Usa todo lo aprendido.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'jungle', pillars: true });
@@ -936,17 +918,15 @@ const WORLD4_LEVELS = [
       b.mudPad(0, 0, -16, 4.5, 10); b.coin(0, 0, -16);
       b.plat(0, 0, -26, 5.5, 8, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -26);
       b.plat(0, 0, -42, 10, 28, { type: 'jungle' });
-      b.rollingLog(0, 0, -34, { to: [5, 0, 0], period: 5.5, len: 3.0 });
-      b.rollingLog(0, 0, -44, { to: [-5, 0, 0], period: 5.5, phase: 0.5, len: 3.0 });
+      b.rollingLog(0, 0, -34, { to: [5, 0, 0], period: 5.12, len: 3.0 });
+      b.rollingLog(0, 0, -44, { to: [-5, 0, 0], period: 5.12, phase: 0.5, len: 3.0 });
       b.coin(0, 0, -38);
       b.plat(0, 0, -58, 6, 6, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -58);
-      const v1 = b.vineSwing(0, 0, -63.2, { w: 3.2, d: 3.2, amp: 3.6, period: 4.4 });
-      const v2 = b.vineSwing(0, 0, -67.6, { w: 3.2, d: 3.2, amp: 3.6, period: 4.4 });
-      b.plat(0, 0, -73, 6, 4, { type: 'jungle', pillars: true }); b.checkpoint(0, 0, -73);
-      b.plat(0, 0, -80, 4.5, 12, { type: 'jungle' });
+      const v1 = b.vineSwing(0, 0, -63.2, { w: 3.2, d: 3.2, amp: 3.6, period: 4.09 });
+      const v2 = b.vineSwing(0, 0, -67.6, { w: 3.2, d: 3.2, amp: 3.6, period: 4.09 });
+      b.plat(0, 0, -73, 6, 4, { type: 'jungle', pillars: true }); b.plat(0, 0, -80, 4.5, 12, { type: 'jungle' });
       b.leafTramp(0, 0, -84, { power: 14 });
-      b.plat(0, 3.5, -92, 5.5, 8, { type: 'jungle', pillars: true }); b.checkpoint(0, 3.5, -92);
-      b.plat(0, 3.5, -104, 7, 20, { type: 'jungle' });
+      b.plat(0, 3.5, -92, 5.5, 8, { type: 'jungle', pillars: true }); b.plat(0, 3.5, -104, 7, 20, { type: 'jungle' });
       b.rotLog(0, 3.65, -102, { w: 5.5, d: 2.8, speed: 0.35 });
       b.plat(0, 3.5, -118, 10, 10, { type: 'jungle', pillars: true });
       b.pillar(-3.2, 3.5, -121, 3); b.pillar(3.2, 3.5, -121, 3);
@@ -967,43 +947,44 @@ const WORLD4_LEVELS = [
 
 const WORLD5_LEVELS = [
   {
-    name: 'Dunas Suaves', target: 38,
-    hint: 'La arena movediza te frena. ¡No te quedes quieto!',
+    name: 'Dunas Suaves', target: 46,
+    hint: 'Remolinos en contra y arenas movedizas.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'sand', pillars: true });
-      b.plat(0, 0, -8, 5, 10, { type: 'sand' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
-      b.quicksand(0, 0, -18, 5, 10); b.coin(0, 0, -18);
-      b.plat(0, 0, -28, 5.5, 10, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -28);
-      b.plat(0, 0, -36, 4.5, 10, { type: 'sand' });
-      b.quicksand(0, 0, -46, 4.5, 10);
-      b.plat(0, 0, -56, 5.5, 10, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -64, 4.5, 10, { type: 'sand' }); b.coin(0, 0, -64);
-      b.plat(0, 0, -74, 8, 10, { type: 'sand', pillars: true });
-      b.crown(0, 0, -75);
-      b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -18); b.wp(0, 0, -28);
-      b.wp(0, 0, -36); b.wp(0, 0, -46); b.wp(0, 0, -56); b.wp(0, 0, -64); b.wp(0, 0, -75);
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'sand', pillars: true });
+      b.plat(0, 0, -42, 4.3, 76, { type: 'sand' });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      b.sandWhirl(0, 0, -18, 4.3, 12, { dir: [0, 0, 1], force: 3.4 });
+      b.quicksand(0, 0, -30, 3.6, 3.6);
+      b.coin(0, 0, -30);
+      b.checkpoint(0, 0, -40);
+      b.sandWhirl(0, 0, -52, 4.3, 12, { dir: [0, 0, 1], force: 3.6 });
+      b.quicksand(0, 0, -64, 3.6, 3.6);
+      b.coin(0, 0, -64);
+      b.plat(0, 0, -80, 5.6, 10, { type: 'sand', pillars: true });
+      b.crown(0, 0, -81);
+      b.wp(0, 0, -2); b.wp(0, 0, -18); b.wp(1.4, 0, -30, 't'); b.wp(0, 0, -40);
+      b.wp(0, 0, -52); b.wp(-1.4, 0, -64, 't'); b.wp(0, 0, -81);
     },
   },
   {
-    name: 'Remolinos de Arena', target: 45,
+    name: 'Remolinos de Arena', target: 54,
     hint: 'Los remolinos empujan. ¡Mira las flechas!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'sand', pillars: true });
-      b.plat(0, 0, -14, 5.5, 22, { type: 'sand' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.1, 8, { type: 'sand', pillars: true });
+      b.plat(0, 0, -14, 4.5, 22, { type: 'sand' });
       b.plat(-3.6, 0, -14, 2.8, 22, { type: 'sand' });
       b.plat(3.6, 0, -14, 2.8, 22, { type: 'sand' });
       b.sandWhirl(0, 0, -14, 5, 16, { dir: [1, 0, 0], force: 3.5 });
       b.coinRow(0, 0, -6, 0, 0, -18, 3);
-      b.plat(0, 0, -28, 7, 8, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -28);
-      b.plat(0, 0, -42, 5.5, 22, { type: 'sand' });
+      b.plat(0, 0, -28, 4.5, 8, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -28);
+      b.plat(0, 0, -42, 4.5, 22, { type: 'sand' });
       b.plat(-3.6, 0, -42, 2.8, 22, { type: 'sand' });
       b.plat(3.6, 0, -42, 2.8, 22, { type: 'sand' });
       b.sandWhirl(0, 0, -42, 5, 16, { dir: [-1, 0, 0], force: 3.5 });
       b.coin(0, 0, -36); b.coin(0, 0, -48);
-      b.plat(0, 0, -56, 7, 8, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -68, 6, 14, { type: 'sand' });
+      b.plat(0, 0, -56, 5.7, 8, { type: 'sand', pillars: true }); b.plat(0, 0, -68, 4.5, 14, { type: 'sand' });
       b.sandWhirl(0, 0, -66, 5, 10, { dir: [0, 0, 1], force: 2.8 });
-      b.plat(0, 0, -80, 8, 8, { type: 'sand', pillars: true });
+      b.plat(0, 0, -80, 5.7, 8, { type: 'sand', pillars: true });
       b.crown(0, 0, -81);
       b.wp(0, 0, -2); b.wp(-1.8, 0, -14); b.wp(0, 0, -24); b.wp(0, 0, -28);
       b.wp(1.8, 0, -42); b.wp(0, 0, -52); b.wp(0, 0, -56);
@@ -1011,22 +992,20 @@ const WORLD5_LEVELS = [
     },
   },
   {
-    name: 'Bloques de Pirámide', target: 52,
+    name: 'Bloques de Pirámide', target: 58,
     hint: 'Bloques deslizantes de piedra. ¡Salta a tiempo!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'sand', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.1, 8, { type: 'sand', pillars: true });
       b.plat(0, 0, -10, 4.5, 14, { type: 'sand' }); b.coinRow(0, 0, -5, 0, 0, -15, 3);
-      b.plat(0, 0, -20, 5.5, 6, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -20);
-      const m1 = b.pyramidBlock(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
-      const m2 = b.pyramidBlock(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      b.plat(0, 0, -20, 4.5, 6, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -20);
+      const m1 = b.pyramidBlock(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.52 });
+      const m2 = b.pyramidBlock(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.52, phase: 0.5 });
       b.coin(0, 0.4, -25); b.coin(0, 0.4, -30);
-      b.plat(0, 0, -36, 5.5, 8, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -36);
-      const m3 = b.pyramidBlock(-2.0, 0, -42, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
-      const m4 = b.pyramidBlock(-2.0, 0, -47, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      b.plat(0, 0, -36, 4.5, 8, { type: 'sand', pillars: true }); const m3 = b.pyramidBlock(-2.0, 0, -42, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.52 });
+      const m4 = b.pyramidBlock(-2.0, 0, -47, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.52, phase: 0.5 });
       b.coin(0, 0.4, -42); b.coin(0, 0.4, -47);
-      b.plat(0, 0, -54, 5.5, 8, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -54);
-      b.plat(0, 0, -62, 4.5, 12, { type: 'sand' });
-      b.plat(0, 0, -72, 8, 8, { type: 'sand', pillars: true });
+      b.plat(0, 0, -54, 5.7, 8, { type: 'sand', pillars: true }); b.plat(0, 0, -62, 4.5, 12, { type: 'sand' });
+      b.plat(0, 0, -72, 5.7, 8, { type: 'sand', pillars: true });
       b.crown(0, 0, -73);
       b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -20);
       b.wp(0, 0, -22.2, 'w', 0, { cond: () => Math.abs(m1.c.pos.x) < 0.4 });
@@ -1046,18 +1025,17 @@ const WORLD5_LEVELS = [
     },
   },
   {
-    name: 'Escarabajos', target: 50,
+    name: 'Escarabajos', target: 58,
     hint: 'Escarabajos que empujan. ¡Esquívalos!',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'sand', pillars: true });
       b.plat(0, 0, -45, 12, 84, { type: 'sand' });
       b.coinRow(4.5, 0, -8, 4.5, 0, -30, 4);
-      b.scarab(0, 0, -18, { to: [0, 0, -12], period: 6.5 });
+      b.scarab(0, 0, -18, { to: [0, 0, -12], period: 6.04 });
       b.checkpoint(0, 0, -36);
       b.coin(-4.5, 0, -46); b.coin(4.5, 0, -58);
-      b.scarab(-3.5, 0, -50, { to: [7, 0, 0], period: 6.0 });
-      b.scarab(3.5, 0, -60, { to: [-7, 0, 0], period: 6.0, phase: 0.5 });
-      b.checkpoint(0, 0, -72);
+      b.scarab(-3.5, 0, -50, { to: [7, 0, 0], period: 5.58 });
+      b.scarab(3.5, 0, -60, { to: [-7, 0, 0], period: 5.58, phase: 0.5 });
       b.coin(4.5, 0, -80); b.coin(-4.5, 0, -84);
       b.plat(0, 0, -92, 8, 10, { type: 'sand', pillars: true });
       b.crown(0, 0, -93);
@@ -1067,18 +1045,17 @@ const WORLD5_LEVELS = [
     },
   },
   {
-    name: 'Arenisca Frágil', target: 48,
+    name: 'Arenisca Frágil', target: 56,
     hint: 'La arenisca se rompe. ¡Pasa rápido!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'sand', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.1, 8, { type: 'sand', pillars: true });
       b.plat(0, 0, -7, 4.5, 8, { type: 'sand' }); b.coin(0, 0, -7);
       for (let i = 0; i < 5; i++) b.sandstone(0, 0, -12.2 - i * 1.85, 2.6, 2.1, { delay: 0.85 });
-      b.plat(0, 0, -25, 5.5, 8, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -25); b.coin(0, 0, -25);
+      b.plat(0, 0, -25, 4.5, 8, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -25); b.coin(0, 0, -25);
       for (let i = 0; i < 5; i++) b.sandstone(0, 0, -30.2 - i * 1.85, 2.6, 2.1, { delay: 0.85 });
-      b.plat(0, 0, -43, 5.5, 8, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -43);
-      b.plat(0, 0, -50, 4, 8, { type: 'sand' });
+      b.plat(0, 0, -43, 4.5, 8, { type: 'sand', pillars: true }); b.plat(0, 0, -50, 4, 8, { type: 'sand' });
       for (let i = 0; i < 4; i++) b.sandstone(0, 0, -56.2 - i * 1.85, 2.6, 2.1, { delay: 0.85 });
-      b.plat(0, 0, -68, 8, 8, { type: 'sand', pillars: true });
+      b.plat(0, 0, -68, 5.7, 8, { type: 'sand', pillars: true });
       b.crown(0, 0, -69);
       b.wp(0, 0, -2); b.wp(0, 0, -10);
       for (let i = 0; i < 5; i++) b.wp(0, 0, -12.2 - i * 1.85, '', 8);
@@ -1089,22 +1066,19 @@ const WORLD5_LEVELS = [
       b.wp(0, 0, -69);
     },
   },
-
-
   {
-    name: 'Oasis Peligroso', target: 55,
+    name: 'Oasis Peligroso', target: 60,
     hint: 'Arena, remolinos y escarabajos.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'sand', pillars: true });
-      b.plat(0, 0, -40, 12, 76, { type: 'sand' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.1, 6, { type: 'sand', pillars: true });
+      b.plat(0, 0, -40, 4.5, 76, { type: 'sand' });
       b.quicksand(0, 0.02, -14, 4, 10); b.coin(0, 0, -14);
       b.checkpoint(0, 0, -28);
       b.sandWhirl(0, 0, -40, 5, 14, { dir: [1, 0, 0], force: 3.0 });
-      b.scarab(0, 0, -44, { to: [5, 0, 0], period: 5.0 });
+      b.scarab(0, 0, -44, { to: [5, 0, 0], period: 4.4 });
       b.coin(4, 0, -40);
-      b.checkpoint(0, 0, -58);
       for (let i = 0; i < 4; i++) b.sandstone(0, 0, -64.0 - i * 1.85, 2.6, 2.1, { delay: 0.85 });
-      b.plat(0, 0, -78, 8, 10, { type: 'sand', pillars: true });
+      b.plat(0, 0, -78, 5.7, 10, { type: 'sand', pillars: true });
       b.crown(0, 0, -79);
       b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -28);
       b.wp(-2.0, 0, -40); b.wp(-2.0, 0, -44, 't'); b.wp(0, 0, -58);
@@ -1112,24 +1086,19 @@ const WORLD5_LEVELS = [
       b.wp(0, 0, -79);
     },
   },
-
-
-
   {
-    name: 'Templo del Escarabajo', target: 58,
+    name: 'Templo del Escarabajo', target: 66,
     hint: 'Pirámides y escarabajos protegen el camino.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'sand', pillars: true });
       b.plat(0, 0, -10, 4.5, 14, { type: 'sand' }); b.coinRow(0, 0, -5, 0, 0, -15, 2);
       b.plat(0, 0, -20, 5, 5, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -20);
-      const m1 = b.pyramidBlock(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0 });
-      const m2 = b.pyramidBlock(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.0, phase: 0.5 });
+      const m1 = b.pyramidBlock(-2.0, 0, -25, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.72 });
+      const m2 = b.pyramidBlock(-2.0, 0, -30, 3.4, 3.4, { to: [4.0, 0, 0], period: 3.72, phase: 0.5 });
       b.coin(0, 0.4, -25); b.coin(0, 0.4, -30);
-      b.plat(0, 0, -36, 5, 6, { type: 'sand', pillars: true }); b.checkpoint(0, 0, -36);
-      b.plat(0, 0, -65, 12, 54, { type: 'sand' }); // continuo hasta la corona
-      b.scarab(0, 0, -46, { to: [5, 0, 0], period: 5.0 });
-      b.scarab(0, 0, -56, { to: [-5, 0, 0], period: 5.0, phase: 0.45 });
-      b.checkpoint(0, 0, -68);
+      b.plat(0, 0, -36, 5, 6, { type: 'sand', pillars: true }); b.plat(0, 0, -65, 12, 54, { type: 'sand' }); // continuo hasta la corona
+      b.scarab(0, 0, -46, { to: [5, 0, 0], period: 4.65 });
+      b.scarab(0, 0, -56, { to: [-5, 0, 0], period: 4.65, phase: 0.45 });
       b.quicksand(0, 0.02, -78, 4, 10);
       b.plat(0, 0, -92, 8, 10, { type: 'sand', pillars: true });
       b.crown(0, 0, -93);
@@ -1145,11 +1114,8 @@ const WORLD5_LEVELS = [
       b.wp(0, 0, -78); b.wp(0, 0, -93);
     },
   },
-
-
-
   {
-    name: 'Corona del Desierto', target: 80,
+    name: 'Corona del Desierto', target: 92,
     hint: '¡La gran pirámide! Combina todos los peligros.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'sand', pillars: true });
@@ -1160,15 +1126,12 @@ const WORLD5_LEVELS = [
       b.coin(-2, 0, -38);
       b.checkpoint(0, 0, -50);
       for (let i = 0; i < 4; i++) b.sandstone(0, 0, -56.0 - i * 1.7, 2.8, 2.0, { delay: 0.85 });
-      b.checkpoint(0, 0, -68);
       // bloques sobre el suelo (no hace falta saltar al vacío)
-      b.pyramidBlock(-2.0, 0.15, -76, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.5 });
-      b.pyramidBlock(-2.0, 0.15, -82, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.5, phase: 0.5 });
+      b.pyramidBlock(-2.0, 0.15, -76, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.19 });
+      b.pyramidBlock(-2.0, 0.15, -82, 3.4, 3.4, { to: [4.0, 0, 0], period: 4.19, phase: 0.5 });
       b.coin(0, 0.5, -76); b.coin(0, 0.5, -82);
-      b.checkpoint(0, 0, -92);
-      b.scarab(0, 0, -100, { to: [5, 0, 0], period: 5.0 });
-      b.scarab(0, 0, -110, { to: [-5, 0, 0], period: 5.0, phase: 0.5 });
-      b.checkpoint(0, 0, -120);
+      b.scarab(0, 0, -100, { to: [5, 0, 0], period: 4.65 });
+      b.scarab(0, 0, -110, { to: [-5, 0, 0], period: 4.65, phase: 0.5 });
       b.quicksand(0, 0.02, -128, 4, 10);
       b.plat(0, 0, -140, 10, 10, { type: 'sand', pillars: true });
       b.pillar(-3.2, 0, -143, 3.5); b.pillar(3.2, 0, -143, 3.5);
@@ -1189,39 +1152,41 @@ const WORLD5_LEVELS = [
 
 const WORLD6_LEVELS = [
   {
-    name: 'Pasillo Pastel', target: 38,
-    hint: '¡Bienvenido a la fábrica! El chicle te frena.',
+    name: 'Pasillo Pastel', target: 48,
+    hint: 'Prensas tempranas y cinta de chocolate en contra.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
-      b.plat(0, 0, -8, 5, 10, { type: 'candy' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
-      b.gumPad(0, 0, -18, 5, 10); b.coin(0, 0, -18);
-      b.plat(0, 0, -28, 5.5, 10, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -28);
-      b.plat(0, 0, -36, 4.5, 10, { type: 'candy' });
-      b.gumPad(0, 0, -46, 4.5, 10);
-      b.plat(0, 0, -56, 5.5, 10, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -64, 4.5, 10, { type: 'candy' }); b.coin(0, 0, -64);
-      b.plat(0, 0, -74, 8, 10, { type: 'candy', pillars: true });
-      b.crown(0, 0, -75);
-      b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -18); b.wp(0, 0, -28);
-      b.wp(0, 0, -36); b.wp(0, 0, -46); b.wp(0, 0, -56); b.wp(0, 0, -64); b.wp(0, 0, -75);
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -42, 4.2, 76, { type: 'candy' });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      b.jellyPad(0, 0, -14, { power: 12 });
+      const p1 = b.candyCrusher(0, 0, -24, { period: 2.9 });
+      b.checkpoint(0, 0, -38);
+      b.chocConvey(0, 0, -50, 4.2, 12, { dir: [0, 0, 1], speed: 3.6 });
+      b.coin(0, 0, -50);
+      const p2 = b.candyCrusher(0, 0, -64, { period: 2.8, phase: 0.45 });
+      b.plat(0, 0, -80, 5.6, 10, { type: 'candy', pillars: true });
+      b.crown(0, 0, -81);
+      const W = (p, lead) => ({ cond: () => p.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -14);
+      b.wp(0, 0, -21.5, 'w', 0, W(p1, 0.1)); b.wp(0, 0, -30, '', 7); b.wp(0, 0, -38);
+      b.wp(0, 0, -50); b.wp(0, 0, -61.5, 'w', 0, W(p2, 0.1)); b.wp(0, 0, -72, '', 7); b.wp(0, 0, -81);
     },
   },
   {
-    name: 'Gelatina Saltarina', target: 45,
+    name: 'Gelatina Saltarina', target: 56,
     hint: 'La gelatina te lanza. ¡Boing rosa!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
-      b.plat(0, 0, -10, 4.5, 14, { type: 'candy' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -10, 4.4, 14, { type: 'candy' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
       b.jellyPad(0, 0, -14, { power: 14 });
       b.coin(0, 3.8, -17);
-      b.plat(0, 3.5, -22, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -22);
-      b.plat(0, 3.5, -30, 4.5, 14, { type: 'candy' });
+      b.plat(0, 3.5, -22, 4.4, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -22);
+      b.plat(0, 3.5, -30, 4.4, 14, { type: 'candy' });
       b.jellyPad(0, 3.5, -34, { power: 14 });
       b.coin(0, 7.0, -37);
-      b.plat(0, 6.8, -42, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 6.8, -42);
-      b.plat(0, 6.8, -50, 4.5, 14, { type: 'candy' });
+      b.plat(0, 6.8, -42, 4.4, 8, { type: 'candy', pillars: true }); b.plat(0, 6.8, -50, 4.4, 14, { type: 'candy' });
       b.jellyPad(0, 6.8, -54, { power: 13 });
-      b.plat(0, 9.5, -62, 8, 8, { type: 'candy', pillars: true });
+      b.plat(0, 9.5, -62, 5.6, 8, { type: 'candy', pillars: true });
       b.crown(0, 9.5, -63);
       b.wp(0, 0, -2); b.wp(0, 0, -14, '', 4); b.wp(0, 3.5, -22);
       b.wp(0, 3.5, -34, '', 4); b.wp(0, 6.8, -42);
@@ -1229,17 +1194,17 @@ const WORLD6_LEVELS = [
     },
   },
   {
-    name: 'Prensas Dulces', target: 50,
+    name: 'Prensas Dulces', target: 58,
     hint: '¡Las prensas bajan! Pasa cuando están arriba.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'candy', pillars: true });
       b.plat(0, 0, -20, 5, 34, { type: 'candy' }); b.coinRow(0, 0, -5, 0, 0, -28, 4);
-      const c1 = b.candyCrusher(0, 0, -14, { period: 3.4, w: 2.0, d: 2.0 });
-      const c2 = b.candyCrusher(0, 0, -24, { period: 3.4, phase: 0.5, w: 2.0, d: 2.0 });
+      const c1 = b.candyCrusher(0, 0, -14, { period: 3.16, w: 2.0, d: 2.0 });
+      const c2 = b.candyCrusher(0, 0, -24, { period: 3.16, phase: 0.5, w: 2.0, d: 2.0 });
       b.plat(0, 0, -42, 6, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -42);
       b.plat(0, 0, -60, 5, 28, { type: 'candy' });
-      const c3 = b.candyCrusher(0, 0, -52, { period: 3.2, phase: 0.2, w: 2.0, d: 2.0 });
-      const c4 = b.candyCrusher(0, 0, -62, { period: 3.2, phase: 0.7, w: 2.0, d: 2.0 });
+      const c3 = b.candyCrusher(0, 0, -52, { period: 2.98, phase: 0.2, w: 2.0, d: 2.0 });
+      const c4 = b.candyCrusher(0, 0, -62, { period: 2.98, phase: 0.7, w: 2.0, d: 2.0 });
       b.coin(0, 0, -55); b.coin(0, 0, -65);
       b.plat(0, 0, -80, 8, 10, { type: 'candy', pillars: true });
       b.crown(0, 0, -81);
@@ -1252,7 +1217,7 @@ const WORLD6_LEVELS = [
     },
   },
   {
-    name: 'Piruletas Giratorias', target: 50,
+    name: 'Piruletas Giratorias', target: 58,
     hint: 'Brazos de piruleta. ¡Esquívalos o wait!',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
@@ -1260,8 +1225,7 @@ const WORLD6_LEVELS = [
       b.plat(0, 0, -20, 8, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -20);
       const t1 = b.lolliArm(0, 0, -32, { len: 3.2, speed: 0.7, arms: 3 });
       b.coin(4.5, 0, -32); b.coin(-4.5, 0, -32);
-      b.plat(0, 0, -46, 8, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -46);
-      const t2 = b.lolliArm(0, 0, -58, { len: 3.2, speed: 0.75, arms: 3 });
+      b.plat(0, 0, -46, 8, 8, { type: 'candy', pillars: true }); const t2 = b.lolliArm(0, 0, -58, { len: 3.2, speed: 0.75, arms: 3 });
       b.coin(4.5, 0, -58);
       b.plat(0, 0, -72, 8, 10, { type: 'candy', pillars: true });
       b.crown(0, 0, -73);
@@ -1272,22 +1236,20 @@ const WORLD6_LEVELS = [
     },
   },
   {
-    name: 'Río de Chocolate', target: 52,
+    name: 'Río de Chocolate', target: 60,
     hint: '¡El chocolate empuja hacia atrás! Rema fuerte.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'candy', pillars: true });
-      b.plat(0, 0, -6, 4.5, 6, { type: 'candy' });
-      b.chocConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, 1], speed: 3.6 });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { type: 'candy', pillars: true });
+      b.plat(0, 0, -6, 4.4, 6, { type: 'candy' });
+      b.chocConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, 1], speed: 3.96 });
       b.coinRow(0, 0, -10, 0, 0, -20, 3);
-      b.plat(0, 0, -25, 5, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -25);
-      b.chocConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, 1], speed: 3.6 });
+      b.plat(0, 0, -25, 4.4, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -25);
+      b.chocConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, 1], speed: 3.96 });
       b.coin(0, 0, -30); b.coin(0, 0, -38);
-      b.plat(0, 0, -44, 5, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -44);
-      b.chocConvey(0, 0, -52, 4.5, 12, { dir: [0, 0, 1], speed: 3.8 });
-      b.plat(0, 0, -61, 5, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -61);
-      b.chocConvey(0, 0, -69, 4.5, 12, { dir: [0, 0, 1], speed: 3.8 });
+      b.plat(0, 0, -44, 4.4, 6, { type: 'candy', pillars: true }); b.chocConvey(0, 0, -52, 4.5, 12, { dir: [0, 0, 1], speed: 4.18 });
+      b.plat(0, 0, -61, 5.6, 6, { type: 'candy', pillars: true }); b.chocConvey(0, 0, -69, 4.5, 12, { dir: [0, 0, 1], speed: 4.18 });
       b.coin(0, 0, -69);
-      b.plat(0, 0, -78, 8, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -78, 5.6, 8, { type: 'candy', pillars: true });
       b.crown(0, 0, -79);
       b.wp(0, 0, -2); b.wp(0, 0, -15); b.wp(0, 0, -25);
       b.wp(0, 0, -34); b.wp(0, 0, -44); b.wp(0, 0, -52);
@@ -1295,21 +1257,20 @@ const WORLD6_LEVELS = [
     },
   },
   {
-    name: 'Donuts Lanzadores', target: 48,
+    name: 'Donuts Lanzadores', target: 56,
     hint: 'Salta en el donut para salir volando.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
-      b.plat(0, 0, -10, 4.5, 14, { type: 'candy' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -10, 4.4, 14, { type: 'candy' }); b.coinRow(0, 0, -4, 0, 0, -12, 3);
       b.donutRing(0, 0, -14, { power: 14 });
       b.coin(0, 3.8, -17);
-      b.plat(0, 3.5, -22, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -22);
-      b.plat(0, 3.5, -30, 4.5, 14, { type: 'candy' });
+      b.plat(0, 3.5, -22, 4.4, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -22);
+      b.plat(0, 3.5, -30, 4.4, 14, { type: 'candy' });
       b.donutRing(0, 3.5, -34, { power: 14 });
       b.coin(0, 7.0, -37);
-      b.plat(0, 6.8, -42, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 6.8, -42);
-      b.plat(0, 6.8, -50, 4.5, 14, { type: 'candy' });
+      b.plat(0, 6.8, -42, 4.4, 8, { type: 'candy', pillars: true }); b.plat(0, 6.8, -50, 4.4, 14, { type: 'candy' });
       b.donutRing(0, 6.8, -54, { power: 13 });
-      b.plat(0, 9.5, -62, 8, 8, { type: 'candy', pillars: true });
+      b.plat(0, 9.5, -62, 5.6, 8, { type: 'candy', pillars: true });
       b.crown(0, 9.5, -63);
       b.wp(0, 0, -2); b.wp(0, 0, -14, '', 4); b.wp(0, 3.5, -22);
       b.wp(0, 3.5, -34, '', 4); b.wp(0, 6.8, -42);
@@ -1317,23 +1278,22 @@ const WORLD6_LEVELS = [
     },
   },
   {
-    name: 'Mezcla Azucarada', target: 58,
+    name: 'Mezcla Azucarada', target: 68,
     hint: 'Chicle, gelatina y prensas juntos.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
-      b.plat(0, 0, -9, 5, 12, { type: 'candy' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'candy', pillars: true });
+      b.plat(0, 0, -9, 4.4, 12, { type: 'candy' });
       // chicle con laterales sólidos (no atascar bot)
       b.plat(-3.2, 0, -20, 2.2, 12, { type: 'candy' });
       b.plat(3.2, 0, -20, 2.2, 12, { type: 'candy' });
       b.gumPad(0, 0, -20, 4.0, 12); b.coin(0, 0, -20);
-      b.plat(0, 0, -30, 6, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -30);
-      b.plat(0, 0, -38, 4.5, 12, { type: 'candy' });
+      b.plat(0, 0, -30, 4.4, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -30);
+      b.plat(0, 0, -38, 4.4, 12, { type: 'candy' });
       b.jellyPad(0, 0, -42, { power: 14 });
-      b.plat(0, 3.5, -50, 5.5, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -50);
-      b.plat(0, 3.5, -64, 5, 24, { type: 'candy' });
-      const c1 = b.candyCrusher(0, 3.5, -60, { period: 3.4, w: 2.0, d: 2.0 });
+      b.plat(0, 3.5, -50, 4.4, 8, { type: 'candy', pillars: true }); b.plat(0, 3.5, -64, 4.4, 24, { type: 'candy' });
+      const c1 = b.candyCrusher(0, 3.5, -60, { period: 2.89, w: 2.0, d: 2.0 , phase: 0.70});
       b.coin(0, 3.5, -66);
-      b.plat(0, 3.5, -80, 8, 8, { type: 'candy', pillars: true });
+      b.plat(0, 3.5, -80, 5.6, 8, { type: 'candy', pillars: true });
       b.crown(0, 3.5, -81);
       const W = (c, lead) => ({ cond: () => c.safe(lead) });
       b.wp(0, 0, -2); b.wp(3.0, 0, -20); b.wp(0, 0, -30);
@@ -1342,7 +1302,7 @@ const WORLD6_LEVELS = [
     },
   },
   {
-    name: 'Corona de Caramelo', target: 80,
+    name: 'Corona de Caramelo', target: 95,
     hint: '¡La gran fábrica! Combina todos los dulces.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'candy', pillars: true });
@@ -1351,13 +1311,12 @@ const WORLD6_LEVELS = [
       b.plat(3.2, 0, -20, 2.2, 12, { type: 'candy' });
       b.gumPad(0, 0, -20, 4.0, 12); b.coin(0, 0, -20);
       b.plat(0, 0, -30, 6, 8, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -30);
-      b.chocConvey(0, 0, -40, 4.5, 14, { dir: [0, 0, 1], speed: 3.4 });
+      b.chocConvey(0, 0, -40, 4.5, 14, { dir: [0, 0, 1], speed: 3.71 });
       b.plat(0, 0, -50, 6, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 0, -50);
       b.plat(0, 0, -58, 4.5, 12, { type: 'candy' });
       b.donutRing(0, 0, -62, { power: 14 });
-      b.plat(0, 3.5, -70, 6, 6, { type: 'candy', pillars: true }); b.checkpoint(0, 3.5, -70);
-      b.plat(0, 3.5, -82, 5, 20, { type: 'candy' });
-      const c1 = b.candyCrusher(0, 3.5, -78, { period: 3.4, w: 2.0, d: 2.0 });
+      b.plat(0, 3.5, -70, 6, 6, { type: 'candy', pillars: true }); b.plat(0, 3.5, -82, 5, 20, { type: 'candy' });
+      const c1 = b.candyCrusher(0, 3.5, -78, { period: 3.16, w: 2.0, d: 2.0 });
       b.plat(0, 3.5, -94, 12, 16, { type: 'candy' });
       const t1 = b.lolliArm(0, 3.5, -94, { len: 3.2, speed: 0.7, arms: 3 });
       b.plat(0, 3.5, -106, 6, 6, { type: 'candy' });
@@ -1379,47 +1338,40 @@ const WORLD6_LEVELS = [
 
 const WORLD7_LEVELS = [
   {
-    name: 'Arrecife Suave', target: 38,
-    hint: '¡Bajo el mar! Las corrientes empujan de lado.',
+    name: 'Arrecife Suave', target: 50,
+    hint: 'Corrientes en contra y erizos al borde.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
-      b.plat(0, 0, -14, 5.5, 22, { type: 'coral' });
-      b.plat(-3.6, 0, -14, 2.8, 22, { type: 'coral' });
-      b.plat(3.6, 0, -14, 2.8, 22, { type: 'coral' });
-      b.waterCurrent(0, 0, -14, 5, 16, { dir: [1, 0, 0], force: 3.5 });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'coral', pillars: true });
+      b.plat(0, 0, -42, 4.2, 76, { type: 'coral' });
       b.coinRow(0, 0, -6, 0, 0, -18, 3);
-      b.plat(0, 0, -28, 7, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -28);
-      b.plat(0, 0, -42, 5.5, 22, { type: 'coral' });
-      b.plat(-3.6, 0, -42, 2.8, 22, { type: 'coral' });
-      b.plat(3.6, 0, -42, 2.8, 22, { type: 'coral' });
-      b.waterCurrent(0, 0, -42, 5, 16, { dir: [-1, 0, 0], force: 3.5 });
-      b.coin(0, 0, -36); b.coin(0, 0, -48);
-      b.plat(0, 0, -56, 7, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -68, 6, 14, { type: 'coral' });
-      b.plat(0, 0, -80, 8, 8, { type: 'coral', pillars: true });
+      b.waterCurrent(0, 0, -16, 4.2, 12, { dir: [0, 0, 1], force: 3.5 });
+      b.urchin(1.9, 0, -22); b.urchin(-1.9, 0, -28);
+      b.checkpoint(0, 0, -38);
+      b.waterCurrent(0, 0, -50, 4.2, 12, { dir: [0, 0, 1], force: 3.7 });
+      b.urchin(-1.9, 0, -54); b.urchin(1.9, 0, -60);
+      b.coin(0, 0, -56);
+      b.plat(0, 0, -80, 5.6, 10, { type: 'coral', pillars: true });
       b.crown(0, 0, -81);
-      b.wp(0, 0, -2); b.wp(-1.8, 0, -14); b.wp(0, 0, -24); b.wp(0, 0, -28);
-      b.wp(1.8, 0, -42); b.wp(0, 0, -52); b.wp(0, 0, -56);
-      b.wp(0, 0, -68); b.wp(0, 0, -81);
+      b.wp(0, 0, -2); b.wp(-1.0, 0, -16); b.wp(0, 0, -28); b.wp(0, 0, -38);
+      b.wp(1.0, 0, -50); b.wp(0, 0, -60); b.wp(0, 0, -81);
     },
   },
   {
-    name: 'Columnas de Burbujas', target: 48,
+    name: 'Columnas de Burbujas', target: 58,
     hint: 'Las burbujas te levantan. ¡Flota hacia arriba!',
     build(b) {
       // huecos con columnas de burbujas (sin suelo debajo para poder flotar)
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
-      b.plat(0, 0, -8, 4.5, 8, { type: 'coral' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'coral', pillars: true });
+      b.plat(0, 0, -8, 4.3, 8, { type: 'coral' });
       b.bubbleColumn(0, 0, -14, 4.5, 4.5, { force: 24 });
       b.coin(0, 2.5, -14);
-      b.plat(0, 3.5, -22, 5.5, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 3.5, -22);
-      b.plat(0, 3.5, -28, 4.5, 6, { type: 'coral' });
+      b.plat(0, 3.5, -22, 4.3, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 3.5, -22);
+      b.plat(0, 3.5, -28, 4.3, 6, { type: 'coral' });
       b.bubbleColumn(0, 3.5, -34, 4.5, 4.5, { force: 24 });
       b.coin(0, 6.0, -34);
-      b.plat(0, 6.8, -42, 5.5, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 6.8, -42);
-      b.plat(0, 6.8, -48, 4.5, 6, { type: 'coral' });
+      b.plat(0, 6.8, -42, 4.3, 8, { type: 'coral', pillars: true }); b.plat(0, 6.8, -48, 4.3, 6, { type: 'coral' });
       b.bubbleColumn(0, 6.8, -54, 4.5, 4.5, { force: 22 });
-      b.plat(0, 9.5, -62, 8, 8, { type: 'coral', pillars: true });
+      b.plat(0, 9.5, -62, 5.5, 8, { type: 'coral', pillars: true });
       b.crown(0, 9.5, -63);
       const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
       b.wp(0, 0, -2); b.wp(0, 0, -10);
@@ -1429,18 +1381,17 @@ const WORLD7_LEVELS = [
     },
   },
   {
-    name: 'Medusas Rebotonas', target: 50,
+    name: 'Medusas Rebotonas', target: 58,
     hint: '¡Medusas! Empujan si las tocas.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'coral', pillars: true });
       b.plat(0, 0, -45, 12, 84, { type: 'coral' });
       b.coinRow(4.5, 0, -8, 4.5, 0, -30, 4);
-      b.jellyFish(0, 0, -18, { to: [0, 0, -12], period: 6.5 });
+      b.jellyFish(0, 0, -18, { to: [0, 0, -12], period: 6.04 });
       b.checkpoint(0, 0, -36);
       b.coin(-4.5, 0, -46); b.coin(4.5, 0, -58);
-      b.jellyFish(-3.5, 0, -50, { to: [7, 0, 0], period: 6.0 });
-      b.jellyFish(3.5, 0, -60, { to: [-7, 0, 0], period: 6.0, phase: 0.5 });
-      b.checkpoint(0, 0, -72);
+      b.jellyFish(-3.5, 0, -50, { to: [7, 0, 0], period: 5.58 });
+      b.jellyFish(3.5, 0, -60, { to: [-7, 0, 0], period: 5.58, phase: 0.5 });
       b.coin(4.5, 0, -80); b.coin(-4.5, 0, -84);
       b.plat(0, 0, -92, 8, 10, { type: 'coral', pillars: true });
       b.crown(0, 0, -93);
@@ -1450,20 +1401,19 @@ const WORLD7_LEVELS = [
     },
   },
   {
-    name: 'Almejas Abiertas', target: 52,
+    name: 'Almejas Abiertas', target: 60,
     hint: 'Salta a la almeja cuando esté abierta.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'coral', pillars: true });
-      b.plat(0, 0, -40, 8, 76, { type: 'coral' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { type: 'coral', pillars: true });
+      b.plat(0, 0, -40, 4.3, 76, { type: 'coral' });
       b.coinRow(0, 0, -6, 0, 0, -18, 3);
-      const a1 = b.clam(0, 0, -18, { period: 3.6 });
+      const a1 = b.clam(0, 0, -18, { period: 2.95 });
       b.checkpoint(0, 0, -28);
-      const a2 = b.clam(-2.0, 0, -40, { period: 3.4, phase: 0.25 });
-      const a3 = b.clam(2.0, 0, -50, { period: 3.4, phase: 0.55 });
+      const a2 = b.clam(-2.0, 0, -40, { period: 2.79, phase: 0.59 });
+      const a3 = b.clam(2.0, 0, -50, { period: 2.79, phase: 0.06 });
       b.coin(0, 0, -44);
-      b.checkpoint(0, 0, -60);
-      const a4 = b.clam(0, 0, -70, { period: 3.2 });
-      b.plat(0, 0, -84, 8, 10, { type: 'coral', pillars: true });
+      const a4 = b.clam(0, 0, -70, { period: 2.62 , phase: 0.40});
+      b.plat(0, 0, -84, 5.5, 10, { type: 'coral', pillars: true });
       b.crown(0, 0, -85);
       const O = (a) => ({ cond: () => a.open(0.15) });
       b.wp(0, 0, -2); b.wp(0, 0, -14);
@@ -1475,21 +1425,20 @@ const WORLD7_LEVELS = [
     },
   },
   {
-    name: 'Anclas Oscilantes', target: 50,
+    name: 'Anclas Oscilantes', target: 58,
     hint: 'Anclas que se balancean. ¡Pasa con timing!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'coral', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { type: 'coral', pillars: true });
       b.plat(0, 0, -12, 3.4, 18, { type: 'coral' }); b.coinRow(0, 0, -5, 0, 0, -16, 3);
       const h1 = b.swingingAnchor(0, 0, -8, { speed: 1.6, phase: 0, len: 4.2 });
       const h2 = b.swingingAnchor(0, 0, -13, { speed: 1.6, phase: Math.PI * 0.6, len: 4.2 });
-      b.plat(0, 0, -22, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -22);
+      b.plat(0, 0, -22, 4.3, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -22);
       b.plat(0, 0, -38, 3.4, 24, { type: 'coral' });
       const h3 = b.swingingAnchor(0, 0, -32, { speed: 1.7, phase: 0, len: 4.2 });
       const h4 = b.swingingAnchor(0, 0, -38, { speed: 1.7, phase: 2.1, len: 4.2 });
       b.coin(0, 0, -35);
-      b.plat(0, 0, -52, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -52);
-      b.plat(0, 0, -64, 5, 20, { type: 'coral' });
-      b.plat(0, 0, -78, 8, 10, { type: 'coral', pillars: true });
+      b.plat(0, 0, -52, 5.5, 6, { type: 'coral', pillars: true }); b.plat(0, 0, -64, 4.3, 20, { type: 'coral' });
+      b.plat(0, 0, -78, 5.5, 10, { type: 'coral', pillars: true });
       b.crown(0, 0, -79);
       const W = (h, lead) => ({ cond: () => h.safe(lead) });
       b.wp(0, 0, -2);
@@ -1501,7 +1450,7 @@ const WORLD7_LEVELS = [
     },
   },
   {
-    name: 'Erizos Punzantes', target: 48,
+    name: 'Erizos Punzantes', target: 56,
     hint: 'Erizos de mar. ¡Pasa por los lados!',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
@@ -1511,7 +1460,6 @@ const WORLD7_LEVELS = [
       b.checkpoint(0, 0, -36);
       b.urchin(0, 0, -48, { r: 0.55 }); b.urchin(0, 0, -58, { r: 0.55 });
       b.coin(4.2, 0, -52);
-      b.checkpoint(0, 0, -68);
       b.urchin(0, 0, -76, { r: 0.55 });
       b.plat(0, 0, -92, 8, 10, { type: 'coral', pillars: true });
       b.crown(0, 0, -93);
@@ -1521,7 +1469,7 @@ const WORLD7_LEVELS = [
     },
   },
   {
-    name: 'Corriente Profunda', target: 58,
+    name: 'Corriente Profunda', target: 70,
     hint: 'Burbujas, corrientes y medusas.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
@@ -1530,12 +1478,11 @@ const WORLD7_LEVELS = [
       b.plat(-4.0, 0, -28, 2.5, 20, { type: 'coral' });
       b.plat(4.0, 0, -28, 2.5, 20, { type: 'coral' });
       b.waterCurrent(0, 0, -28, 5, 14, { dir: [1, 0, 0], force: 2.8 });
-      b.jellyFish(0, 0, -30, { to: [4, 0, 0], period: 5.0 });
+      b.jellyFish(0, 0, -30, { to: [4, 0, 0], period: 4.65 });
       b.plat(0, 0, -42, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 0, -42);
       b.plat(0, 0, -48, 4.5, 6, { type: 'coral' });
       b.bubbleColumn(0, 0, -54, 4.5, 4.5, { force: 20, power: 15 });
-      b.plat(0, 3.5, -62, 5.5, 8, { type: 'coral', pillars: true }); b.checkpoint(0, 3.5, -62);
-      b.plat(0, 3.5, -72, 10, 14, { type: 'coral' });
+      b.plat(0, 3.5, -62, 5.5, 8, { type: 'coral', pillars: true }); b.plat(0, 3.5, -72, 10, 14, { type: 'coral' });
       b.urchin(0, 3.5, -72, { r: 0.55 });
       b.plat(0, 3.5, -84, 8, 8, { type: 'coral', pillars: true });
       b.crown(0, 3.5, -85);
@@ -1546,7 +1493,7 @@ const WORLD7_LEVELS = [
     },
   },
   {
-    name: 'Corona del Arrecife', target: 80,
+    name: 'Corona del Arrecife', target: 98,
     hint: '¡El gran arrecife! Usa todo lo aprendido.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'coral', pillars: true });
@@ -1560,9 +1507,8 @@ const WORLD7_LEVELS = [
       b.bubbleColumn(0, 0, -54, 4.5, 4.5, { force: 20, power: 15 });
       b.plat(0, 3.5, -62, 6, 6, { type: 'coral', pillars: true }); b.checkpoint(0, 3.5, -62);
       b.plat(0, 3.5, -90, 10, 52, { type: 'coral' });
-      const a1 = b.clam(0, 3.5, -70, { period: 3.6 });
-      const a2 = b.clam(0, 3.5, -80, { period: 3.6, phase: 0.4 });
-      b.checkpoint(0, 3.5, -90);
+      const a1 = b.clam(0, 3.5, -70, { period: 3.35 });
+      const a2 = b.clam(0, 3.5, -80, { period: 3.35, phase: 0.4 });
       b.urchin(0, 3.5, -100, { r: 0.55 });
       // pasillo continuo bajo el ancla hasta la corona
       b.plat(0, 3.5, -118, 4, 28, { type: 'coral' });
@@ -1585,37 +1531,42 @@ const WORLD7_LEVELS = [
 
 const WORLD8_LEVELS = [
   {
-    name: 'Patio Encantado', target: 38,
-    hint: '¡Un castillo de cuento! Sigue las banderas doradas.',
+    name: 'Patio Encantado', target: 52,
+    hint: 'Hachas tempranas y puente levadizo.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
-      b.plat(0, 0, -40, 6, 72, { type: 'castle' });
-      b.coinRow(0, 0, -6, 0, 0, -24, 4);
-      b.checkpoint(0, 0, -28);
-      b.coin(0, 0, -40); b.coin(0, 0, -52);
-      b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -80, 8, 10, { type: 'castle', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'castle', pillars: true });
+      b.plat(0, 0, -42, 4.2, 76, { type: 'castle' });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      const h1 = b.pendulumAxe(0, 0, -16, { speed: 1.65, len: 4.0 });
+      const h2 = b.pendulumAxe(0, 0, -24, { speed: 1.65, phase: 2.0, len: 4.0 });
+      b.checkpoint(0, 0, -38);
+      b.drawbridge(0, 0, -50, { period: 3.4, d: 4.5 });
+      b.coin(0, 0, -50);
+      const h3 = b.pendulumAxe(0, 0, -64, { speed: 1.7, phase: 1.1, len: 4.0 });
+      b.plat(0, 0, -80, 5.6, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -81);
-      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
-      b.wp(0, 0, -44); b.wp(0, 0, -56); b.wp(0, 0, -70); b.wp(0, 0, -81);
+      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -12);
+      b.wp(0, 0, -13.5, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -21.5, 'w', 0, W(h2, 0.25));
+      b.wp(0, 0, -30); b.wp(0, 0, -38); b.wp(0, 0, -50);
+      b.wp(0, 0, -61.5, 'w', 0, W(h3, 0.25)); b.wp(0, 0, -72); b.wp(0, 0, -81);
     },
   },
   {
-    name: 'Hachas Pendulares', target: 48,
+    name: 'Hachas Pendulares', target: 58,
     hint: 'Hachas de cuento. ¡Espera y cruza!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'castle', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { type: 'castle', pillars: true });
       b.plat(0, 0, -12, 3.4, 18, { type: 'castle' }); b.coinRow(0, 0, -5, 0, 0, -16, 3);
       const h1 = b.pendulumAxe(0, 0, -8, { speed: 1.6, phase: 0, len: 4.2 });
       const h2 = b.pendulumAxe(0, 0, -13, { speed: 1.6, phase: Math.PI * 0.6, len: 4.2 });
-      b.plat(0, 0, -22, 6, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -22);
+      b.plat(0, 0, -22, 4.2, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -22);
       b.plat(0, 0, -38, 3.4, 24, { type: 'castle' });
       const h3 = b.pendulumAxe(0, 0, -32, { speed: 1.7, phase: 0, len: 4.2 });
       const h4 = b.pendulumAxe(0, 0, -38, { speed: 1.7, phase: 2.1, len: 4.2 });
       b.coin(0, 0, -35);
-      b.plat(0, 0, -52, 6, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -52);
-      b.plat(0, 0, -64, 5, 20, { type: 'castle' });
-      b.plat(0, 0, -78, 8, 10, { type: 'castle', pillars: true });
+      b.plat(0, 0, -52, 5.5, 6, { type: 'castle', pillars: true }); b.plat(0, 0, -64, 4.2, 20, { type: 'castle' });
+      b.plat(0, 0, -78, 5.5, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -79);
       const W = (h, lead) => ({ cond: () => h.safe(lead) });
       b.wp(0, 0, -2);
@@ -1626,39 +1577,36 @@ const WORLD8_LEVELS = [
     },
   },
   {
-    name: 'Baldosas Mágicas', target: 50,
+    name: 'Baldosas Mágicas', target: 60,
     hint: 'Las baldosas aparecen y desaparecen. ¡Cruza cuando brillen!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
-      b.plat(0, 0, -42, 6, 76, { type: 'castle' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'castle', pillars: true });
+      b.plat(0, 0, -42, 4.2, 76, { type: 'castle' });
       // baldosas que parpadean ENCIMA del camino (reto de monedas / ritmo)
-      b.blinkPlat(0, 0.55, -18, 3.5, 3.5, { period: 2.4, onFrac: 0.5 });
-      b.blinkPlat(0, 0.55, -28, 3.5, 3.5, { period: 2.4, phase: 0.5, onFrac: 0.5 });
+      b.blinkPlat(0, 0.55, -18, 3.5, 3.5, { period: 2.0, onFrac: 0.5 });
+      b.blinkPlat(0, 0.55, -28, 3.5, 3.5, { period: 2.0, phase: 0.84, onFrac: 0.5 });
       b.coin(0, 1.2, -18); b.coin(0, 1.2, -28);
       b.checkpoint(0, 0, -36);
-      b.blinkPlat(0, 0.55, -48, 3.5, 3.5, { period: 2.2, onFrac: 0.5 });
-      b.blinkPlat(0, 0.55, -58, 3.5, 3.5, { period: 2.2, phase: 0.5, onFrac: 0.5 });
+      b.blinkPlat(0, 0.55, -48, 3.5, 3.5, { period: 2.0, onFrac: 0.5 , phase: 0.05});
+      b.blinkPlat(0, 0.55, -58, 3.5, 3.5, { period: 2.0, phase: 0.18, onFrac: 0.5 });
       b.coin(0, 1.2, -48);
-      b.checkpoint(0, 0, -66);
-      b.plat(0, 0, -84, 8, 10, { type: 'castle', pillars: true });
+      b.plat(0, 0, -84, 5.5, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -85);
       b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -36);
       b.wp(0, 0, -52); b.wp(0, 0, -66); b.wp(0, 0, -85);
     },
   },
   {
-    name: 'Puente Levadizo', target: 50,
+    name: 'Puente Levadizo', target: 60,
     hint: 'El puente baja: ¡pasa cuando esté horizontal!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'castle', pillars: true });
-      b.plat(0, 0, -10, 4.5, 12, { type: 'castle' });
-      b.plat(0, 0, -18, 5, 5, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -18);
-      const d1 = b.drawbridge(0, 0, -20, { period: 3.8, d: 6 });
-      b.plat(0, 0, -30, 5, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -30);
-      const d2 = b.drawbridge(0, 0, -32, { period: 3.6, phase: 0.35, d: 6 });
-      b.plat(0, 0, -42, 5, 6, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -42);
-      b.plat(0, 0, -54, 5, 16, { type: 'castle' }); b.coinRow(0, 0, -48, 0, 0, -58, 3);
-      b.plat(0, 0, -66, 8, 8, { type: 'castle', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { type: 'castle', pillars: true });
+      b.plat(0, 0, -10, 4.2, 12, { type: 'castle' });
+      b.plat(0, 0, -18, 4.2, 5, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -18);
+      const d1 = b.drawbridge(0, 0, -20, { period: 3.04, d: 6 });
+      b.plat(0, 0, -30, 4.2, 6, { type: 'castle', pillars: true }); const d2 = b.drawbridge(0, 0, -32, { period: 2.88, phase: 0.69, d: 6 });
+      b.plat(0, 0, -42, 4.2, 6, { type: 'castle', pillars: true }); b.plat(0, 0, -54, 4.2, 16, { type: 'castle' }); b.coinRow(0, 0, -48, 0, 0, -58, 3);
+      b.plat(0, 0, -66, 5.5, 8, { type: 'castle', pillars: true });
       b.crown(0, 0, -67);
       const O = (d) => ({ cond: () => d.open(0.15) });
       b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -18);
@@ -1668,7 +1616,7 @@ const WORLD8_LEVELS = [
     },
   },
   {
-    name: 'Engranajes Reales', target: 50,
+    name: 'Engranajes Reales', target: 60,
     hint: 'Engranajes giratorios. ¡Pasa por el borde!',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
@@ -1676,8 +1624,7 @@ const WORLD8_LEVELS = [
       b.plat(0, 0, -18, 8, 8, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -18);
       const g1 = b.gearWall(0, 0, -30, { len: 3.2, speed: 0.7, arms: 3 });
       b.coin(4.5, 0, -30);
-      b.plat(0, 0, -44, 8, 8, { type: 'castle', pillars: true }); b.checkpoint(0, 0, -44);
-      const g2 = b.gearWall(0, 0, -56, { len: 3.2, speed: 0.75, arms: 3 });
+      b.plat(0, 0, -44, 8, 8, { type: 'castle', pillars: true }); const g2 = b.gearWall(0, 0, -56, { len: 3.2, speed: 0.75, arms: 3 });
       b.coin(-4.5, 0, -56);
       b.plat(0, 0, -70, 8, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -71);
@@ -1688,18 +1635,17 @@ const WORLD8_LEVELS = [
     },
   },
   {
-    name: 'Fantasmas Empujones', target: 50,
+    name: 'Fantasmas Empujones', target: 60,
     hint: 'Fantasmas amistosos… pero empujan. ¡Esquívalos!',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'castle', pillars: true });
       b.plat(0, 0, -45, 12, 84, { type: 'castle' });
       b.coinRow(4.5, 0, -8, 4.5, 0, -28, 4);
-      b.ghostPusher(0, 0, -18, { to: [0, 0, -10], period: 6.0 });
+      b.ghostPusher(0, 0, -18, { to: [0, 0, -10], period: 5.4 });
       b.checkpoint(0, 0, -36);
-      b.ghostPusher(-3.5, 0, -50, { to: [7, 0, 0], period: 5.5 });
-      b.ghostPusher(3.5, 0, -60, { to: [-7, 0, 0], period: 5.5, phase: 0.5 });
+      b.ghostPusher(-3.5, 0, -50, { to: [7, 0, 0], period: 4.95 });
+      b.ghostPusher(3.5, 0, -60, { to: [-7, 0, 0], period: 4.95, phase: 0.5 });
       b.coin(-4.5, 0, -46); b.coin(4.5, 0, -58);
-      b.checkpoint(0, 0, -72);
       b.plat(0, 0, -90, 8, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -91);
       b.wp(0, 0, -2); b.wp(4.5, 0, -18, 't'); b.wp(4.5, 0, -28); b.wp(0, 0, -36);
@@ -1708,19 +1654,18 @@ const WORLD8_LEVELS = [
     },
   },
   {
-    name: 'Pasadizos Secretos', target: 55,
+    name: 'Pasadizos Secretos', target: 66,
     hint: 'Busca el arco dorado: ¡atajo con monedas!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
-      b.plat(0, 0, -42, 6, 76, { type: 'castle' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'castle', pillars: true });
+      b.plat(0, 0, -42, 4.2, 76, { type: 'castle' });
       b.secretDoor(0, 0, -14, { side: 1, len: 14, coins: 4 });
       b.checkpoint(0, 0, -28);
       const h1 = b.pendulumAxe(0, 0, -40, { speed: 1.55, len: 4.0 });
       b.coin(0, 0, -48);
-      b.checkpoint(0, 0, -56);
       // baldosa mágica opcional; carril continuo ya cubre
-      b.blinkPlat(0, 0.4, -64, 3.2, 3.2, { period: 2.5, onFrac: 0.6 });
-      b.plat(0, 0, -84, 8, 10, { type: 'castle', pillars: true });
+      b.blinkPlat(0, 0.4, -64, 3.2, 3.2, { period: 2.0, onFrac: 0.6 , phase: 0.70});
+      b.plat(0, 0, -84, 5.5, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -85);
       const W = (h, lead) => ({ cond: () => h.safe(lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
@@ -1729,7 +1674,7 @@ const WORLD8_LEVELS = [
     },
   },
   {
-    name: 'Corona del Castillo', target: 80,
+    name: 'Corona del Castillo', target: 100,
     hint: '¡La corona real! Usa todo lo aprendido.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'castle', pillars: true });
@@ -1737,12 +1682,11 @@ const WORLD8_LEVELS = [
       b.plat(0, 0, -70, 12, 140, { type: 'castle' });
       b.secretDoor(0, 0, -14, { side: -1, len: 12, coins: 3 });
       b.checkpoint(0, 0, -28);
-      b.drawbridge(0, 0, -40, { period: 4.2, d: 5 });
+      b.drawbridge(0, 0, -40, { period: 3.78, d: 5 });
       b.checkpoint(0, 0, -52);
       b.gearWall(0, 0, -64, { len: 3.0, speed: 0.6, arms: 3 });
       const h1 = b.pendulumAxe(0, 0, -78, { speed: 1.45, len: 4.0 });
-      b.checkpoint(0, 0, -90);
-      b.ghostPusher(6.0, 0, -102, { to: [0, 0, -6], period: 5.5 });
+      b.ghostPusher(6.0, 0, -102, { to: [0, 0, -6], period: 4.95 });
       b.plat(0, 0, -120, 10, 12, { type: 'castle', pillars: true });
       b.pillar(-3.2, 0, -123, 3); b.pillar(3.2, 0, -123, 3);
       b.crown(0, 0, -122);
@@ -1757,40 +1701,47 @@ const WORLD8_LEVELS = [
 
 const WORLD9_LEVELS = [
   {
-    name: 'Avenida Neón', target: 38,
-    hint: '¡Bienvenido a la ciudad de neón! Sigue las luces.',
+    name: 'Avenida Neón', target: 54,
+    hint: 'Láseres tempranos, turbo y cinta en contra.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
-      b.plat(0, 0, -40, 6, 72, { type: 'neon' });
-      b.coinRow(0, 0, -6, 0, 0, -24, 4);
-      b.checkpoint(0, 0, -28);
-      b.coin(0, 0, -40); b.coin(0, 0, -52);
-      b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -80, 8, 10, { type: 'neon', pillars: true });
-      b.crown(0, 0, -81);
-      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
-      b.wp(0, 0, -44); b.wp(0, 0, -56); b.wp(0, 0, -70); b.wp(0, 0, -81);
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -42, 4.1, 76, { type: 'neon' });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      const l1 = b.laserGate(0, 0, -16, { period: 2.5 });
+      const l2 = b.laserGate(0, 0, -26, { period: 2.5, phase: 0.45 });
+      b.checkpoint(0, 0, -38);
+      b.boostPad(0, 0, -48, { force: 13 });
+      const l3 = b.laserGate(0, 0, -58, { period: 2.4, phase: 0.2 });
+      b.coin(0, 0, -58);
+      b.neonConvey(0, 0, -70, 4.1, 12, { dir: [0, 0, 1], speed: 3.6 });
+      b.plat(0, 0, -86, 5.6, 10, { type: 'neon', pillars: true });
+      b.crown(0, 0, -87);
+      const W = (l, lead) => ({ cond: () => l.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -12);
+      b.wp(0, 0, -13.5, 'w', 0, W(l1, 0.1)); b.wp(0, 0, -20, '', 7);
+      b.wp(0, 0, -23.5, 'w', 0, W(l2, 0.1)); b.wp(0, 0, -32); b.wp(0, 0, -38);
+      b.wp(0, 0, -48); b.wp(0, 0, -55.5, 'w', 0, W(l3, 0.1)); b.wp(0, 0, -64, '', 7);
+      b.wp(0, 0, -70); b.wp(0, 0, -87);
     },
   },
   {
-    name: 'Teletransportes', target: 45,
+    name: 'Teletransportes', target: 58,
     hint: 'Pisa el pad cian y apareces en el rosa.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
-      b.plat(0, 0, -10, 5, 12, { type: 'neon' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -10, 4.1, 12, { type: 'neon' });
       const t1 = b.teleportPad(0, 0, -14, { color: 0x40f8ff });
       // hueco; destino alto
-      b.plat(0, 3.5, -28, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 3.5, -28);
+      b.plat(0, 3.5, -28, 4.1, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 3.5, -28);
       const t2 = b.teleportPad(0, 3.5, -28, { color: 0xff40c8 });
       b.linkTeleports(t1, t2);
-      b.plat(0, 3.5, -40, 5, 14, { type: 'neon' });
+      b.plat(0, 3.5, -40, 4.1, 14, { type: 'neon' });
       const t3 = b.teleportPad(0, 3.5, -44, { color: 0x40f8ff });
-      b.plat(0, 7.0, -58, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 7.0, -58);
-      const t4 = b.teleportPad(0, 7.0, -58, { color: 0xff40c8 });
+      b.plat(0, 7.0, -58, 5.5, 8, { type: 'neon', pillars: true }); const t4 = b.teleportPad(0, 7.0, -58, { color: 0xff40c8 });
       b.linkTeleports(t3, t4);
       b.coin(0, 3.5, -36); b.coin(0, 7.0, -64);
-      b.plat(0, 7.0, -70, 5, 14, { type: 'neon' });
-      b.plat(0, 7.0, -82, 8, 8, { type: 'neon', pillars: true });
+      b.plat(0, 7.0, -70, 4.1, 14, { type: 'neon' });
+      b.plat(0, 7.0, -82, 5.5, 8, { type: 'neon', pillars: true });
       b.crown(0, 7.0, -83);
       const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
       // ir hacia el destino: al cruzar el pad, el teleporte te sube
@@ -1802,19 +1753,19 @@ const WORLD9_LEVELS = [
     },
   },
   {
-    name: 'Láseres Temporizados', target: 50,
+    name: 'Láseres Temporizados', target: 62,
     hint: 'Láseres rosa. Cruza cuando se apaguen.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'neon', pillars: true });
-      b.plat(0, 0, -20, 5, 34, { type: 'neon' }); b.coinRow(0, 0, -5, 0, 0, -28, 4);
-      const l1 = b.laserGate(0, 0, -14, { period: 2.8 });
-      const l2 = b.laserGate(0, 0, -24, { period: 2.8, phase: 0.5 });
-      b.plat(0, 0, -42, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -42);
-      b.plat(0, 0, -60, 5, 28, { type: 'neon' });
-      const l3 = b.laserGate(0, 0, -52, { period: 2.6, phase: 0.2 });
-      const l4 = b.laserGate(0, 0, -62, { period: 2.6, phase: 0.7 });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { type: 'neon', pillars: true });
+      b.plat(0, 0, -20, 4.1, 34, { type: 'neon' }); b.coinRow(0, 0, -5, 0, 0, -28, 4);
+      const l1 = b.laserGate(0, 0, -14, { period: 2.18 });
+      const l2 = b.laserGate(0, 0, -24, { period: 2.18, phase: 0.84 });
+      b.plat(0, 0, -42, 4.1, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -60, 4.1, 28, { type: 'neon' });
+      const l3 = b.laserGate(0, 0, -52, { period: 2.03, phase: 0.71 });
+      const l4 = b.laserGate(0, 0, -62, { period: 2.03, phase: 0.38 });
       b.coin(0, 0, -55); b.coin(0, 0, -65);
-      b.plat(0, 0, -80, 8, 10, { type: 'neon', pillars: true });
+      b.plat(0, 0, -80, 5.5, 10, { type: 'neon', pillars: true });
       b.crown(0, 0, -81);
       const W = (l, lead) => ({ cond: () => l.safe(lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -10);
@@ -1825,24 +1776,23 @@ const WORLD9_LEVELS = [
     },
   },
   {
-    name: 'Imán Urbano', target: 48,
+    name: 'Imán Urbano', target: 58,
     hint: 'Los imanes te jalan de lado. Compensa la trayectoria.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
-      b.plat(0, 0, -14, 8, 22, { type: 'neon' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -14, 4.1, 22, { type: 'neon' });
       b.plat(-3.8, 0, -14, 2.6, 22, { type: 'neon' });
       b.plat(3.8, 0, -14, 2.6, 22, { type: 'neon' });
       b.magnetZone(0, 0, -14, 5, 16, { dir: [1, 0, 0], force: 3.5 });
       b.coinRow(0, 0, -6, 0, 0, -18, 3);
-      b.plat(0, 0, -28, 7, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -28);
-      b.plat(0, 0, -42, 8, 22, { type: 'neon' });
+      b.plat(0, 0, -28, 4.1, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -28);
+      b.plat(0, 0, -42, 4.1, 22, { type: 'neon' });
       b.plat(-3.8, 0, -42, 2.6, 22, { type: 'neon' });
       b.plat(3.8, 0, -42, 2.6, 22, { type: 'neon' });
       b.magnetZone(0, 0, -42, 5, 16, { dir: [-1, 0, 0], force: 3.5 });
       b.coin(0, 0, -36); b.coin(0, 0, -48);
-      b.plat(0, 0, -56, 7, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -68, 6, 14, { type: 'neon' });
-      b.plat(0, 0, -80, 8, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -56, 5.5, 8, { type: 'neon', pillars: true }); b.plat(0, 0, -68, 4.1, 14, { type: 'neon' });
+      b.plat(0, 0, -80, 5.5, 8, { type: 'neon', pillars: true });
       b.crown(0, 0, -81);
       b.wp(0, 0, -2); b.wp(-1.8, 0, -14); b.wp(0, 0, -24); b.wp(0, 0, -28);
       b.wp(1.8, 0, -42); b.wp(0, 0, -52); b.wp(0, 0, -56);
@@ -1850,19 +1800,18 @@ const WORLD9_LEVELS = [
     },
   },
   {
-    name: 'Turbos Neón', target: 48,
+    name: 'Turbos Neón', target: 58,
     hint: 'Pads amarillos = turbo hacia adelante. ¡Sujétate!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
-      b.plat(0, 0, -48, 6, 88, { type: 'neon' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -48, 4.1, 88, { type: 'neon' });
       b.boostPad(0, 0, -14, { force: 16 });
       b.coin(0, 0, -22);
       b.checkpoint(0, 0, -32);
       b.boostPad(0, 0, -42, { force: 16 });
       b.coin(0, 0, -52);
-      b.checkpoint(0, 0, -62);
       b.boostPad(0, 0, -72, { force: 14 });
-      b.plat(0, 0, -90, 8, 10, { type: 'neon', pillars: true });
+      b.plat(0, 0, -90, 5.5, 10, { type: 'neon', pillars: true });
       b.crown(0, 0, -91);
       b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -32);
       b.wp(0, 0, -42); b.wp(0, 0, -62);
@@ -1870,20 +1819,19 @@ const WORLD9_LEVELS = [
     },
   },
   {
-    name: 'Ascensores', target: 52,
+    name: 'Ascensores', target: 62,
     hint: 'Plataformas elevadoras. Los resortes te suben.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
-      b.plat(0, 0, -12, 5, 16, { type: 'neon' });
-      b.elevator(4.5, 0, -16, 2.6, 2.6, { to: [0, 3.5, 0], period: 4.0 });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -12, 4.1, 16, { type: 'neon' });
+      b.elevator(4.5, 0, -16, 2.6, 2.6, { to: [0, 3.5, 0], period: 3.12 });
       b.spring(0, 0, -18, { power: 16 });
-      b.plat(0, 3.5, -26, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 3.5, -26);
-      b.plat(0, 3.5, -36, 5, 12, { type: 'neon' });
-      b.elevator(4.5, 3.5, -38, 2.6, 2.6, { to: [0, 3.5, 0], period: 4.0, phase: 0.5 });
+      b.plat(0, 3.5, -26, 4.1, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 3.5, -26);
+      b.plat(0, 3.5, -36, 4.1, 12, { type: 'neon' });
+      b.elevator(4.5, 3.5, -38, 2.6, 2.6, { to: [0, 3.5, 0], period: 3.12, phase: 0.5 });
       b.spring(0, 3.5, -40, { power: 16 });
-      b.plat(0, 7.0, -48, 6, 8, { type: 'neon', pillars: true }); b.checkpoint(0, 7.0, -48);
-      b.plat(0, 7.0, -60, 6, 16, { type: 'neon' }); b.coin(0, 7.0, -56);
-      b.plat(0, 7.0, -74, 8, 10, { type: 'neon', pillars: true });
+      b.plat(0, 7.0, -48, 4.1, 8, { type: 'neon', pillars: true }); b.plat(0, 7.0, -60, 4.1, 16, { type: 'neon' }); b.coin(0, 7.0, -56);
+      b.plat(0, 7.0, -74, 5.5, 10, { type: 'neon', pillars: true });
       b.crown(0, 7.0, -75);
       b.wp(0, 0, -2); b.wp(0, 0, -18, '', 4); b.wp(0, 3.5, -26);
       b.wp(0, 3.5, -40, '', 4); b.wp(0, 7.0, -48);
@@ -1891,20 +1839,19 @@ const WORLD9_LEVELS = [
     },
   },
   {
-    name: 'Cintas Opuestas', target: 55,
+    name: 'Cintas Opuestas', target: 68,
     hint: 'Cintas neón empujan hacia atrás. ¡Rema!',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'neon', pillars: true });
-      b.plat(0, 0, -6, 4.5, 6, { type: 'neon' });
-      b.neonConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, 1], speed: 3.4 });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { type: 'neon', pillars: true });
+      b.plat(0, 0, -6, 4.1, 6, { type: 'neon' });
+      b.neonConvey(0, 0, -15, 4.5, 14, { dir: [0, 0, 1], speed: 3.91 });
       b.coinRow(0, 0, -10, 0, 0, -20, 3);
-      b.plat(0, 0, -25, 5, 6, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -25);
-      b.neonConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, 1], speed: 3.4 });
+      b.plat(0, 0, -25, 4.1, 6, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -25);
+      b.neonConvey(0, 0, -34, 4.5, 14, { dir: [0, 0, 1], speed: 3.91 });
       b.coin(0, 0, -30); b.coin(0, 0, -38);
-      b.plat(0, 0, -44, 5, 6, { type: 'neon', pillars: true }); b.checkpoint(0, 0, -44);
-      b.plat(0, 0, -58, 5, 22, { type: 'neon' });
+      b.plat(0, 0, -44, 4.1, 6, { type: 'neon', pillars: true }); b.plat(0, 0, -58, 4.1, 22, { type: 'neon' });
       b.boostPad(0, 0, -58, { force: 14 });
-      b.plat(0, 0, -74, 8, 10, { type: 'neon', pillars: true });
+      b.plat(0, 0, -74, 5.5, 10, { type: 'neon', pillars: true });
       b.crown(0, 0, -75);
       b.wp(0, 0, -2); b.wp(0, 0, -15); b.wp(0, 0, -25);
       b.wp(0, 0, -34); b.wp(0, 0, -44);
@@ -1912,15 +1859,15 @@ const WORLD9_LEVELS = [
     }
   },
   {
-    name: 'Corona Neón', target: 80,
+    name: 'Corona Neón', target: 105,
     hint: '¡La corona de la ciudad! Turbo, láseres y teleports.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'neon', pillars: true });
-      b.plat(0, 0, -50, 8, 100, { type: 'neon' });
-      b.neonConvey(0, 0, -16, 4.5, 12, { dir: [0, 0, 1], speed: 3.0 });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'neon', pillars: true });
+      b.plat(0, 0, -50, 4.1, 100, { type: 'neon' });
+      b.neonConvey(0, 0, -16, 4.5, 12, { dir: [0, 0, 1], speed: 3.45 });
       b.checkpoint(0, 0, -28);
       b.boostPad(0, 0, -36, { force: 12 });
-      const l1 = b.laserGate(0, 0, -48, { period: 3.2 });
+      const l1 = b.laserGate(0, 0, -48, { period: 2.5 });
       b.checkpoint(0, 0, -58);
       const ta = b.teleportPad(-4.8, 0, -66, { color: 0x40f8ff });
       b.plat(-4.8, 3.2, -66, 4, 6, { type: 'neon' });
@@ -1930,10 +1877,9 @@ const WORLD9_LEVELS = [
       b.plat(-3.5, 0, -80, 2.8, 18, { type: 'neon' });
       b.plat(3.5, 0, -80, 2.8, 18, { type: 'neon' });
       b.magnetZone(0, 0, -80, 5, 14, { dir: [1, 0, 0], force: 2.8 });
-      b.checkpoint(0, 0, -92);
       b.spring(0, 0, -98, { power: 16 });
-      b.elevator(4.5, 0, -98, 2.6, 2.6, { to: [0, 3.5, 0], period: 4.5 });
-      b.plat(0, 3.5, -106, 10, 10, { type: 'neon', pillars: true });
+      b.elevator(4.5, 0, -98, 2.6, 2.6, { to: [0, 3.5, 0], period: 3.51 });
+      b.plat(0, 3.5, -106, 5.5, 10, { type: 'neon', pillars: true });
       b.pillar(-3.2, 3.5, -109, 3); b.pillar(3.2, 3.5, -109, 3);
       b.crown(0, 3.5, -108);
       const W = (l, lead) => ({ cond: () => l.safe(lead) });
@@ -1948,90 +1894,96 @@ const WORLD9_LEVELS = [
 
 const WORLD10_LEVELS = [
   {
-    name: 'Órbita Suave', target: 38,
-    hint: '¡El Cosmo te espera! Nebulosas y planetas de colores.',
+    name: 'Órbita Suave', target: 56,
+    hint: 'Meteoros tempranos, baja gravedad y agujero al borde.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
-      b.plat(0, 0, -40, 6, 72, { type: 'space' });
-      b.coinRow(0, 0, -6, 0, 0, -24, 4);
-      b.checkpoint(0, 0, -28);
-      b.coin(0, 0, -40); b.coin(0, 0, -52);
-      b.checkpoint(0, 0, -56);
-      b.plat(0, 0, -80, 8, 10, { type: 'space', pillars: true });
-      b.crown(0, 0, -81);
-      b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
-      b.wp(0, 0, -44); b.wp(0, 0, -56); b.wp(0, 0, -70); b.wp(0, 0, -81);
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5.2, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -45, 4.0, 82, { type: 'space' });
+      b.coinRow(0, 0, -6, 0, 0, -18, 3);
+      const m1 = b.meteor(0, 0, -16, { period: 3.0 });
+      const m2 = b.meteor(0, 0, -26, { period: 3.0, phase: 0.45 });
+      b.lowGravZone(0, 0, -36, 4.0, 10, { gScale: 0.42, jumpScale: 1.4 });
+      b.checkpoint(0, 0, -44);
+      const m3 = b.meteor(0, 0, -56, { period: 2.9, phase: 0.2 });
+      b.coin(0, 0, -56);
+      b.starBoost(0, 0, -68, { force: 13 });
+      b.blackHole(5.0, 0, -76, { r: 3.6, force: 9.5 });
+      b.plat(0, 0, -92, 5.6, 10, { type: 'space', pillars: true });
+      b.crown(0, 0, -93);
+      const W = (m, lead) => ({ cond: () => m.safe(lead) });
+      b.wp(0, 0, -2); b.wp(0, 0, -12);
+      b.wp(0, 0, -13.5, 'w', 0, W(m1, 0.15)); b.wp(0, 0, -20, '', 7);
+      b.wp(0, 0, -23.5, 'w', 0, W(m2, 0.15)); b.wp(0, 0, -34); b.wp(0, 0, -44);
+      b.wp(0, 0, -53.5, 'w', 0, W(m3, 0.15)); b.wp(0, 0, -64, '', 7);
+      b.wp(0, 0, -68); b.wp(-1.2, 0, -76); b.wp(0, 0, -93);
     },
   },
   {
-    name: 'Gravedad Baja', target: 48,
+    name: 'Gravedad Baja', target: 60,
     hint: 'Zonas de baja gravedad: saltos más altos y flotantes.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'space', pillars: true });
       // piso ancho continuo — la baja gravedad no te tira al vacío
-      b.plat(0, 0, -50, 8, 92, { type: 'space' });
+      b.plat(0, 0, -50, 4, 92, { type: 'space' });
       b.lowGravZone(0, 0, -18, 6, 16, { gScale: 0.45, jumpScale: 1.4 });
       b.coin(0, 0, -14); b.coin(0, 0, -22);
       b.checkpoint(0, 0, -36);
       b.lowGravZone(0, 0, -54, 6, 16, { gScale: 0.45, jumpScale: 1.4 });
       b.coin(0, 0, -50); b.coin(0, 0, -58);
-      b.checkpoint(0, 0, -70);
-      b.plat(0, 0, -88, 8, 10, { type: 'space', pillars: true });
+      b.plat(0, 0, -88, 5.5, 10, { type: 'space', pillars: true });
       b.crown(0, 0, -89);
       b.wp(0, 0, -2); b.wp(0, 0, -18); b.wp(0, 0, -36);
       b.wp(0, 0, -54); b.wp(0, 0, -70); b.wp(0, 0, -89);
     },
   },
   {
-    name: 'Pozos de Gravedad', target: 50,
+    name: 'Pozos de Gravedad', target: 62,
     hint: 'Los planetas te atraen. Compensa la órbita.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
-      b.plat(0, 0, -50, 10, 92, { type: 'space' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -50, 4, 92, { type: 'space' });
       b.gravWell(-5.5, 0, -22, { r: 5.0, force: 6.5, color: 0xff9060 });
       b.coin(0, 0, -18); b.coin(0, 0, -26);
       b.checkpoint(0, 0, -36);
       b.gravWell(5.5, 0, -52, { r: 5.0, force: 6.5, color: 0x60c0ff });
       b.coin(0, 0, -48); b.coin(0, 0, -56);
-      b.checkpoint(0, 0, -68);
-      b.plat(0, 0, -88, 8, 10, { type: 'space', pillars: true });
+      b.plat(0, 0, -88, 5.5, 10, { type: 'space', pillars: true });
       b.crown(0, 0, -89);
       b.wp(0, 0, -2); b.wp(1.5, 0, -22); b.wp(0, 0, -36);
       b.wp(-1.5, 0, -52); b.wp(0, 0, -68); b.wp(0, 0, -89);
     },
   },
   {
-    name: 'Asteroides en Órbita', target: 52,
+    name: 'Asteroides en Órbita', target: 64,
     hint: 'Asteroides orbitan a los lados. Sigue el camino central.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
-      b.plat(0, 0, -50, 6, 92, { type: 'space' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -50, 4, 92, { type: 'space' });
       b.orbitPlat(0, 0.85, -28, 2.8, 2.8, { radius: 5.0, speed: 0.7, phase: 0 });
       b.coin(5.0, 0.85, -28);
       b.checkpoint(0, 0, -40);
       b.orbitPlat(0, 0.85, -58, 2.8, 2.8, { radius: 5.0, speed: 0.75, phase: 1.5 });
       b.coin(-5.0, 0.85, -58);
-      b.checkpoint(0, 0, -70);
-      b.plat(0, 0, -88, 8, 10, { type: 'space', pillars: true });
+      b.plat(0, 0, -88, 5.5, 10, { type: 'space', pillars: true });
       b.crown(0, 0, -89);
       b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -40);
       b.wp(0, 0, -58); b.wp(0, 0, -70); b.wp(0, 0, -89);
     },
   },
   {
-    name: 'Lluvia de Meteoros', target: 50,
+    name: 'Lluvia de Meteoros', target: 62,
     hint: '¡Ojo a las sombras naranjas! Espera y cruza.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 6, { type: 'space', pillars: true });
-      b.plat(0, 0, -20, 5, 34, { type: 'space' }); b.coinRow(0, 0, -5, 0, 0, -28, 4);
-      const m1 = b.meteor(0, 0, -14, { period: 3.4, phase: 0 });
-      const m2 = b.meteor(0, 0, -24, { period: 3.4, phase: 0.5 });
-      b.plat(0, 0, -42, 6, 8, { type: 'space', pillars: true }); b.checkpoint(0, 0, -42);
-      b.plat(0, 0, -60, 5, 28, { type: 'space' });
-      const m3 = b.meteor(0, 0, -52, { period: 3.2, phase: 0.2 });
-      const m4 = b.meteor(0, 0, -62, { period: 3.2, phase: 0.7 });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { type: 'space', pillars: true });
+      b.plat(0, 0, -20, 4, 34, { type: 'space' }); b.coinRow(0, 0, -5, 0, 0, -28, 4);
+      const m1 = b.meteor(0, 0, -14, { period: 2.55, phase: 0.17 });
+      const m2 = b.meteor(0, 0, -24, { period: 2.55, phase: 0.84 });
+      b.plat(0, 0, -42, 4, 8, { type: 'space', pillars: true }); b.checkpoint(0, 0, -42);
+      b.plat(0, 0, -60, 4, 28, { type: 'space' });
+      const m3 = b.meteor(0, 0, -52, { period: 2.4, phase: 0.71 });
+      const m4 = b.meteor(0, 0, -62, { period: 2.4, phase: 0.38 });
       b.coin(0, 0, -55); b.coin(0, 0, -65);
-      b.plat(0, 0, -80, 8, 10, { type: 'space', pillars: true });
+      b.plat(0, 0, -80, 5.5, 10, { type: 'space', pillars: true });
       b.crown(0, 0, -81);
       const W = (m, lead) => ({ cond: () => m.safe(lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -10);
@@ -2042,37 +1994,35 @@ const WORLD10_LEVELS = [
     },
   },
   {
-    name: 'Agujeros Negros', target: 52,
+    name: 'Agujeros Negros', target: 64,
     hint: 'Atractores al borde. Mantente al centro del camino.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
-      b.plat(0, 0, -50, 8, 92, { type: 'space' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -50, 4, 92, { type: 'space' });
       b.blackHole(-6.5, 0, -22, { r: 4.0, force: 9 });
       b.coin(0, 0, -18); b.coin(0, 0, -26);
       b.checkpoint(0, 0, -36);
       b.blackHole(6.5, 0, -54, { r: 4.0, force: 9 });
       b.coin(0, 0, -50); b.coin(0, 0, -58);
-      b.checkpoint(0, 0, -68);
-      b.plat(0, 0, -88, 8, 10, { type: 'space', pillars: true });
+      b.plat(0, 0, -88, 5.5, 10, { type: 'space', pillars: true });
       b.crown(0, 0, -89);
       b.wp(0, 0, -2); b.wp(0, 0, -22); b.wp(0, 0, -36);
       b.wp(0, 0, -54); b.wp(0, 0, -68); b.wp(0, 0, -89);
     },
   },
   {
-    name: 'Anillos Estelares', target: 48,
+    name: 'Anillos Estelares', target: 60,
     hint: 'Atraviesa los anillos dorados para un turbo cósmico.',
     build(b) {
-      b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
-      b.plat(0, 0, -48, 6, 88, { type: 'space' });
+      b.start(0, 0, 0); b.plat(0, 0, 0, 5, 8, { type: 'space', pillars: true });
+      b.plat(0, 0, -48, 4, 88, { type: 'space' });
       b.starBoost(0, 0, -14, { force: 15 });
       b.coin(0, 0, -22);
       b.checkpoint(0, 0, -32);
       b.starBoost(0, 0, -42, { force: 15 });
       b.coin(0, 0, -52);
-      b.checkpoint(0, 0, -62);
       b.starBoost(0, 0, -72, { force: 14 });
-      b.plat(0, 0, -90, 8, 10, { type: 'space', pillars: true });
+      b.plat(0, 0, -90, 5.5, 10, { type: 'space', pillars: true });
       b.crown(0, 0, -91);
       b.wp(0, 0, -2); b.wp(0, 0, -14); b.wp(0, 0, -32);
       b.wp(0, 0, -42); b.wp(0, 0, -62);
@@ -2080,7 +2030,7 @@ const WORLD10_LEVELS = [
     },
   },
   {
-    name: 'Corona del Cosmos', target: 95,
+    name: 'Corona del Cosmos', target: 110,
     hint: '¡El gran final! Un recuerdo de cada mundo.',
     build(b) {
       b.start(0, 0, 0); b.plat(0, 0, 0, 6, 8, { type: 'space', pillars: true });
@@ -2089,28 +2039,23 @@ const WORLD10_LEVELS = [
       b.hammer(0, 0, -16, { speed: 1.35, len: 4.0 });
       b.checkpoint(0, 0, -28);
       // W2 géiser
-      const j1 = b.fireJet(0, 0, -40, { period: 3.2, h: 2.5 });
+      const j1 = b.fireJet(0, 0, -40, { period: 2.88, h: 2.5 });
       b.checkpoint(0, 0, -50);
       // W3 carámbano
-      const ic = b.icicle(0, 0, -60, { period: 3.4 });
-      b.checkpoint(0, 0, -70);
+      const ic = b.icicle(0, 0, -60, { period: 3.06 });
       // W4 hoja (rebote suave, sin hueco)
       b.leafTramp(0, 0, -78, { power: 11 });
       b.coin(0, 2.2, -78);
       // W5 escarabajo lateral
-      b.scarab(5.8, 0, -90, { to: [0, 0, -8], period: 5.0 });
-      b.checkpoint(0, 0, -96);
+      b.scarab(5.8, 0, -90, { to: [0, 0, -8], period: 4.5 });
       // W6 cinta chocolate en contra
-      b.chocConvey(0, 0, -108, 4.5, 12, { dir: [0, 0, 1], speed: 2.6 });
-      b.checkpoint(0, 0, -120);
+      b.chocConvey(0, 0, -108, 4.5, 12, { dir: [0, 0, 1], speed: 2.99 });
       // W7 burbujas laterales (decor)
       b.bubbleColumn(5.5, 0, -128, 3, 6, { force: 10 });
       // W8 hacha
       const ax = b.pendulumAxe(0, 0, -140, { speed: 1.35, len: 3.8 });
-      b.checkpoint(0, 0, -152);
       // W9 láser
-      const lz = b.laserGate(0, 0, -162, { period: 3.0 });
-      b.checkpoint(0, 0, -172);
+      const lz = b.laserGate(0, 0, -162, { period: 2.7 });
       // W10 anillo + lowGrav + corona especial
       b.starBoost(0, 0, -180, { force: 12 });
       b.lowGravZone(0, 0, -190, 6, 12, { gScale: 0.5, jumpScale: 1.3 });
