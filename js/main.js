@@ -1,11 +1,11 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=5';
-import { Level } from './world.js?v=5';
-import { LEVELS, WORLDS } from './levels.js?v=5';
-import { Input } from './input.js?v=5';
-import { Sfx } from './audio.js?v=5';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=5';
+import { Ball, stepBall } from './physics.js?v=6';
+import { Level } from './world.js?v=6';
+import { LEVELS, WORLDS } from './levels.js?v=6';
+import { Input } from './input.js?v=6';
+import { Sfx } from './audio.js?v=6';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=6';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -74,8 +74,9 @@ const THEMES = {
     sun: 0xffc090, sunI: 1.85, skyTop: 0x1a0a08, skyMid: 0x5a2010, skyHor: 0xc45018, skyBot: 0xff6a20,
   },
   ice: {
-    fog: 0xd8eefc, hemiSky: 0xf0f8ff, hemiGround: 0xc8dce8, hemiI: 1.85,
-    sun: 0xfff8f0, sunI: 2.0, skyTop: 0x6eb8ef, skyMid: 0xb8dcff, skyHor: 0xe8f4ff, skyBot: 0xffffff,
+    fog: 0x2e6a9e, hemiSky: 0x7aa8c8, hemiGround: 0x4a7898, hemiI: 1.25,
+    sun: 0xffe0c8, sunI: 1.45, skyTop: 0x0a3a78, skyMid: 0x1e68a8, skyHor: 0x4a90c8, skyBot: 0x7ab0d0,
+    fogNear: 22, fogFar: 85,
   },
 };
 let currentTheme = 'sky';
@@ -92,10 +93,10 @@ function rebuildSky(th) {
   cols.needsUpdate = true;
 }
 function applyTheme(th) {
-  if (th === currentTheme) return;
   currentTheme = th;
   const t = THEMES[th] || THEMES.sky;
   scene.fog.color.set(t.fog); scene.background.set(t.fog);
+  scene.fog.near = t.fogNear || 38; scene.fog.far = t.fogFar || 120;
   hemi.color.set(t.hemiSky); hemi.groundColor.set(t.hemiGround); hemi.intensity = t.hemiI;
   sunLight.color.set(t.sun); sunLight.intensity = t.sunI;
   rebuildSky(th);

@@ -1,7 +1,7 @@
 // Construcción de niveles: geometría estática fusionada (pocas draw calls),
 // entidades dinámicas (martillos, molinetes, plataformas móviles...) y colliders.
 import * as THREE from 'three';
-import { Collider } from './physics.js?v=5';
+import { Collider } from './physics.js?v=6';
 
 export const PAL = {
   grass: 0x7ddc5a, grassSide: 0xf0d9a8, stoneBottom: 0xc9a777,
@@ -22,11 +22,11 @@ export const PAL = {
   lavaCrumb: 0xff7a28, lavaCrumbSide: 0xb83a10,
   convey: 0xff9a3a, conveySide: 0xc45a12,
   lavaMover: 0xff7040, lavaMoverSide: 0xc04020,
-  // Glaciar Resbaloso
-  ice: 0xb8e8ff, iceSide: 0x7ec8e8, iceBottom: 0x5aa8c8,
-  iceTop: 0xe8f8ff, snow: 0xf5fbff, snowSide: 0xd0e4f0, snowBottom: 0xb8c8d8,
-  crystal: 0xa8f0ff, packIce: 0x9ad4f0, crackIce: 0xd0f0ff,
-  windFan: 0x6ec8ff, icicle: 0xd8f4ff, snowBounce: 0xffffff,
+  // Glaciar Resbaloso — contraste: hielo cian brillante vs nieve mate
+  ice: 0x7ad4f5, iceSide: 0x2a7aaa, iceBottom: 0x1a5a80,
+  iceTop: 0x6ad8f8, snow: 0xd4e6f4, snowSide: 0x4a6e8e, snowBottom: 0x2e4e6e,
+  crystal: 0x6ad8ff, packIce: 0x5ec0e8, crackIce: 0xb8e8f8,
+  windFan: 0x3aa0e0, icicle: 0xc8f0ff, snowBounce: 0xf0f6fc,
 };
 
 const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _v = new THREE.Vector3(), _s = new THREE.Vector3(1, 1, 1);
@@ -121,14 +121,36 @@ export class Level {
     if (type === 'ice' || type === 'packIce' || o.ice) c.ice = true;
     if (type === 'wood') this._planks(x, y, z, w, d);
     if (type === 'ice' || type === 'packIce') this._iceShine(x, y, z, w, d);
+    if (type === 'snow') this._snowRim(x, y, z, w, d);
     if (o.rock !== false && type !== 'wood' && type !== 'ice' && type !== 'packIce' && type !== 'snow' && w * d >= 6) this._rockUnder(x, y - h, z, w, d);
     if (o.pillars) this._cornerPillars(x, y, z, w, d);
     if (y < this.minY) this.minY = y;
     return c;
   }
   _iceShine(x, y, z, w, d) {
-    _m.compose(_v.set(x, y + 0.02, z), _q.identity(), _s);
-    this.decor.add(new THREE.BoxGeometry(Math.max(0.4, w * 0.35), 0.02, Math.max(0.3, d * 0.15)), _m, 0xffffff, 0xffffff);
+    // brillo cian + borde oscuro para que el hielo se distinga de la nieve
+    _m.compose(_v.set(x, y + 0.025, z), _q.identity(), _s);
+    this.decor.add(new THREE.BoxGeometry(Math.max(0.5, w * 0.55), 0.03, Math.max(0.35, d * 0.22)), _m, 0xd8f8ff, 0xa0e8ff);
+    // remate perimetral (lados visibles)
+    const rw = w * 0.98, rd = d * 0.98, t = 0.08;
+    for (const [px, pz, ww, dd] of [
+      [x, z - rd / 2, rw, t], [x, z + rd / 2, rw, t],
+      [x - rw / 2, z, t, rd], [x + rw / 2, z, t, rd],
+    ]) {
+      _m.compose(_v.set(px, y + 0.015, pz), _q.identity(), _s);
+      this.decor.add(new THREE.BoxGeometry(ww, 0.04, dd), _m, PAL.iceSide, PAL.iceBottom);
+    }
+  }
+  _snowRim(x, y, z, w, d) {
+    // borde mate azul-gris para plataformas de nieve (agarre)
+    const rw = w * 0.98, rd = d * 0.98, t = 0.1;
+    for (const [px, pz, ww, dd] of [
+      [x, z - rd / 2, rw, t], [x, z + rd / 2, rw, t],
+      [x - rw / 2, z, t, rd], [x + rw / 2, z, t, rd],
+    ]) {
+      _m.compose(_v.set(px, y + 0.012, pz), _q.identity(), _s);
+      this.decor.add(new THREE.BoxGeometry(ww, 0.035, dd), _m, PAL.snowSide, PAL.snowBottom);
+    }
   }
   _planks(x, y, z, w, d) {
     // líneas de tablones (decorativas, apenas sobresalen)
@@ -737,7 +759,7 @@ export class Level {
     const b = this.bounds.clone(); b.expandByScalar(28);
     const w = Math.max(70, b.max.x - b.min.x + 40), d = Math.max(90, b.max.z - b.min.z + 40);
     const y = this.minY - 4.5;
-    const sea = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ color: 0xe8f4ff }));
+    const sea = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshLambertMaterial({ color: 0x7ab0d0 }));
     sea.rotation.x = -Math.PI / 2; sea.position.set((b.min.x + b.max.x) / 2, y, (b.min.z + b.max.z) / 2);
     this.group.add(sea); this.snowFloor = sea;
   }
