@@ -125,7 +125,7 @@ export const LEVELS = [
       b.plat(0, 3, -63.5, 6, 5, { pillars: true }); b.checkpoint(0, 3, -63.5);
       for (let i = 0; i < 4; i++) b.crumble(0, 3, -67 - i * 2, 2, 2);
       b.coinRow(0, 3, -67, 0, 3, -73, 2);
-      b.plat(0, 3, -80, 8, 8, { pillars: true });
+      b.plat(0, 3, -79, 8, 10, { pillars: true });
       b.crown(0, 3, -81);
       b.wp(0, 0, -2); b.wp(0, 0, -26.2, 'w', 0, { cond: () => m1.c.pos.z > -29.9 });
       b.wp(0, 0, -27.5, 'r', 0, { follow: m1 }); b.wp(0, 0, -29.6, 'r', 0, { follow: m1, cond: () => m1.c.pos.z < -40.2 });

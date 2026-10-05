@@ -200,7 +200,8 @@ export function stepBall(ball, colliders, input, dt) {
         ball.vel.x = hx / hl * 14; ball.vel.z = hz / hl * 14; ball.vel.y = Math.max(ball.vel.y, 4);
         ball.events.push({ type: 'bumper', c }); continue;
       }
-      if (c.kind === 'spring' && n.y > 0.6) {
+      if (c.kind === 'spring' && (n.y > 0.6 || (n.y > -0.2 && ball.pos.y > c.pos.y - 0.05))) {
+        // también se activa al tocarlo de lado: nunca te quedas atascado contra él
         ball.vel.y = c.owner && c.owner.power ? c.owner.power : 17; ball.jumped = false;
         ball.events.push({ type: 'spring', c }); ball.sinceGround = 99; continue;
       }
