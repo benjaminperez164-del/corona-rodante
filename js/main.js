@@ -1,11 +1,13 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=6';
-import { Level } from './world.js?v=6';
-import { LEVELS, WORLDS } from './levels.js?v=6';
-import { Input } from './input.js?v=6';
-import { Sfx } from './audio.js?v=6';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=6';
+import { Ball, stepBall } from './physics.js?v=7';
+import { Level } from './world.js?v=7';
+import { LEVELS, WORLDS } from './levels.js?v=7';
+import { Input } from './input.js?v=7';
+import { Sfx } from './audio.js?v=7';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=7';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=7';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=7';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -14,14 +16,39 @@ const IS_TOUCH = matchMedia('(pointer: coarse)').matches || 'ontouchstart' in wi
 // ---------------- Guardado ----------------
 const SAVE_KEY = 'coronaRodante.v1';
 const defSave = () => ({ coins: 0, skins: ['piedra'], skin: 'piedra', levels: {}, portraitOk: false, muted: false, tutorialSeen: false,
-  opts: { music: true, sfx: true, shadows: true } });
+  opts: { music: true, sfx: true, shadows: true },
+  daily: { streak: 0, bestStreak: 0, lastWon: '', best: {}, claimed: '' },
+  achievements: { unlocked: {} },
+  stats: { earnedCoins: 0, noDeathWins: 0 },
+});
 function loadSave() {
-  try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s && typeof s === 'object') { const d = defSave(); return { ...d, ...s, opts: { ...d.opts, ...(s.opts || {}) } }; } } catch (e) { /* sin guardado */ }
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (s && typeof s === 'object') {
+      const d = defSave();
+      return {
+        ...d, ...s,
+        opts: { ...d.opts, ...(s.opts || {}) },
+        daily: { ...d.daily, ...(s.daily || {}) },
+        achievements: { unlocked: { ...(s.achievements && s.achievements.unlocked) } },
+        stats: { ...d.stats, ...(s.stats || {}) },
+      };
+    }
+  } catch (e) { /* sin guardado */ }
   return defSave();
 }
 let save = loadSave();
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* almacenamiento lleno o bloqueado */ } }
 if (params.has('unlock')) for (let i = 0; i < LEVELS.length; i++) save.levels[i] = save.levels[i] || { done: true, stars: [true, false, false], best: 999 };
+// Retrocompat: estimar monedas ganadas si no hay stats
+if (!save.stats.earnedCoins) {
+  let est = save.coins || 0;
+  for (const id of save.skins || []) {
+    const sk = SKINS.find((s) => s.id === id);
+    if (sk && sk.price) est += sk.price;
+  }
+  save.stats.earnedCoins = est;
+}
 
 // ---------------- Render ----------------
 const canvas = $('c');
@@ -151,12 +178,13 @@ const sfx = new Sfx(); sfx.music = save.opts.music && !save.muted; sfx.sfx = sav
 const G = {
   state: 'title', level: null, levelIndex: 0, checkpoint: new THREE.Vector3(), coins: 0, time: 0, timerOn: false,
   deaths: 0, dead: false, deadT: 0, deadKind: '', winT: 0, shake: 0, lastGroundY: 0, cool: {}, t: 0, returnTo: 'title',
+  dailyMode: false, dailySpec: null,
   camPos: new THREE.Vector3(0, 6, 10), camLook: new THREE.Vector3(), followY: 0, bot: null, hintT: 0, hintShowing: false, selectedWorld: 0,
 };
 const DT = 1 / 120;
 
 // ---------------- UI ----------------
-const screens = ['scr-title', 'scr-levels', 'scr-shop', 'scr-options', 'scr-pause', 'scr-win'];
+const screens = ['scr-title', 'scr-levels', 'scr-shop', 'scr-options', 'scr-pause', 'scr-win', 'scr-daily', 'scr-achievements'];
 function showScreen(id) {
   for (const s of screens) $(s).classList.toggle('hidden', s !== id);
   if (id === 'scr-levels') renderLevels();
@@ -236,28 +264,112 @@ function renderLevels() {
     b.className = 'lvl' + (unlocked ? '' : ' locked') + (w.theme === 'lava' ? ' lava' : '') + (w.theme === 'ice' ? ' ice' : '');
     b.innerHTML = `<div class="n">${unlocked ? li + 1 : '🔒'}</div><div class="nm">${unlocked ? L.name : 'Bloqueado'}</div><div class="st">${st.map(s => `<span class="${s ? 'on' : ''}">★</span>`).join('')}</div>`;
     b.dataset.level = i;
-    b.onclick = () => { if (!unlocked) { sfx.play('click'); toast('Termina el nivel anterior para desbloquear'); return; } sfx.play('click'); startLevel(i, true); };
+    b.onclick = () => { if (!unlocked) { sfx.play('click'); toast('Termina el nivel anterior para desbloquear'); return; } sfx.play('click'); G.dailyMode = false; G.dailySpec = null; startLevel(i, true); };
     grid.appendChild(b);
   });
 }
+function skinUnlockReady(s) {
+  if (!s.unlock) return true;
+  if (s.unlock.startsWith('streak:')) return (save.daily?.bestStreak || 0) >= +s.unlock.slice(7);
+  if (s.unlock.startsWith('achieve:')) return !!(save.achievements?.unlocked?.[s.unlock.slice(8)]);
+  return false;
+}
+function skinUnlockLabel(s) {
+  if (!s.unlock) return '';
+  if (s.unlock.startsWith('streak:')) return `Racha ${s.unlock.slice(7)} días`;
+  if (s.unlock.startsWith('achieve:')) {
+    const a = achievementById(s.unlock.slice(8));
+    return a ? `Logro: ${a.name}` : 'Logro';
+  }
+  return 'Bloqueada';
+}
+function grantUnlockSkins() {
+  let added = false;
+  for (const s of SKINS) {
+    if (!s.unlock) continue;
+    if (skinUnlockReady(s) && !save.skins.includes(s.id)) { save.skins.push(s.id); added = true; }
+  }
+  return added;
+}
 function renderShop() {
+  grantUnlockSkins();
   const grid = $('skin-grid'); grid.innerHTML = '';
   for (const s of SKINS) {
     const owned = save.skins.includes(s.id), eq = save.skin === s.id;
-    const d = document.createElement('div'); d.className = 'skin' + (eq ? ' equipped' : ''); d.dataset.skin = s.id;
-    const btn = eq ? '<button class="btn small green" disabled>Equipada</button>' : owned ? '<button class="btn small blue">Usar</button>'
-      : `<button class="btn small yellow" ${save.coins < s.price ? 'disabled' : ''}><span class="coin-ico"></span> ${s.price}</button>`;
+    const locked = !owned && s.unlock && !skinUnlockReady(s);
+    const d = document.createElement('div'); d.className = 'skin' + (eq ? ' equipped' : '') + (locked ? ' locked' : ''); d.dataset.skin = s.id;
+    let btn;
+    if (eq) btn = '<button class="btn small green" disabled>Equipada</button>';
+    else if (owned) btn = '<button class="btn small blue">Usar</button>';
+    else if (s.unlock) btn = locked
+      ? `<div class="lock-note">🔒 ${skinUnlockLabel(s)}</div>`
+      : '<button class="btn small green">¡Gratis!</button>';
+    else btn = `<button class="btn small yellow" ${save.coins < s.price ? 'disabled' : ''}><span class="coin-ico"></span> ${s.price}</button>`;
     d.innerHTML = `<img alt="" src="${skinPreview(s.id)}"><div class="nm">${s.name}</div>${btn}`;
-    d.querySelector('button').onclick = () => {
+    const b = d.querySelector('button');
+    if (b) b.onclick = () => {
       if (eq) return;
       if (!owned) {
-        if (save.coins < s.price) { toast('¡Te faltan monedas!'); return; }
-        save.coins -= s.price; save.skins.push(s.id); sfx.play('buy'); toast(`¡Nueva bola: ${s.name}!`);
+        if (s.unlock) {
+          if (!skinUnlockReady(s)) { toast('Aún no desbloqueada'); return; }
+          save.skins.push(s.id); sfx.play('buy'); toast(`¡Nueva bola: ${s.name}!`);
+        } else {
+          if (save.coins < s.price) { toast('¡Te faltan monedas!'); return; }
+          save.coins -= s.price; save.skins.push(s.id); sfx.play('buy'); toast(`¡Nueva bola: ${s.name}!`);
+        }
+        notifyAchievements();
       } else sfx.play('click');
       save.skin = s.id; setSkin(s.id); persist(); renderShop(); updateWallet();
     };
     grid.appendChild(d);
   }
+}
+function renderDaily() {
+  const spec = dailySpec(localDateStr(), LEVELS.length);
+  const base = LEVELS[spec.baseIndex];
+  const best = save.daily?.best?.[spec.date];
+  const done = save.daily?.claimed === spec.date;
+  const streak = save.daily?.streak || 0;
+  const twistNote = spec.twist === 1 ? 'Meta de tiempo un poco más fácil' : (spec.twist === 2 ? 'Meta de tiempo más exigente' : 'Sin modificadores extra');
+  const target = spec.twist === 1 ? Math.round(base.target * 1.15) : (spec.twist === 2 ? Math.round(base.target * 0.88) : base.target);
+  $('daily-body').innerHTML = `
+    <div class="daily-card">
+      <h3>📅 ${spec.date}</h3>
+      <div class="daily-hint">Remix de <b>${base.name}</b> · ${WORLDS[base.worldIndex].name}</div>
+      <div class="daily-meta">
+        <div class="daily-pill">🔥 Racha ${streak}</div>
+        <div class="daily-pill">⏱️ Mejor ${best != null ? fmtTime(best) : '—'}</div>
+        <div class="daily-pill"><span class="coin-ico"></span> +${spec.reward}</div>
+      </div>
+      <div class="daily-hint">${twistNote} · meta ★ ${fmtTime(target)}</div>
+      <button class="btn yellow big" id="btn-daily-go">${done ? '▶ Jugar de nuevo' : '▶ ¡Al reto!'}</button>
+      ${done ? '<div class="daily-hint">Recompensa de hoy ya cobrada. ¡Mejora tu tiempo!</div>' : '<div class="daily-hint">Completa el nivel una vez hoy para ganar monedas y sumar racha.</div>'}
+    </div>`;
+  $('btn-daily-go').onclick = () => {
+    sfx.play('click');
+    G.dailyMode = true; G.dailySpec = { ...spec, target };
+    startLevel(spec.baseIndex, true);
+  };
+}
+function renderAchievements() {
+  const grid = $('ach-grid'); grid.innerHTML = '';
+  for (const a of ACHIEVEMENTS) {
+    const on = !!(save.achievements?.unlocked?.[a.id]);
+    const d = document.createElement('div');
+    d.className = 'ach-card' + (on ? ' on' : '');
+    d.innerHTML = `<div class="ico">${a.icon}</div><div><div class="nm">${a.name}</div><div class="ds">${a.desc}</div></div>`;
+    grid.appendChild(d);
+  }
+}
+function notifyAchievements(extra = {}) {
+  const newly = evaluateAchievements(save, LEVELS, extra);
+  if (grantUnlockSkins()) persist();
+  for (const id of newly) {
+    const a = achievementById(id);
+    if (a) toast(`🏅 Logro: ${a.name}`, 3.2);
+  }
+  if (newly.length) persist();
+  return newly;
 }
 function renderOptions() {
   $('tg-music').classList.toggle('on', save.opts.music);
@@ -282,7 +394,9 @@ function resetRun() {
   if (L.crownObj) { L.crownObj.position.copy(L.crownPos); L.crownObj.scale.setScalar(1); }
   G.followY = ball.pos.y; snapCamera();
   const Ld = LEVELS[G.levelIndex];
-  $('hud-level').textContent = `${(Ld.localIndex != null ? Ld.localIndex : G.levelIndex) + 1} · ${Ld.name}`;
+  $('hud-level').textContent = G.dailyMode
+    ? `📅 Reto · ${Ld.name}`
+    : `${(Ld.localIndex != null ? Ld.localIndex : G.levelIndex) + 1} · ${Ld.name}`;
   updateHUD();
   if (G.bot) G.bot.i = 0;
 }
@@ -292,14 +406,15 @@ async function startLevel(i, fromMenu) {
   G.state = 'play'; showScreen(null); setPlayingUI(true);
   sfx.musicOn = true;
   maybeShowTutorial();
-  // Si el tutorial está visible, retrasamos el hint del nivel para no saturar
   const delay = G.hintShowing ? 0 : 250;
-  if (!G.hintShowing) setTimeout(() => toast(LEVELS[i].hint, 3.5), delay);
+  const hint = G.dailyMode ? (`Reto Diario: ${LEVELS[i].hint}`) : LEVELS[i].hint;
+  if (!G.hintShowing) setTimeout(() => toast(hint, 3.5), delay);
   $('joy-hint').style.opacity = (save.tutorialSeen || (save.levels[0] && save.levels[0].done)) ? 0 : 0;
 }
 function pause() { if (G.state !== 'play') return; G.state = 'pause'; setPlayingUI(false); $('hud').classList.remove('hidden'); showScreen('scr-pause'); }
 function resume() { G.state = 'play'; showScreen(null); setPlayingUI(true); }
 function toTitle() {
+  G.dailyMode = false; G.dailySpec = null;
   G.state = 'title'; setPlayingUI(false); showScreen('scr-title'); sfx.musicOn = true;
   const doneW1 = save.levels[7] && save.levels[7].done;
   const doneW2 = save.levels[15] && save.levels[15].done;
@@ -339,29 +454,42 @@ function win() {
   G.state = 'won'; G.winT = 0; sfx.play('win'); flash(0.5);
   fx.burst(G.level.crownPos, 60, [0xffd23a, 0xff6fb7, 0x5fd3c8, 0x7ddc5a, 0x5aa8ff, 0xffffff], { speed: 7, up: 9, life: 1.6, g: 9, size: 1.3 });
   const L = LEVELS[G.levelIndex];
-  const stars = [true, G.coins >= G.level.coins.length, G.time <= L.target];
+  const target = (G.dailyMode && G.dailySpec) ? G.dailySpec.target : L.target;
+  const stars = [true, G.coins >= G.level.coins.length, G.time <= target];
   const prev = save.levels[G.levelIndex] || { done: false, stars: [false, false, false], best: 9999 };
   let newStars = 0; const merged = prev.stars.map((s, k) => { if (stars[k] && !s) newStars++; return s || stars[k]; });
-  const earned = G.coins + newStars * 5;
+  let earned = G.coins + newStars * 5;
   save.coins += earned;
+  save.stats.earnedCoins = (save.stats.earnedCoins || 0) + earned;
   save.levels[G.levelIndex] = { done: true, stars: merged, best: Math.min(prev.best || 9999, G.time) };
+  if (G.deaths === 0) save.stats.noDeathWins = (save.stats.noDeathWins || 0) + 1;
+  let dailyReward = 0;
+  if (G.dailyMode && G.dailySpec) {
+    const r = applyDailyWin(save, G.dailySpec, G.time);
+    dailyReward = r.reward;
+    earned += dailyReward;
+  }
+  notifyAchievements({ noDeath: G.deaths === 0 });
   persist();
-  G.lastWin = { stars, earned, newStars };
+  G.lastWin = { stars, earned, newStars, dailyReward, target };
   setTimeout(() => showWin(stars, earned), 1300);
 }
 function showWin(stars, earned) {
   if (G.state !== 'won') return;
   setPlayingUI(false); showScreen('scr-win');
   const L = LEVELS[G.levelIndex], sp = $('win-stars').children;
+  const target = (G.lastWin && G.lastWin.target) || L.target;
   for (let k = 0; k < 3; k++) { sp[k].classList.remove('on'); if (stars[k]) setTimeout(() => { sp[k].classList.add('on'); sfx.play('star', 1 + k * 0.12); }, 300 + k * 350); }
+  const dailyLine = (G.lastWin && G.lastWin.dailyReward) ? `<div class="ok">📅 Reto Diario +${G.lastWin.dailyReward} <span class="coin-ico" style="vertical-align:-4px"></span></div>` : (G.dailyMode ? '<div class="no">📅 Reto (recompensa ya cobrada hoy)</div>' : '');
   $('win-info').innerHTML = `<div class="ok">★ Corona conseguida</div>
     <div class="${stars[1] ? 'ok' : 'no'}">★ Monedas: ${G.coins}/${G.level.coins.length}</div>
-    <div class="${stars[2] ? 'ok' : 'no'}">★ Tiempo: ${fmtTime(G.time)} (meta ${fmtTime(L.target)})</div>
+    <div class="${stars[2] ? 'ok' : 'no'}">★ Tiempo: ${fmtTime(G.time)} (meta ${fmtTime(target)})</div>
+    ${dailyLine}
     <div>+${earned} <span class="coin-ico" style="vertical-align:-4px"></span></div>`;
-  $('btn-next').classList.toggle('hidden', G.levelIndex >= LEVELS.length - 1);
+  $('btn-next').classList.toggle('hidden', G.dailyMode || G.levelIndex >= LEVELS.length - 1);
   const Ld = LEVELS[G.levelIndex];
   const w = WORLDS[Ld.worldIndex || 0];
-  if (Ld.localIndex === w.levels.length - 1) toast(`¡Has completado ${w.name}! 👑`, 4);
+  if (!G.dailyMode && Ld.localIndex === w.levels.length - 1) toast(`¡Has completado ${w.name}! 👑`, 4);
 }
 
 function fixedStep(dt) {
@@ -521,6 +649,7 @@ addEventListener('resize', resize); addEventListener('orientationchange', () => 
 function on(id, fn) { $(id).addEventListener('click', (e) => { sfx.init(); fn(e); }); }
 on('btn-play', () => {
   sfx.play('click');
+  G.dailyMode = false; G.dailySpec = null;
   let i = 0; while (i < LEVELS.length - 1 && save.levels[i] && save.levels[i].done) i++;
   if (!save.levels[0] || !save.levels[0].done) startLevel(0, true);
   else {
@@ -528,6 +657,8 @@ on('btn-play', () => {
     G.returnTo = 'scr-title'; showScreen('scr-levels');
   }
 });
+on('btn-daily', () => { sfx.play('click'); showScreen('scr-daily'); });
+on('btn-achievements', () => { sfx.play('click'); notifyAchievements(); showScreen('scr-achievements'); });
 on('btn-shop', () => { sfx.play('click'); showScreen('scr-shop'); });
 on('btn-options', () => { sfx.play('click'); G.returnTo = 'scr-title'; showScreen('scr-options'); });
 document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => {
@@ -543,11 +674,11 @@ on('btn-mute', () => {
 });
 on('btn-resume', () => { sfx.play('click'); resume(); });
 on('btn-restart', () => { sfx.play('click'); resetRun(); resume(); });
-on('btn-levels', () => { sfx.play('click'); G.state = 'menu'; setPlayingUI(false); showScreen('scr-levels'); });
+on('btn-levels', () => { sfx.play('click'); G.dailyMode = false; G.dailySpec = null; G.state = 'menu'; setPlayingUI(false); showScreen('scr-levels'); });
 on('btn-pause-opts', () => { sfx.play('click'); G.returnTo = 'scr-pause'; showScreen('scr-options'); });
-on('btn-next', () => { sfx.play('click'); startLevel(G.levelIndex + 1, true); });
+on('btn-next', () => { sfx.play('click'); G.dailyMode = false; G.dailySpec = null; startLevel(G.levelIndex + 1, true); });
 on('btn-again', () => { sfx.play('click'); startLevel(G.levelIndex, 'keep'); });
-on('btn-win-levels', () => { sfx.play('click'); G.state = 'menu'; showScreen('scr-levels'); });
+on('btn-win-levels', () => { sfx.play('click'); G.dailyMode = false; G.dailySpec = null; G.state = 'menu'; showScreen('scr-levels'); });
 on('tg-music', () => { save.opts.music = !save.opts.music; sfx.setMusic(save.opts.music && !save.muted); persist(); renderOptions(); sfx.play('click'); });
 on('tg-sfx', () => { save.opts.sfx = !save.opts.sfx; sfx.setSfx(save.opts.sfx && !save.muted); persist(); renderOptions(); sfx.play('click'); });
 on('tg-shadows', () => {
@@ -627,6 +758,15 @@ window.__game = {
   },
   teleport(x, y, z) { ball.reset(new THREE.Vector3(x, y, z)); },
   resetSave() { localStorage.removeItem(SAVE_KEY); save = loadSave(); },
+  dailySpec, localDateStr, evaluateAchievements,
+  startDaily(dateStr) {
+    const spec = dailySpec(dateStr || localDateStr(), LEVELS.length);
+    const base = LEVELS[spec.baseIndex];
+    const target = spec.twist === 1 ? Math.round(base.target * 1.15) : (spec.twist === 2 ? Math.round(base.target * 0.88) : base.target);
+    G.dailyMode = true; G.dailySpec = { ...spec, target };
+    this.start(spec.baseIndex);
+    return { ...spec, target, name: base.name };
+  },
 };
 
 // ---------------- Inicio ----------------
@@ -636,5 +776,7 @@ G.state = 'title';
 showScreen('scr-title');
 const _d1 = save.levels[7] && save.levels[7].done, _d2 = save.levels[15] && save.levels[15].done;
 if ($('title-world')) $('title-world').textContent = _d2 ? 'Mundos · Ruinas, Volcán y Glaciar' : (_d1 ? 'Mundos · Ruinas y Volcán' : 'Mundo 1 · Ruinas Flotantes');
+notifyAchievements();
+grantUnlockSkins(); persist();
 $('loading').classList.add('hidden');
 requestAnimationFrame((t) => { last = t; frame(t); });

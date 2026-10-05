@@ -7,12 +7,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="Corona Rodante: rueda por las Ruinas Flotantes y el Volcán Ardiente hasta la corona. Juego de plataformas 3D para el navegador del móvil.">
+<meta name="description" content="Corona Rodante: rueda por las Ruinas, el Volcán y el Glaciar. Reto Diario, bolas y logros. Juego de plataformas 3D para el navegador del móvil.">
 <title>Corona Rodante</title>
-<link rel="icon" href="icon.svg?v=6" type="image/svg+xml">
-<link rel="manifest" href="manifest.json?v=6">
-<link rel="stylesheet" href="css/style.css?v=6">
-<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=6" } }</script>
+<link rel="icon" href="icon.svg?v=7" type="image/svg+xml">
+<link rel="manifest" href="manifest.json?v=7">
+<link rel="stylesheet" href="css/style.css?v=7">
+<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=7" } }</script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -43,12 +43,17 @@
     <div class="sub" id="title-world">Mundo 1 · Ruinas Flotantes</div>
     <div class="menu">
       <button class="btn yellow big" id="btn-play">▶ Jugar</button>
+      <button class="btn green big" id="btn-daily">📅 Reto Diario</button>
       <div class="row">
         <button class="btn pink" id="btn-shop">🎱 Bolas</button>
+        <button class="btn purple" id="btn-achievements">🏅 Logros</button>
+      </div>
+      <div class="row">
         <button class="btn blue" id="btn-options">⚙ Opciones</button>
       </div>
     </div>
     <div class="wallet"><span class="coin-ico"></span><span class="wallet-n">0</span></div>
+    <div class="ver-badge" id="ver-badge">v0.2</div>
   </div>
 </section>
 
@@ -122,6 +127,23 @@
   </div>
 </section>
 
+
+<!-- Reto Diario -->
+<section class="screen hidden" id="scr-daily">
+  <div class="panel wide">
+    <div class="panel-head"><button class="btn small blue back" data-back>◀</button><h2>Reto Diario</h2><div class="wallet small"><span class="coin-ico"></span><span class="wallet-n">0</span></div></div>
+    <div class="daily-body" id="daily-body"></div>
+  </div>
+</section>
+
+<!-- Logros -->
+<section class="screen hidden" id="scr-achievements">
+  <div class="panel wide">
+    <div class="panel-head"><button class="btn small blue back" data-back>◀</button><h2>Logros</h2><div class="wallet small"><span class="coin-ico"></span><span class="wallet-n">0</span></div></div>
+    <div class="ach-grid" id="ach-grid"></div>
+  </div>
+</section>
+
 <!-- Girar teléfono -->
 <div id="rotate" class="hidden">
   <div class="rot-phone">📱</div>
@@ -144,6 +166,6 @@
 
 <div id="loading">Cargando…</div>
 <noscript>Este juego necesita JavaScript.</noscript>
-<script type="module" src="js/main.js?v=6"></script>
+<script type="module" src="js/main.js?v=7"></script>
 </body>
 </html>

@@ -168,3 +168,24 @@ body.playing.joy #joy-zone { display: block; }
 .lvl.ice { background: linear-gradient(#c8ecff, #5aa8e0); box-shadow: 0 5px 0 #2a6fa8; }
 .lvl.ice:active:not(.locked) { box-shadow: 0 2px 0 #2a6fa8; }
 body.theme-ice { background: #4a8ec8; }
+
+
+.btn.purple { background: linear-gradient(#c9a0ff, #8a5cff); box-shadow: 0 6px 0 #5a38b0; }
+.btn.purple:active { box-shadow: 0 2px 0 #5a38b0; transform: translateY(4px); }
+.ver-badge { margin-top: 14px; display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 900; font-size: 13px;
+  background: rgba(255,255,255,.85); color: #2d6ea8; box-shadow: 0 2px 0 rgba(0,0,0,.08); letter-spacing: .04em; }
+.daily-body { padding: 8px 4px 16px; text-align: center; }
+.daily-card { background: #e8f6ff; border-radius: 18px; padding: 16px; box-shadow: 0 4px 0 #9fc3dc; margin-bottom: 12px; }
+.daily-card h3 { margin: 0 0 6px; font-size: 22px; color: #1e5a90; }
+.daily-meta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 10px 0; }
+.daily-pill { background: #fff; border-radius: 999px; padding: 6px 12px; font-weight: 800; color: #2d6ea8; box-shadow: 0 2px 0 #c5d8e8; font-size: 14px; }
+.daily-hint { color: #4a6a88; font-size: 14px; margin: 8px 0 14px; }
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; padding: 4px 2px 16px; max-height: min(62vh, 520px); overflow: auto; }
+.ach-card { background: #f0f6fc; border-radius: 14px; padding: 12px; box-shadow: 0 3px 0 #b8cde0; display: flex; gap: 10px; align-items: flex-start; opacity: .55; }
+.ach-card.on { opacity: 1; background: linear-gradient(#fff8d0, #ffe8a0); box-shadow: 0 3px 0 #d4a820; }
+.ach-card .ico { font-size: 28px; line-height: 1; }
+.ach-card .nm { font-weight: 900; color: #2d5080; font-size: 15px; }
+.ach-card .ds { font-size: 12px; color: #5a7090; margin-top: 2px; }
+.skin.locked { opacity: .7; }
+.skin .lock-note { font-size: 11px; color: #6a5080; font-weight: 800; margin-top: 4px; }
+.toast-ach { background: linear-gradient(#ffe066, #ffb703) !important; color: #403010 !important; font-weight: 900; }
