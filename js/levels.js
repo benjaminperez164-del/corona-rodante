@@ -1166,7 +1166,7 @@ const W6B = [
       const p2 = b.candyCrusher(0, 0, -64, { period: 2.8, phase: 0.45 });
       b.plat(0, 0, -80, 5.6, 10, { type: 'candy', pillars: true });
       b.crown(0, 0, -81);
-      const W = (p, lead) => ({ cond: () => p.safe(lead) });
+      const W = (p, lead) => ({ cond: () => SAFEW(p, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -14);
       b.wp(0, 0, -21.5, 'w', 0, W(p1, 0.1)); b.wp(0, 0, -30, '', 7); b.wp(0, 0, -38);
       b.wp(0, 0, -50); b.wp(0, 0, -61.5, 'w', 0, W(p2, 0.1)); b.wp(0, 0, -72, '', 7); b.wp(0, 0, -81);
@@ -1208,7 +1208,7 @@ const W6B = [
       b.coin(0, 0, -55); b.coin(0, 0, -65);
       b.plat(0, 0, -80, 8, 10, { type: 'candy', pillars: true });
       b.crown(0, 0, -81);
-      const W = (c, lead) => ({ cond: () => c.safe(lead) });
+      const W = (c, lead) => ({ cond: () => SAFEW(c, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -10);
       b.wp(0, 0, -11.5, 'w', 0, W(c1, 0.1)); b.wp(0, 0, -18, '', 7);
       b.wp(0, 0, -21.5, 'w', 0, W(c2, 0.1)); b.wp(0, 0, -32); b.wp(0, 0, -42);
@@ -1295,7 +1295,7 @@ const W6B = [
       b.coin(0, 3.5, -66);
       b.plat(0, 3.5, -80, 5.6, 8, { type: 'candy', pillars: true });
       b.crown(0, 3.5, -81);
-      const W = (c, lead) => ({ cond: () => c.safe(lead) });
+      const W = (c, lead) => ({ cond: () => SAFEW(c, lead) });
       b.wp(0, 0, -2); b.wp(3.0, 0, -20); b.wp(0, 0, -30);
       b.wp(0, 0, -42, '', 4); b.wp(0, 3.5, -50);
       b.wp(0, 3.5, -57.5, 'w', 0, W(c1, 0.1)); b.wp(0, 3.5, -66, '', 7); b.wp(0, 3.5, -81);
@@ -1325,7 +1325,7 @@ const W6B = [
       b.pillar(-3.2, 6.8, -121, 3); b.pillar(3.2, 6.8, -121, 3);
       b.crown(0, 6.8, -120);
       void t1;
-      const W = (c, lead) => ({ cond: () => c.safe(lead) });
+      const W = (c, lead) => ({ cond: () => SAFEW(c, lead) });
       b.wp(0, 0, -2); b.wp(3.0, 0, -20); b.wp(0, 0, -30);
       b.wp(0, 0, -40); b.wp(0, 0, -50);
       b.wp(0, 0, -62, '', 4); b.wp(0, 3.5, -70);
@@ -1415,13 +1415,13 @@ const W7B = [
       const a4 = b.clam(0, 0, -70, { period: 2.62 , phase: 0.40});
       b.plat(0, 0, -84, 5.5, 10, { type: 'coral', pillars: true });
       b.crown(0, 0, -85);
-      const O = (a) => ({ cond: () => a.open(0.15) });
+      const O = (a) => ({ cond: () => SAFEW(a, 0.15, 'open') });
       b.wp(0, 0, -2); b.wp(0, 0, -14);
-      b.wp(0, 0, -16.5, 'w', 0, O(a1)); b.wp(0, 0, -22); b.wp(0, 0, -28);
-      b.wp(-2.0, 0, -38.5, 'w', 0, O(a2)); b.wp(-2.0, 0, -44);
-      b.wp(2.0, 0, -48.5, 'w', 0, O(a3)); b.wp(2.0, 0, -54);
+      b.wp(0, 0, -15.4, 'w', 0, O(a1)); b.wp(0, 0, -22); b.wp(0, 0, -28);
+      b.wp(-2.0, 0, -37.4, 'w', 0, O(a2)); b.wp(-2.0, 0, -44);
+      b.wp(2.0, 0, -47.4, 'w', 0, O(a3)); b.wp(2.0, 0, -54);
       b.wp(0, 0, -60);
-      b.wp(0, 0, -68.5, 'w', 0, O(a4)); b.wp(0, 0, -76); b.wp(0, 0, -85);
+      b.wp(0, 0, -67.4, 'w', 0, O(a4)); b.wp(0, 0, -76); b.wp(0, 0, -85);
     },
   },
   {
@@ -1440,7 +1440,7 @@ const W7B = [
       b.plat(0, 0, -52, 5.5, 6, { type: 'coral', pillars: true }); b.plat(0, 0, -64, 4.3, 20, { type: 'coral' });
       b.plat(0, 0, -78, 5.5, 10, { type: 'coral', pillars: true });
       b.crown(0, 0, -79);
-      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      const W = (h, lead) => ({ cond: () => SAFEW(h, lead) });
       b.wp(0, 0, -2);
       b.wp(0, 0, -5.5, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -10.5, 'w', 0, W(h2, 0.25));
       b.wp(0, 0, -18); b.wp(0, 0, -22);
@@ -1517,8 +1517,8 @@ const W7B = [
       b.pillar(-3.2, 3.5, -139, 3); b.pillar(3.2, 3.5, -139, 3);
       b.crown(0, 3.5, -138);
       const Hi = (y) => { const oy = b.oy || 0; return { cond: () => (window.__game && window.__game.ball.pos.y > y + oy) }; };
-      const O = (a) => ({ cond: () => a.open(0.15) });
-      const Wh = (h, lead) => ({ cond: () => h.safe(lead) });
+      const O = (a) => ({ cond: () => SAFEW(a, 0.15, 'open') });
+      const Wh = (h, lead) => ({ cond: () => SAFEW(h, lead) });
       b.wp(0, 0, -2); b.wp(-2.2, 0, -28); b.wp(0, 0, -42);
       b.wp(0, 0, -48); b.wp(0, 3.2, -54, 'w', 0, Hi(3.0)); b.wp(0, 3.5, -62);
       b.wp(0, 3.5, -67.5, 'w', 0, O(a1)); b.wp(0, 3.5, -74, '', 7);
@@ -1545,7 +1545,7 @@ const W8B = [
       const h3 = b.pendulumAxe(0, 0, -64, { speed: 1.7, phase: 1.1, len: 4.0 });
       b.plat(0, 0, -80, 5.6, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -81);
-      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      const W = (h, lead) => ({ cond: () => SAFEW(h, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -12);
       b.wp(0, 0, -13.5, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -21.5, 'w', 0, W(h2, 0.25));
       b.wp(0, 0, -30); b.wp(0, 0, -38); b.wp(0, 0, -50);
@@ -1568,7 +1568,7 @@ const W8B = [
       b.plat(0, 0, -52, 5.5, 6, { type: 'castle', pillars: true }); b.plat(0, 0, -64, 4.2, 20, { type: 'castle' });
       b.plat(0, 0, -78, 5.5, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -79);
-      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      const W = (h, lead) => ({ cond: () => SAFEW(h, lead) });
       b.wp(0, 0, -2);
       b.wp(0, 0, -5.5, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -10.5, 'w', 0, W(h2, 0.25));
       b.wp(0, 0, -18); b.wp(0, 0, -22);
@@ -1608,7 +1608,7 @@ const W8B = [
       b.plat(0, 0, -42, 4.2, 6, { type: 'castle', pillars: true }); b.plat(0, 0, -54, 4.2, 16, { type: 'castle' }); b.coinRow(0, 0, -48, 0, 0, -58, 3);
       b.plat(0, 0, -66, 5.5, 8, { type: 'castle', pillars: true });
       b.crown(0, 0, -67);
-      const O = (d) => ({ cond: () => d.open(0.15) });
+      const O = (d) => ({ cond: () => SAFEW(d, 0.15, 'open') });
       b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(0, 0, -18);
       b.wp(0, 0, -19.5, 'w', 0, O(d1)); b.wp(0, 0, -26, '', 7); b.wp(0, 0, -30);
       b.wp(0, 0, -31.5, 'w', 0, O(d2)); b.wp(0, 0, -38, '', 7); b.wp(0, 0, -42);
@@ -1667,7 +1667,7 @@ const W8B = [
       b.blinkPlat(0, 0.4, -64, 3.2, 3.2, { period: 2.0, onFrac: 0.6 , phase: 0.70});
       b.plat(0, 0, -84, 5.5, 10, { type: 'castle', pillars: true });
       b.crown(0, 0, -85);
-      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      const W = (h, lead) => ({ cond: () => SAFEW(h, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -20); b.wp(0, 0, -28);
       b.wp(0, 0, -37.5, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -48); b.wp(0, 0, -56);
       b.wp(0, 0, -70); b.wp(0, 0, -85);
@@ -1690,7 +1690,7 @@ const W8B = [
       b.plat(0, 0, -120, 10, 12, { type: 'castle', pillars: true });
       b.pillar(-3.2, 0, -123, 3); b.pillar(3.2, 0, -123, 3);
       b.crown(0, 0, -122);
-      const W = (h, lead) => ({ cond: () => h.safe(lead) });
+      const W = (h, lead) => ({ cond: () => SAFEW(h, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -28); b.wp(0, 0, -52);
       b.wp(5.2, 0, -60); b.wp(5.2, 0, -64, 't'); b.wp(5.2, 0, -72);
       b.wp(0, 0, -76, 'w', 0, W(h1, 0.25)); b.wp(0, 0, -90);
@@ -1716,7 +1716,7 @@ const W9B = [
       b.neonConvey(0, 0, -70, 4.1, 12, { dir: [0, 0, 1], speed: 3.6 });
       b.plat(0, 0, -86, 5.6, 10, { type: 'neon', pillars: true });
       b.crown(0, 0, -87);
-      const W = (l, lead) => ({ cond: () => l.safe(lead) });
+      const W = (l, lead) => ({ cond: () => SAFEW(l, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -12);
       b.wp(0, 0, -13.5, 'w', 0, W(l1, 0.1)); b.wp(0, 0, -20, '', 7);
       b.wp(0, 0, -23.5, 'w', 0, W(l2, 0.1)); b.wp(0, 0, -32); b.wp(0, 0, -38);
@@ -1767,7 +1767,7 @@ const W9B = [
       b.coin(0, 0, -55); b.coin(0, 0, -65);
       b.plat(0, 0, -80, 5.5, 10, { type: 'neon', pillars: true });
       b.crown(0, 0, -81);
-      const W = (l, lead) => ({ cond: () => l.safe(lead) });
+      const W = (l, lead) => ({ cond: () => SAFEW(l, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -10);
       b.wp(0, 0, -11.5, 'w', 0, W(l1, 0.1)); b.wp(0, 0, -18, '', 7);
       b.wp(0, 0, -21.5, 'w', 0, W(l2, 0.1)); b.wp(0, 0, -32); b.wp(0, 0, -42);
@@ -1882,7 +1882,7 @@ const W9B = [
       b.plat(0, 3.5, -106, 5.5, 10, { type: 'neon', pillars: true });
       b.pillar(-3.2, 3.5, -109, 3); b.pillar(3.2, 3.5, -109, 3);
       b.crown(0, 3.5, -108);
-      const W = (l, lead) => ({ cond: () => l.safe(lead) });
+      const W = (l, lead) => ({ cond: () => SAFEW(l, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -16); b.wp(0, 0, -28); b.wp(0, 0, -36);
       b.wp(0, 0, -45.5, 'w', 0, W(l1, 0.1)); b.wp(0, 0, -54, '', 7); b.wp(0, 0, -58);
       b.wp(-1.5, 0, -80); b.wp(0, 0, -92);
@@ -1910,7 +1910,7 @@ const W10B = [
       b.blackHole(5.0, 0, -76, { r: 3.6, force: 9.5 });
       b.plat(0, 0, -92, 5.6, 10, { type: 'space', pillars: true });
       b.crown(0, 0, -93);
-      const W = (m, lead) => ({ cond: () => m.safe(lead) });
+      const W = (m, lead) => ({ cond: () => SAFEW(m, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -12);
       b.wp(0, 0, -13.5, 'w', 0, W(m1, 0.15)); b.wp(0, 0, -20, '', 7);
       b.wp(0, 0, -23.5, 'w', 0, W(m2, 0.15)); b.wp(0, 0, -34); b.wp(0, 0, -44);
@@ -1985,7 +1985,7 @@ const W10B = [
       b.coin(0, 0, -55); b.coin(0, 0, -65);
       b.plat(0, 0, -80, 5.5, 10, { type: 'space', pillars: true });
       b.crown(0, 0, -81);
-      const W = (m, lead) => ({ cond: () => m.safe(lead) });
+      const W = (m, lead) => ({ cond: () => SAFEW(m, lead) });
       b.wp(0, 0, -2); b.wp(0, 0, -10);
       b.wp(0, 0, -11.5, 'w', 0, W(m1, 0.15)); b.wp(0, 0, -18, '', 7);
       b.wp(0, 0, -21.5, 'w', 0, W(m2, 0.15)); b.wp(0, 0, -32); b.wp(0, 0, -42);
@@ -2062,10 +2062,10 @@ const W10B = [
       b.plat(0, 0, -210, 12, 14, { type: 'space', pillars: true });
       b.pillar(-3.5, 0, -214, 3); b.pillar(3.5, 0, -214, 3);
       b.cosmosCrown(0, 0, -212);
-      const Wj = (j, lead) => ({ cond: () => j.safe(lead) });
-      const Wi = (i, lead) => ({ cond: () => i.safe(lead) });
-      const Wh = (h, lead) => ({ cond: () => h.safe(lead) });
-      const Wl = (l, lead) => ({ cond: () => l.safe(lead) });
+      const Wj = (j, lead) => ({ cond: () => SAFEW(j, lead) });
+      const Wi = (i, lead) => ({ cond: () => SAFEW(i, lead) });
+      const Wh = (h, lead) => ({ cond: () => SAFEW(h, lead) });
+      const Wl = (l, lead) => ({ cond: () => SAFEW(l, lead) });
       b.wp(0, 0, -2);
       b.wp(2.8, 0, -14, 't'); b.wp(2.8, 0, -20); b.wp(0, 0, -28);
       b.wp(0, 0, -37.5, 'w', 0, Wj(j1, 0.1)); b.wp(0, 0, -46, '', 7); b.wp(0, 0, -50);
@@ -2230,22 +2230,32 @@ function tZig(o = {}) {
 // espacio para detenerse (justo), pero cruzar de corrido castiga la prisa.
 function tGaunt(o = {}) {
   const w = o.w || 2.4, gap = o.gap || 5.0, groups = o.groups || [['jet', 'jet']];
-  const per = { jet: 2.8, crush: 3.0, clam: 3.4, laser: 2.7, axe: 1.6 };
+  const per = { jet: 2.8, crush: 3.0, clam: 3.4, laser: 2.7, axe: 3.9 };
+  const RAT = [1.29, 0.77, 1.38, 0.72, 1.17, 0.86];
   return { name: 'tGaunt', build(b) {
     b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { pillars: true });
     let z = -3; const plan = [];
     groups.forEach((g, gi) => {
       const zs = z - 5; const hs = [];
+      let prev = 0;
       g.forEach((k, j) => {
         const hz = zs - j * gap;
-        const p = (o.periods && o.periods[k]) || per[k];
-        const pp = +(p * (1 + 0.21 * j)).toFixed(2), ph = (0.37 * (gi + 1) + 0.29 * j) % 1;
+        const base = (o.periods && o.periods[k]) || per[k];
+        let pp = base;
+        if (j > 0) {
+          // periodo "irracional" respecto al anterior: la sincronía cambia en cada intento
+          let best = null;
+          for (const r of RAT) { const c = prev * r; const err = Math.abs(c / base - 1); if (!best || err < best[0]) best = [err, c]; }
+          pp = Math.min(base * 1.45, Math.max(base * 0.7, best[1]));
+        }
+        pp = +pp.toFixed(2); prev = pp;
+        const ph = (0.37 * (gi + 1) + 0.29 * j) % 1;
         let h;
         if (k === 'jet') h = b.fireJet(0, 0, hz, { period: pp, phase: ph, h: 2.6, r: 0.95 });
         else if (k === 'crush') h = b.candyCrusher(0, 0, hz, { period: pp, phase: ph, w: w + 0.4, d: 2.2 });
         else if (k === 'clam') h = b.clam(0, 0, hz, { period: pp, phase: ph, w: w + 0.6, d: 2.6 });
         else if (k === 'laser') h = b.laserGate(0, 0, hz, { period: pp, phase: ph, w: w + 1.2 });
-        else h = b.pendulumAxe(0, 0, hz, { speed: +(1.55 + 0.17 * j).toFixed(2), phase: ph * 6.28, len: 3.8 });
+        else h = b.pendulumAxe(0, 0, hz, { speed: +(6.2832 / pp).toFixed(3), phase: ph * 6.28, len: 3.8 });
         hs.push([k, hz, h]);
         if (j === 0) b.coin(0, 0, hz + 2.5);
       });
@@ -2258,49 +2268,100 @@ function tGaunt(o = {}) {
     for (const hs of plan) {
       const [k, hz, h] = hs[0];
       const back = k === 'axe' ? 3.0 : 2.5;
-      const l1 = k === 'axe' ? 0.25 : 0.05, l2 = k === 'axe' ? 0.5 : (k === 'laser' ? 0.6 : 0.75);
-      b.wp(0, 0, hz + back, 'w', 0, { cond: () => h.safe(l1) && h.safe(l2) });
+      const l1 = k === 'axe' ? 0.25 : 0.05, l2 = { axe: 0.5, laser: 1.1, jet: 0.9, crush: 1.3, clam: 1.3 }[k];
+      b.wp(0, 0, hz + back, 'w', 0, { cond: () => { for (let s = l1; s < l2 + 0.01; s += 0.15) if (!h.safe(Math.min(s, l2))) return false; return true; } });
       b.wp(0, 0, hs[hs.length - 1][1] - 2.8, '', 7.5);
     }
     b.wp(0, 0, z - 3.5);
   } };
 }
+// Piloto de pruebas: entrar al peligro al inicio de su ventana segura
+// (evita depender del momento exacto en que se empezó el nivel).
+function _safeRun(h, lead, fn) {
+  const P = h.period || 4; let s = lead;
+  while (s < lead + P && h[fn](s)) s += 0.05;
+  return s - lead;
+}
+function SAFEW(h, lead, fn = 'safe') {
+  if (h._maxRun === undefined) {
+    const P = h.period || 4; let best = 0, run = 0;
+    for (let s = 0; s < 2 * P; s += 0.05) { if (h[fn](s)) { run += 0.05; best = Math.max(best, run); } else run = 0; }
+    h._maxRun = best;
+  }
+  return _safeRun(h, lead, fn) >= Math.min(0.95, h._maxRun * 0.7);
+}
 
 
 const WORLD4_LEVELS = [
-  chain(W4B[0], [W4B[0], tHex({ n: 5, r: 1.1 }), WORLD2_LEVELS[1], tZig({ w: 2.8, segs: 3 }), WORLD3_LEVELS[0]], { target: 75, cps: [1, 3] }),
-  chain(W4B[1], [W4B[1], tZig({ w: 2.8, segs: 3 }), WORLD2_LEVELS[2], tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 65, cps: [1, 2] }),
-  chain(W4B[2], [W4B[2], tMovers({ pairs: 1, period: 4.0 }), WORLD2_LEVELS[4], tHex({ n: 5, r: 1.1 })], { target: 70, cps: [1, 2] }),
+  chain(W4B[0], [W4B[0], tHex({ n: 5, r: 1.1 }), WORLD2_LEVELS[1], tZig({ w: 2.8, segs: 3 }), WORLD3_LEVELS[0]], { target: 75, cps: [0, 3] }),
+  chain(W4B[1], [W4B[1], tZig({ w: 2.8, segs: 3 }), WORLD2_LEVELS[2], tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 65, cps: [0, 2] }),
+  chain(W4B[2], [W4B[2], tMovers({ pairs: 1, period: 4.0 }), WORLD2_LEVELS[4], tHex({ n: 5, r: 1.1 })], { target: 70, cps: [0, 2] }),
   chain(W4B[3], [W4B[3], tHex({ n: 5, r: 1.1 }), WORLD2_LEVELS[0]], { target: 80, cps: [0, 1] }),
-  chain(W4B[4], [W4B[4], tZig({ w: 2.8, segs: 3 }), WORLD2_LEVELS[0], tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 60, cps: [1, 2] }),
-  chain(W4B[5], [W4B[5], tMovers({ pairs: 1, period: 4.0 }), WORLD2_LEVELS[1], tHex({ n: 5, r: 1.1 }), WORLD3_LEVELS[0]], { target: 75, cps: [1, 3] }),
-  chain(W4B[6], [W4B[6], tHex({ n: 5, r: 1.1 }), WORLD2_LEVELS[2], tZig({ w: 2.8, segs: 3 })], { target: 70, cps: [1, 2] }),
-  chain(W4B[7], [W4B[7], tZig({ w: 2.8, segs: 3 }), WORLD2_LEVELS[4], tMovers({ pairs: 1, period: 4.0 }), tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 90, cps: [1, 3] }),
+  chain(W4B[4], [W4B[4], tZig({ w: 2.8, segs: 3 }), tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 65, cps: [0, 1] }),
+  chain(W4B[5], [W4B[5], tMovers({ pairs: 1, period: 4.0 }), WORLD2_LEVELS[1], tHex({ n: 5, r: 1.1 }), WORLD3_LEVELS[0]], { target: 75, cps: [0, 3] }),
+  chain(W4B[6], [W4B[6], tHex({ n: 5, r: 1.1 }), WORLD2_LEVELS[2], tZig({ w: 2.8, segs: 3 })], { target: 70, cps: [0, 2] }),
+  chain(W4B[7], [W4B[7], tZig({ w: 2.8, segs: 3 }), WORLD2_LEVELS[4], tMovers({ pairs: 1, period: 4.0 }), tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 90, cps: [0, 3] }),
 ];
 const WORLD5_LEVELS = [
-  chain(W5B[0], [W5B[0], tHex({ n: 6, r: 1.1 }), W4B[1], tZig({ w: 2.7, segs: 3 }), WORLD3_LEVELS[5]], { target: 90, cps: [1, 3], haste: 0.97 }),
-  chain(W5B[1], [W5B[1], tZig({ w: 2.7, segs: 3 }), W4B[5], tMovers({ pairs: 1, period: 3.8 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 80, cps: [1, 3], haste: 0.97 }),
-  chain(W5B[2], [W5B[2], tMovers({ pairs: 1, period: 3.8 }), W4B[3], tHex({ n: 6, r: 1.1 })], { target: 70, cps: [1, 2], haste: 0.97 }),
-  chain(W5B[3], [W5B[3], tHex({ n: 6, r: 1.1 }), W4B[6], tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 80, cps: [1, 2], haste: 0.97 }),
-  chain(W5B[4], [W5B[4], tZig({ w: 2.7, segs: 3 }), W4B[2], tMovers({ pairs: 1, period: 3.8 }), W4B[0]], { target: 80, cps: [1, 3], haste: 0.97 }),
-  chain(W5B[5], [W5B[5], tMovers({ pairs: 1, period: 3.8 }), W4B[1], tHex({ n: 6, r: 1.1 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 80, cps: [1, 3], haste: 0.97 }),
-  chain(W5B[6], [W5B[6], tHex({ n: 6, r: 1.1 }), W4B[5], tZig({ w: 2.7, segs: 3 })], { target: 70, cps: [1, 2], haste: 0.97 }),
-  chain(W5B[7], [W5B[7], tZig({ w: 2.7, segs: 3 }), W4B[3], tMovers({ pairs: 1, period: 3.8 }), tGaunt({ w: 2.5, groups: [['jet', 'jet'], ['jet', 'jet']] })], { target: 125, cps: [1, 3], haste: 0.97 }),
+  chain(W5B[0], [W5B[0], tHex({ n: 6, r: 1.1 }), W4B[1], tZig({ w: 2.7, segs: 3 }), WORLD3_LEVELS[5]], { target: 90, cps: [0, 3] }),
+  chain(W5B[1], [W5B[1], tZig({ w: 2.7, segs: 3 }), W4B[5], tMovers({ pairs: 1, period: 3.8 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 70, cps: [0, 3] }),
+  chain(W5B[2], [W5B[2], tHex({ n: 6, r: 1.1 }), W4B[6], tZig({ w: 2.7, segs: 3 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 85, cps: [0, 3] }),
+  chain(W5B[3], [W5B[3], tHex({ n: 6, r: 1.1 }), W4B[6], tZig({ w: 2.7, segs: 3 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 85, cps: [0, 3] }),
+  chain(W5B[4], [W5B[4], tZig({ w: 2.7, segs: 3 }), W4B[2], tMovers({ pairs: 1, period: 3.8 }), W4B[0]], { target: 80, cps: [0, 3] }),
+  chain(W5B[5], [W5B[5], tMovers({ pairs: 1, period: 3.8 }), W4B[1], tHex({ n: 6, r: 1.1 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 85, cps: [0, 3] }),
+  chain(W5B[6], [W5B[6], tHex({ n: 6, r: 1.1 }), W4B[5], tZig({ w: 2.7, segs: 3 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 90, cps: [0, 3] }),
+  chain(W5B[7], [W5B[7], tZig({ w: 2.7, segs: 3 }), W4B[3], tMovers({ pairs: 1, period: 3.8 }), WORLD3_LEVELS[6], tGaunt({ w: 2.5, groups: [['jet', 'jet'], ['jet', 'jet']] })], { target: 135, cps: [0, 4] }),
 ];
 const WORLD6_LEVELS = [
-  chain(W6B[0], [W6B[0], tHex({ n: 6, r: 1.05, step: 3.1 }), W5B[1], tZig({ w: 2.6, segs: 4 }), tGaunt({ w: 2.5, groups: [['crush', 'crush']] })], { target: 85, cps: [1, 3], haste: 0.95 }),
-  chain(W6B[1], [W6B[1], tZig({ w: 2.6, segs: 4 }), W5B[3], tMovers({ pairs: 2, period: 3.7 })], { target: 80, cps: [1, 2], haste: 0.95 }),
-  chain(W6B[2], [W6B[2], tMovers({ pairs: 2, period: 3.7 }), W5B[4], tGaunt({ w: 2.5, groups: [['crush', 'jet']] })], { target: 85, cps: [1, 2], haste: 0.95 }),
-  chain(W6B[3], [W6B[3], tHex({ n: 6, r: 1.05, step: 3.1 }), W5B[5], tZig({ w: 2.6, segs: 4 }), W4B[6]], { target: 90, cps: [1, 3], haste: 0.95 }),
-  chain(W6B[4], [W6B[4], tZig({ w: 2.6, segs: 4 }), W5B[6], tGaunt({ w: 2.5, groups: [['crush', 'crush']] })], { target: 100, cps: [1, 2], haste: 0.95 }),
-  chain(W6B[5], [W6B[5], tMovers({ pairs: 2, period: 3.7 }), W4B[6], tGaunt({ w: 2.5, groups: [['jet', 'crush']] })], { target: 80, cps: [1, 2], haste: 0.95 }),
-  chain(W6B[6], [W6B[6], tHex({ n: 6, r: 1.05, step: 3.1 }), W4B[4], tGaunt({ w: 2.5, groups: [['crush', 'jet']] })], { target: 80, cps: [1, 2], haste: 0.95 }),
-  chain(W6B[7], [W6B[7], tZig({ w: 2.6, segs: 4 }), WORLD3_LEVELS[4], tMovers({ pairs: 2, period: 3.7 }), tGaunt({ w: 2.5, groups: [['crush', 'jet'], ['crush', 'crush']] })], { target: 130, cps: [1, 3], haste: 0.95 }),
+  chain(W6B[0], [W6B[0], tHex({ n: 6, r: 1.05, step: 3.1 }), W5B[1], tZig({ w: 2.6, segs: 4 }), tGaunt({ w: 2.5, groups: [['crush', 'crush'], ['jet', 'crush'], ['crush', 'jet']] })], { target: 100, cps: [0, 3] }),
+  chain(W6B[1], [W6B[1], tZig({ w: 2.6, segs: 4 }), W5B[3], tMovers({ pairs: 2, period: 3.7 }), tGaunt({ w: 2.5, groups: [['crush', 'jet']] })], { target: 95, cps: [0, 3] }),
+  chain(W6B[2], [W6B[2], tMovers({ pairs: 2, period: 3.7 }), W5B[4], tHex({ n: 6, r: 1.05, step: 3.1 }), W4B[7], tGaunt({ w: 2.5, groups: [['crush', 'jet']] })], { target: 105, cps: [0, 4] }),
+  chain(W6B[3], [W6B[3], tHex({ n: 6, r: 1.05, step: 3.1 }), W5B[5], tZig({ w: 2.6, segs: 4 }), tGaunt({ w: 2.5, groups: [['jet', 'crush']] })], { target: 75, cps: [0, 3] }),
+  chain(W6B[4], [W6B[4], tZig({ w: 2.6, segs: 4 }), W5B[6], tMovers({ pairs: 2, period: 3.7 }), tGaunt({ w: 2.5, groups: [['crush', 'crush']] })], { target: 115, cps: [0, 3] }),
+  chain(W6B[5], [W6B[5], tMovers({ pairs: 2, period: 3.7 }), W4B[6], tHex({ n: 6, r: 1.05, step: 3.1 }), tGaunt({ w: 2.5, groups: [['jet', 'crush'], ['jet', 'crush']] })], { target: 105, cps: [0, 3] }),
+  chain(W6B[6], [W6B[6], tHex({ n: 6, r: 1.05, step: 3.1 }), W4B[4], tZig({ w: 2.6, segs: 4 }), tGaunt({ w: 2.5, groups: [['crush', 'jet']] })], { target: 95, cps: [0, 3] }),
+  chain(W6B[7], [W6B[7], tZig({ w: 2.6, segs: 4 }), WORLD3_LEVELS[4], tMovers({ pairs: 2, period: 3.7 }), W5B[4], tGaunt({ w: 2.5, groups: [['crush', 'jet'], ['crush', 'crush']] })], { target: 125, cps: [0, 4] }),
 ];
-const WORLD7_LEVELS = W7B;
-const WORLD8_LEVELS = W8B;
-const WORLD9_LEVELS = W9B;
-const WORLD10_LEVELS = W10B;
+const WORLD7_LEVELS = [
+  chain(W7B[0], [W7B[0], tHex({ n: 7, r: 1.05, step: 3.1 }), W6B[1], tZig({ w: 2.5, segs: 4 }), W5B[0], tGaunt({ w: 2.4, groups: [['clam', 'clam']] })], { target: 100, cps: [0, 4] }),
+  chain(W7B[1], [W7B[1], tZig({ w: 2.5, segs: 4 }), W6B[2], tMovers({ pairs: 2, period: 3.6 }), tGaunt({ w: 2.4, groups: [['clam', 'crush'], ['jet', 'clam']] })], { target: 100, cps: [0, 3] }),
+  chain(W7B[2], [W7B[2], tMovers({ pairs: 2, period: 3.6 }), W6B[3], tHex({ n: 7, r: 1.05, step: 3.1 }), W5B[2], tGaunt({ w: 2.4, groups: [['clam', 'clam']] })], { target: 105, cps: [0, 4] }),
+  chain(W7B[3], [W7B[3], tHex({ n: 7, r: 1.05, step: 3.1 }), W6B[5], tZig({ w: 2.5, segs: 4 }), tGaunt({ w: 2.4, groups: [['crush', 'clam'], ['crush', 'jet']] })], { target: 100, cps: [0, 3] }),
+  chain(W7B[4], [W7B[4], tZig({ w: 2.5, segs: 4 }), W6B[6], tMovers({ pairs: 2, period: 3.6 }), tGaunt({ w: 2.4, groups: [['crush', 'clam'], ['clam', 'crush']] })], { target: 105, cps: [0, 3] }),
+  chain(W7B[5], [W7B[5], tMovers({ pairs: 2, period: 3.6 }), W6B[0], tHex({ n: 7, r: 1.05, step: 3.1 }), W6B[1], tGaunt({ w: 2.4, groups: [['clam', 'clam']] })], { target: 110, cps: [0, 4] }),
+  chain(W7B[6], [W7B[6], tHex({ n: 7, r: 1.05, step: 3.1 }), W5B[0], tZig({ w: 2.5, segs: 4 }), W6B[2], tMovers({ pairs: 2, period: 3.6 }), tGaunt({ w: 2.4, groups: [['clam', 'crush']] })], { target: 110, cps: [0, 5] }),
+  chain(W7B[7], [W7B[7], tZig({ w: 2.5, segs: 4 }), W4B[1], tMovers({ pairs: 2, period: 3.6 }), W6B[3], tGaunt({ w: 2.4, groups: [['crush', 'clam'], ['clam', 'crush']] })], { target: 130, cps: [0, 4] }),
+];
+const WORLD8_LEVELS = [
+  chain(W8B[0], [W8B[0], tHex({ n: 7, r: 1.0, step: 3.2 }), W7B[0], tZig({ w: 2.4, segs: 4 }), tGaunt({ w: 2.4, groups: [['clam', 'jet'], ['axe', 'clam']] })], { target: 85, cps: [0, 3] }),
+  chain(W8B[1], [W8B[1], tZig({ w: 2.4, segs: 4 }), W7B[2], tMovers({ pairs: 2, period: 3.5 }), tGaunt({ w: 2.4, groups: [['axe', 'jet']] })], { target: 95, cps: [0, 3] }),
+  chain(W8B[2], [W8B[2], tMovers({ pairs: 2, period: 3.5 }), W7B[3], tHex({ n: 7, r: 1.0, step: 3.2 }), W6B[7], tGaunt({ w: 2.4, groups: [['axe', 'jet']] })], { target: 130, cps: [0, 4] }),
+  chain(W8B[3], [W8B[3], tHex({ n: 7, r: 1.0, step: 3.2 }), W7B[5], tZig({ w: 2.4, segs: 4 }), W4B[5], tGaunt({ w: 2.4, groups: [['clam', 'jet'], ['axe', 'clam']] })], { target: 105, cps: [0, 4] }),
+  chain(W8B[4], [W8B[4], tZig({ w: 2.4, segs: 4 }), W7B[6], tMovers({ pairs: 2, period: 3.5 }), W6B[1], tGaunt({ w: 2.4, groups: [['axe', 'clam'], ['clam', 'axe']] })], { target: 115, cps: [0, 4] }),
+  chain(W8B[5], [W8B[5], tMovers({ pairs: 2, period: 3.5 }), W7B[4], tHex({ n: 7, r: 1.0, step: 3.2 }), W7B[0], tGaunt({ w: 2.4, groups: [['clam', 'jet'], ['axe', 'clam']] })], { target: 115, cps: [0, 4] }),
+  chain(W8B[6], [W8B[6], tHex({ n: 7, r: 1.0, step: 3.2 }), W6B[4], tZig({ w: 2.4, segs: 4 }), tGaunt({ w: 2.4, groups: [['axe', 'crush'], ['clam', 'jet']] })], { target: 115, cps: [0, 3] }),
+  chain(W8B[7], [W8B[7], tMovers({ pairs: 2, period: 3.5 }), W6B[7], tHex({ n: 7, r: 1.0, step: 3.2 }), W7B[5], tGaunt({ w: 2.4, groups: [['axe', 'crush'], ['clam', 'jet'], ['axe', 'clam']] })], { target: 140, cps: [0, 4] }),
+];
+const WORLD9_LEVELS = [
+  chain(W9B[0], [W9B[0], tHex({ n: 8, r: 1.0, step: 3.2 }), W8B[0], tZig({ w: 2.3, segs: 5 }), W7B[1], tGaunt({ w: 2.3, groups: [['laser', 'crush'], ['laser', 'jet']] })], { target: 120, cps: [0, 4] }),
+  chain(W9B[1], [W9B[1], tZig({ w: 2.3, segs: 5 }), W8B[2], tMovers({ pairs: 2, period: 3.4 }), W6B[2], tGaunt({ w: 2.3, groups: [['axe', 'jet'], ['laser', 'clam']] })], { target: 110, cps: [0, 4] }),
+  chain(W9B[2], [W9B[2], tMovers({ pairs: 2, period: 3.4 }), W8B[3], tHex({ n: 8, r: 1.0, step: 3.2 }), W7B[4], tZig({ w: 2.3, segs: 5 }), tGaunt({ w: 2.3, groups: [['laser', 'crush'], ['laser', 'jet']] })], { target: 125, cps: [0, 5] }),
+  chain(W9B[3], [W9B[3], tHex({ n: 8, r: 1.0, step: 3.2 }), W8B[4], tZig({ w: 2.3, segs: 5 }), W5B[3], tGaunt({ w: 2.3, groups: [['laser', 'jet'], ['axe', 'laser']] })], { target: 105, cps: [0, 4] }),
+  chain(W9B[4], [W9B[4], tZig({ w: 2.3, segs: 5 }), W8B[5], tMovers({ pairs: 2, period: 3.4 }), W7B[6], tGaunt({ w: 2.3, groups: [['laser', 'crush'], ['laser', 'jet']] })], { target: 120, cps: [0, 4] }),
+  chain(W9B[5], [W9B[5], tMovers({ pairs: 2, period: 3.4 }), W8B[6], tHex({ n: 8, r: 1.0, step: 3.2 }), W6B[5], tGaunt({ w: 2.3, groups: [['laser', 'laser'], ['laser', 'jet']] })], { target: 145, cps: [0, 4] }),
+  chain(W9B[6], [W9B[6], tHex({ n: 8, r: 1.0, step: 3.2 }), W8B[0], tZig({ w: 2.3, segs: 5 }), tGaunt({ w: 2.3, groups: [['laser', 'laser'], ['axe', 'laser']] })], { target: 115, cps: [0, 3] }),
+  chain(W9B[7], [W9B[7], tZig({ w: 2.3, segs: 5 }), W8B[2], tMovers({ pairs: 2, period: 3.4 }), W6B[2], tGaunt({ w: 2.3, groups: [['laser', 'jet'], ['axe', 'laser'], ['laser', 'clam']] })], { target: 130, cps: [0, 4] }),
+];
+const WORLD10_LEVELS = [
+  chain(W10B[0], [W10B[0], tHex({ n: 8, r: 0.95, step: 3.3 }), W9B[0], tZig({ w: 2.2, segs: 5 }), W8B[1], tGaunt({ w: 2.3, groups: [['laser', 'jet'], ['jet', 'clam']] })], { target: 125, cps: [0, 4] }),
+  chain(W10B[1], [W10B[1], tZig({ w: 2.2, segs: 5 }), W9B[2], tMovers({ pairs: 3, period: 3.3 }), W7B[2], tGaunt({ w: 2.3, groups: [['laser', 'jet'], ['clam', 'laser']] })], { target: 130, cps: [0, 4] }),
+  chain(W10B[2], [W10B[2], tMovers({ pairs: 3, period: 3.3 }), W9B[3], tHex({ n: 8, r: 0.95, step: 3.3 }), tGaunt({ w: 2.3, groups: [['laser', 'jet'], ['clam', 'laser']] })], { target: 95, cps: [0, 3] }),
+  chain(W10B[3], [W10B[3], tHex({ n: 8, r: 0.95, step: 3.3 }), W9B[4], tZig({ w: 2.2, segs: 5 }), tGaunt({ w: 2.3, groups: [['laser', 'jet'], ['clam', 'laser']] })], { target: 105, cps: [0, 3] }),
+  chain(W10B[4], [W10B[4], tZig({ w: 2.2, segs: 5 }), W9B[5], tMovers({ pairs: 3, period: 3.3 }), W8B[6], tGaunt({ w: 2.3, groups: [['laser', 'jet'], ['clam', 'laser']] })], { target: 130, cps: [0, 4] }),
+  chain(W10B[5], [W10B[5], tMovers({ pairs: 3, period: 3.3 }), W9B[6], tHex({ n: 8, r: 0.95, step: 3.3 }), tGaunt({ w: 2.3, groups: [['laser', 'laser'], ['axe', 'jet']] })], { target: 150, cps: [0, 3] }),
+  chain(W10B[6], [W10B[6], tHex({ n: 8, r: 0.95, step: 3.3 }), W9B[1], tZig({ w: 2.2, segs: 5 }), W9B[0], tGaunt({ w: 2.3, groups: [['laser', 'laser'], ['axe', 'jet']] })], { target: 115, cps: [0, 4] }),
+  chain(W10B[7], [W10B[7], tZig({ w: 2.2, segs: 5 }), W8B[1], tMovers({ pairs: 3, period: 3.3 }), W9B[2], tGaunt({ w: 2.3, groups: [['clam', 'jet'], ['laser', 'jet'], ['laser', 'clam']] })], { target: 195, cps: [0, 4] }),
+];
 
 
 export const WORLDS = [

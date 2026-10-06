@@ -1,13 +1,13 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=50';
-import { Level } from './world.js?v=50';
-import { LEVELS, WORLDS } from './levels.js?v=50';
-import { Input } from './input.js?v=50';
-import { Sfx } from './audio.js?v=50';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=50';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=50';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=50';
+import { Ball, stepBall } from './physics.js?v=52';
+import { Level } from './world.js?v=52';
+import { LEVELS, WORLDS } from './levels.js?v=52';
+import { Input } from './input.js?v=52';
+import { Sfx } from './audio.js?v=52';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=52';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=52';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=52';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
