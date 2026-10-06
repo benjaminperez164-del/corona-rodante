@@ -732,7 +732,7 @@ const WORLD3_LEVELS = [
 ];
 
 
-const WORLD4_LEVELS = [
+const W4B = [
   {
     name: 'Sendero Verde', target: 44,
     hint: '¡Selva densa! Barro, troncos y monedas arriesgadas.',
@@ -945,7 +945,7 @@ const WORLD4_LEVELS = [
   },
 ];
 
-const WORLD5_LEVELS = [
+const W5B = [
   {
     name: 'Dunas Suaves', target: 46,
     hint: 'Remolinos en contra y arenas movedizas.',
@@ -1150,7 +1150,7 @@ const WORLD5_LEVELS = [
 
 
 
-const WORLD6_LEVELS = [
+const W6B = [
   {
     name: 'Pasillo Pastel', target: 48,
     hint: 'Prensas tempranas y cinta de chocolate en contra.',
@@ -1336,7 +1336,7 @@ const WORLD6_LEVELS = [
   },
 ];
 
-const WORLD7_LEVELS = [
+const W7B = [
   {
     name: 'Arrecife Suave', target: 50,
     hint: 'Corrientes en contra y erizos al borde.',
@@ -1373,7 +1373,7 @@ const WORLD7_LEVELS = [
       b.bubbleColumn(0, 6.8, -54, 4.5, 4.5, { force: 22 });
       b.plat(0, 9.5, -62, 5.5, 8, { type: 'coral', pillars: true });
       b.crown(0, 9.5, -63);
-      const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
+      const Hi = (y) => { const oy = b.oy || 0; return { cond: () => (window.__game && window.__game.ball.pos.y > y + oy) }; };
       b.wp(0, 0, -2); b.wp(0, 0, -10);
       b.wp(0, 3.2, -14, 'w', 0, Hi(3.0)); b.wp(0, 3.5, -22);
       b.wp(0, 3.5, -30); b.wp(0, 6.5, -34, 'w', 0, Hi(6.3)); b.wp(0, 6.8, -42);
@@ -1486,7 +1486,7 @@ const WORLD7_LEVELS = [
       b.urchin(0, 3.5, -72, { r: 0.55 });
       b.plat(0, 3.5, -84, 8, 8, { type: 'coral', pillars: true });
       b.crown(0, 3.5, -85);
-      const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
+      const Hi = (y) => { const oy = b.oy || 0; return { cond: () => (window.__game && window.__game.ball.pos.y > y + oy) }; };
       b.wp(0, 0, -2); b.wp(0, 0, -12); b.wp(-2.2, 0, -28); b.wp(-2.2, 0, -34, 't');
       b.wp(0, 0, -42); b.wp(0, 0, -48); b.wp(0, 3.2, -54, 'w', 0, Hi(3.0)); b.wp(0, 3.5, -62);
       b.wp(4.5, 3.5, -72, 't'); b.wp(0, 3.5, -85);
@@ -1516,7 +1516,7 @@ const WORLD7_LEVELS = [
       b.plat(0, 3.5, -136, 10, 10, { type: 'coral', pillars: true });
       b.pillar(-3.2, 3.5, -139, 3); b.pillar(3.2, 3.5, -139, 3);
       b.crown(0, 3.5, -138);
-      const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
+      const Hi = (y) => { const oy = b.oy || 0; return { cond: () => (window.__game && window.__game.ball.pos.y > y + oy) }; };
       const O = (a) => ({ cond: () => a.open(0.15) });
       const Wh = (h, lead) => ({ cond: () => h.safe(lead) });
       b.wp(0, 0, -2); b.wp(-2.2, 0, -28); b.wp(0, 0, -42);
@@ -1529,7 +1529,7 @@ const WORLD7_LEVELS = [
   },
 ];
 
-const WORLD8_LEVELS = [
+const W8B = [
   {
     name: 'Patio Encantado', target: 52,
     hint: 'Hachas tempranas y puente levadizo.',
@@ -1699,7 +1699,7 @@ const WORLD8_LEVELS = [
   },
 ];
 
-const WORLD9_LEVELS = [
+const W9B = [
   {
     name: 'Avenida Neón', target: 54,
     hint: 'Láseres tempranos, turbo y cinta en contra.',
@@ -1743,7 +1743,7 @@ const WORLD9_LEVELS = [
       b.plat(0, 7.0, -70, 4.1, 14, { type: 'neon' });
       b.plat(0, 7.0, -82, 5.5, 8, { type: 'neon', pillars: true });
       b.crown(0, 7.0, -83);
-      const Hi = (y) => ({ cond: () => (window.__game && window.__game.ball.pos.y > y) });
+      const Hi = (y) => { const oy = b.oy || 0; return { cond: () => (window.__game && window.__game.ball.pos.y > y + oy) }; };
       // ir hacia el destino: al cruzar el pad, el teleporte te sube
       b.wp(0, 0, -2); b.wp(0, 0, -12);
       b.wp(0, 3.5, -28, 'w', 0, Hi(2.8));
@@ -1892,7 +1892,7 @@ const WORLD9_LEVELS = [
 ];
 
 
-const WORLD10_LEVELS = [
+const W10B = [
   {
     name: 'Órbita Suave', target: 56,
     hint: 'Meteoros tempranos, baja gravedad y agujero al borde.',
@@ -2079,6 +2079,228 @@ const WORLD10_LEVELS = [
   },
 ];
 
+
+
+// ---------------------------------------------------------------------------
+// v0.4.2 — Niveles largos por secciones (Mundos 4–10).
+// Cada nivel encadena 3–5 secciones ya probadas (base del mundo, plantillas de
+// saltos/plataformas sobre el vacío/vigas estrechas y tramos de mundos previos).
+// Las secciones se desplazan en Y/Z; la corona de cada sección intermedia se
+// convierte en el empalme (con checkpoint en 1–2 empalmes, tras lo más duro).
+// ---------------------------------------------------------------------------
+const COSMETIC_TYPES = new Set(['stone', 'basalt', 'snow', 'jungle', 'sand', 'candy', 'coral', 'castle', 'neon', 'space']);
+function composeSections(b, secs, o = {}) {
+  const n = secs.length;
+  const cps = o.cps || (n <= 2 ? [0] : (n === 3 ? [0, 1] : (n === 4 ? [1, 2] : [1, n - 2])));
+  const haste = o.haste || 1;
+  let dy = 0, dz = 0;
+  for (let k = 0; k < n; k++) {
+    const first = k === 0, last = k === n - 1;
+    const sec = secs[k];
+    const src = sec.build.toString();
+    if ((dy !== 0 || dz !== 0) && /pos\.[yz]/.test(src) && !/b\.oy/.test(src)) throw new Error('Sección con condición absoluta en Y/Z fuera de posición: ' + (sec.name || k));
+    let end = null;
+    const S = (x, y, z) => [x, y + dy, z + dz];
+    const fixOpts = (r) => {
+      if (haste === 1) return r;
+      return r.map((a) => {
+        if (a && typeof a === 'object' && !Array.isArray(a) && typeof a.period === 'number' && a.period >= 2.1) {
+          return { ...a, period: +Math.max(2.1, a.period * haste).toFixed(2) };
+        }
+        return a;
+      });
+    };
+    const P = new Proxy(b, {
+      get(t, key) {
+        if (key === 'oy') return dy;
+        if (key === 'oz') return dz;
+        const f = t[key];
+        if (typeof f !== 'function') return f;
+        switch (key) {
+          case 'start': return first ? (x, y, z) => t.start(...S(x, y, z)) : () => {};
+          case 'crown': case 'cosmosCrown':
+            return (x, y, z, ...r) => { end = S(x, y, z); if (last) return f.call(t, ...S(x, y, z), ...r); };
+          case 'checkpoint': return () => {};
+          case 'hint': case 'finish': case 'linkTeleports': return f.bind(t);
+          case 'ramp': case 'coinRow':
+            return (x1, y1, z1, x2, y2, z2, ...r) => f.call(t, ...S(x1, y1, z1), ...S(x2, y2, z2), ...r);
+          case 'plat':
+            return (x, y, z, w, d, op = {}) => {
+              if (op && op.type && COSMETIC_TYPES.has(op.type)) { op = { ...op }; delete op.type; }
+              return f.call(t, ...S(x, y, z), w, d, op);
+            };
+          case 'wp':
+            return (x, y, z, ...r) => f.call(t, ...S(x, y, z), ...r);
+          default:
+            if (typeof key === 'string' && key.startsWith('_')) return f.bind(t);
+            return (x, y, z, ...r) => f.call(t, ...S(x, y, z), ...fixOpts(r));
+        }
+      },
+    });
+    sec.build(P);
+    if (!end) throw new Error('Sección sin corona: ' + (sec.name || k));
+    if (!last) {
+      if (cps.includes(k)) b.checkpoint(end[0], end[1], end[2]);
+      dy = end[1]; dz = end[2] - 3.5;
+    }
+  }
+}
+function chain(base, secs, o = {}) {
+  return {
+    name: base.name, target: o.target || base.target, hint: o.hint || base.hint,
+    build(b) { composeSections(b, secs, o); },
+  };
+}
+
+// ---- Plantillas de sección (se tiñen con el tema del mundo) ----
+// Piedras sobre el vacío: saltos cortos y visibles.
+function tHex(o = {}) {
+  const n = o.n || 5, r = o.r || 1.1, step = o.step || 3.0;
+  const xs = o.xs || [0, 1.4, -0.8, 1.0, -0.6, 1.2, -1.0, 0.6];
+  return { name: 'tHex', build(b) {
+    b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { pillars: true });
+    b.plat(0, 0, -7, 3.4, 8);
+    const st = []; let z = -13.2;
+    for (let i = 0; i < n; i++) { st.push([xs[i % xs.length], z]); z -= step; }
+    st.forEach(([x, zz], i) => { b.hex(x, 0, zz, r); if (i % 2 === 0) b.coin(x, 0, zz); });
+    const lastZ = st[st.length - 1][1];
+    const endZ = lastZ - 5.3;
+    b.plat(0, 0, endZ, 6, 5, { pillars: true });
+    b.crown(0, 0, endZ);
+    b.wp(0, 0, -2); b.wp(0, 0, -10.2, 'j', 5);
+    st.forEach(([x, zz]) => b.wp(x, 0, zz, 'j', 4));
+    b.wp(0, 0, endZ);
+  } };
+}
+// Plataformas laterales móviles sobre el vacío (patrón del Volcán).
+function tMovers(o = {}) {
+  const pairs = o.pairs || 2, period = o.period || 4.0;
+  return { name: 'tMovers', build(b) {
+    b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { pillars: true });
+    b.plat(0, 0, -7, 3.6, 8);
+    let z0 = -14; const ms = [];
+    for (let p = 0; p < pairs; p++) {
+      b.plat(0, 0, z0, 4.5, 6, { pillars: true });
+      const m1 = b.mover(-2.0, 0, z0 - 5, 3.4, 3.4, { to: [4.0, 0, 0], period });
+      const m2 = b.mover(-2.0, 0, z0 - 10, 3.4, 3.4, { to: [4.0, 0, 0], period, phase: 0.5 });
+      b.coin(0, 0.4, z0 - 5); b.coin(0, 0.4, z0 - 10);
+      ms.push([z0, m1, m2]); z0 -= 16;
+    }
+    b.plat(0, 0, z0, 6, 6, { pillars: true });
+    b.crown(0, 0, z0);
+    b.wp(0, 0, -2); b.wp(0, 0, -10);
+    for (const [z, m1, m2] of ms) {
+      b.wp(0, 0, z);
+      b.wp(0, 0, z - 2.2 + 0.0, 'w', 0, { cond: () => Math.abs(m1.c.pos.x) < 0.4 });
+      b.wp(0, 0, z - 3.0, 'j', 5);
+      b.wp(0, 0, z - 5, 'r', 0, { follow: m1 });
+      b.wp(0, 0, z - 7.5, 'j', 6, { follow: m1, oz: -1.0 });
+      b.wp(0, 0, z - 10, 'r', 0, { follow: m2 });
+      b.wp(0, 0, z - 12.5, 'j', 6, { follow: m2, oz: -1.0 });
+    }
+    b.wp(0, 0, z0);
+  } };
+}
+// Viga estrecha en zigzag (sin barandas).
+function tZig(o = {}) {
+  const w = o.w || 2.6, segs = o.segs || 4, len = o.len || 9, dx = o.dx || 3.2;
+  return { name: 'tZig', build(b) {
+    b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { pillars: true });
+    let x = 0, z = -3; const pts = [[0, -2]];
+    for (let s = 0; s < segs; s++) {
+      // tramo recto
+      b.plat(x, 0, z - len / 2, w, len + w * 0.5);
+      if (s % 2 === 1) b.coin(x, 0, z - len / 2);
+      z -= len;
+      pts.push([x, z + w * 0.3, 't']);
+      // tramo lateral
+      const nx = s % 2 === 0 ? (x === 0 ? dx : -x) : (x === 0 ? -dx : -x);
+      const tx = s === segs - 1 ? 0 : nx;
+      b.plat((x + tx) / 2, 0, z, Math.abs(tx - x) + w, w);
+      pts.push([tx, z, 't']);
+      x = tx;
+    }
+    b.plat(0, 0, z - 4, 6, 6, { pillars: true });
+    b.crown(0, 0, z - 4);
+    pts.forEach(([px, pz, f]) => b.wp(px, 0, pz, f || ''));
+    b.wp(0, 0, z - 4);
+  } };
+}
+// Pasarela estrecha con peligros temporizados agrupados. Entre peligros hay
+// espacio para detenerse (justo), pero cruzar de corrido castiga la prisa.
+function tGaunt(o = {}) {
+  const w = o.w || 2.4, gap = o.gap || 5.0, groups = o.groups || [['jet', 'jet']];
+  const per = { jet: 2.8, crush: 3.0, clam: 3.4, laser: 2.7, axe: 1.6 };
+  return { name: 'tGaunt', build(b) {
+    b.start(0, 0, 0); b.plat(0, 0, 0, 5, 6, { pillars: true });
+    let z = -3; const plan = [];
+    groups.forEach((g, gi) => {
+      const zs = z - 5; const hs = [];
+      g.forEach((k, j) => {
+        const hz = zs - j * gap;
+        const p = (o.periods && o.periods[k]) || per[k];
+        const pp = +(p * (1 + 0.21 * j)).toFixed(2), ph = (0.37 * (gi + 1) + 0.29 * j) % 1;
+        let h;
+        if (k === 'jet') h = b.fireJet(0, 0, hz, { period: pp, phase: ph, h: 2.6, r: 0.95 });
+        else if (k === 'crush') h = b.candyCrusher(0, 0, hz, { period: pp, phase: ph, w: w + 0.4, d: 2.2 });
+        else if (k === 'clam') h = b.clam(0, 0, hz, { period: pp, phase: ph, w: w + 0.6, d: 2.6 });
+        else if (k === 'laser') h = b.laserGate(0, 0, hz, { period: pp, phase: ph, w: w + 1.2 });
+        else h = b.pendulumAxe(0, 0, hz, { speed: +(1.55 + 0.17 * j).toFixed(2), phase: ph * 6.28, len: 3.8 });
+        hs.push([k, hz, h]);
+        if (j === 0) b.coin(0, 0, hz + 2.5);
+      });
+      plan.push(hs); z = hs[hs.length - 1][1] - 3.5;
+    });
+    b.plat(0, 0, (-3 + z) / 2 - 0.5, w, Math.abs(z + 3) + 3);
+    b.plat(0, 0, z - 3.5, 6, 6, { pillars: true });
+    b.crown(0, 0, z - 3.5);
+    b.wp(0, 0, -2);
+    for (const hs of plan) {
+      const [k, hz, h] = hs[0];
+      const back = k === 'axe' ? 3.0 : 2.5;
+      const l1 = k === 'axe' ? 0.25 : 0.05, l2 = k === 'axe' ? 0.5 : (k === 'laser' ? 0.6 : 0.75);
+      b.wp(0, 0, hz + back, 'w', 0, { cond: () => h.safe(l1) && h.safe(l2) });
+      b.wp(0, 0, hs[hs.length - 1][1] - 2.8, '', 7.5);
+    }
+    b.wp(0, 0, z - 3.5);
+  } };
+}
+
+
+const WORLD4_LEVELS = [
+  chain(W4B[0], [W4B[0], tHex({ n: 5, r: 1.1 }), WORLD2_LEVELS[1], tZig({ w: 2.8, segs: 3 }), WORLD3_LEVELS[0]], { target: 75, cps: [1, 3] }),
+  chain(W4B[1], [W4B[1], tZig({ w: 2.8, segs: 3 }), WORLD2_LEVELS[2], tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 65, cps: [1, 2] }),
+  chain(W4B[2], [W4B[2], tMovers({ pairs: 1, period: 4.0 }), WORLD2_LEVELS[4], tHex({ n: 5, r: 1.1 })], { target: 70, cps: [1, 2] }),
+  chain(W4B[3], [W4B[3], tHex({ n: 5, r: 1.1 }), WORLD2_LEVELS[0]], { target: 80, cps: [0, 1] }),
+  chain(W4B[4], [W4B[4], tZig({ w: 2.8, segs: 3 }), WORLD2_LEVELS[0], tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 60, cps: [1, 2] }),
+  chain(W4B[5], [W4B[5], tMovers({ pairs: 1, period: 4.0 }), WORLD2_LEVELS[1], tHex({ n: 5, r: 1.1 }), WORLD3_LEVELS[0]], { target: 75, cps: [1, 3] }),
+  chain(W4B[6], [W4B[6], tHex({ n: 5, r: 1.1 }), WORLD2_LEVELS[2], tZig({ w: 2.8, segs: 3 })], { target: 70, cps: [1, 2] }),
+  chain(W4B[7], [W4B[7], tZig({ w: 2.8, segs: 3 }), WORLD2_LEVELS[4], tMovers({ pairs: 1, period: 4.0 }), tGaunt({ w: 2.6, groups: [['jet', 'jet']] })], { target: 90, cps: [1, 3] }),
+];
+const WORLD5_LEVELS = [
+  chain(W5B[0], [W5B[0], tHex({ n: 6, r: 1.1 }), W4B[1], tZig({ w: 2.7, segs: 3 }), WORLD3_LEVELS[5]], { target: 90, cps: [1, 3], haste: 0.97 }),
+  chain(W5B[1], [W5B[1], tZig({ w: 2.7, segs: 3 }), W4B[5], tMovers({ pairs: 1, period: 3.8 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 80, cps: [1, 3], haste: 0.97 }),
+  chain(W5B[2], [W5B[2], tMovers({ pairs: 1, period: 3.8 }), W4B[3], tHex({ n: 6, r: 1.1 })], { target: 70, cps: [1, 2], haste: 0.97 }),
+  chain(W5B[3], [W5B[3], tHex({ n: 6, r: 1.1 }), W4B[6], tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 80, cps: [1, 2], haste: 0.97 }),
+  chain(W5B[4], [W5B[4], tZig({ w: 2.7, segs: 3 }), W4B[2], tMovers({ pairs: 1, period: 3.8 }), W4B[0]], { target: 80, cps: [1, 3], haste: 0.97 }),
+  chain(W5B[5], [W5B[5], tMovers({ pairs: 1, period: 3.8 }), W4B[1], tHex({ n: 6, r: 1.1 }), tGaunt({ w: 2.5, groups: [['jet', 'jet']] })], { target: 80, cps: [1, 3], haste: 0.97 }),
+  chain(W5B[6], [W5B[6], tHex({ n: 6, r: 1.1 }), W4B[5], tZig({ w: 2.7, segs: 3 })], { target: 70, cps: [1, 2], haste: 0.97 }),
+  chain(W5B[7], [W5B[7], tZig({ w: 2.7, segs: 3 }), W4B[3], tMovers({ pairs: 1, period: 3.8 }), tGaunt({ w: 2.5, groups: [['jet', 'jet'], ['jet', 'jet']] })], { target: 125, cps: [1, 3], haste: 0.97 }),
+];
+const WORLD6_LEVELS = [
+  chain(W6B[0], [W6B[0], tHex({ n: 6, r: 1.05, step: 3.1 }), W5B[1], tZig({ w: 2.6, segs: 4 }), tGaunt({ w: 2.5, groups: [['crush', 'crush']] })], { target: 85, cps: [1, 3], haste: 0.95 }),
+  chain(W6B[1], [W6B[1], tZig({ w: 2.6, segs: 4 }), W5B[3], tMovers({ pairs: 2, period: 3.7 })], { target: 80, cps: [1, 2], haste: 0.95 }),
+  chain(W6B[2], [W6B[2], tMovers({ pairs: 2, period: 3.7 }), W5B[4], tGaunt({ w: 2.5, groups: [['crush', 'jet']] })], { target: 85, cps: [1, 2], haste: 0.95 }),
+  chain(W6B[3], [W6B[3], tHex({ n: 6, r: 1.05, step: 3.1 }), W5B[5], tZig({ w: 2.6, segs: 4 }), W4B[6]], { target: 90, cps: [1, 3], haste: 0.95 }),
+  chain(W6B[4], [W6B[4], tZig({ w: 2.6, segs: 4 }), W5B[6], tGaunt({ w: 2.5, groups: [['crush', 'crush']] })], { target: 100, cps: [1, 2], haste: 0.95 }),
+  chain(W6B[5], [W6B[5], tMovers({ pairs: 2, period: 3.7 }), W4B[6], tGaunt({ w: 2.5, groups: [['jet', 'crush']] })], { target: 80, cps: [1, 2], haste: 0.95 }),
+  chain(W6B[6], [W6B[6], tHex({ n: 6, r: 1.05, step: 3.1 }), W4B[4], tGaunt({ w: 2.5, groups: [['crush', 'jet']] })], { target: 80, cps: [1, 2], haste: 0.95 }),
+  chain(W6B[7], [W6B[7], tZig({ w: 2.6, segs: 4 }), WORLD3_LEVELS[4], tMovers({ pairs: 2, period: 3.7 }), tGaunt({ w: 2.5, groups: [['crush', 'jet'], ['crush', 'crush']] })], { target: 130, cps: [1, 3], haste: 0.95 }),
+];
+const WORLD7_LEVELS = W7B;
+const WORLD8_LEVELS = W8B;
+const WORLD9_LEVELS = W9B;
+const WORLD10_LEVELS = W10B;
 
 
 export const WORLDS = [
