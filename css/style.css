@@ -89,6 +89,21 @@ body.playing.joy #joy-zone { display: block; }
 #toast { position: fixed; left: 50%; top: 22%; transform: translateX(-50%); z-index: 12; font-weight: 900; font-size: 22px; text-align: center; color: #fff; padding: 10px 22px; border-radius: 20px;
   background: rgba(30, 80, 140, .55); text-shadow: 0 2px 0 rgba(0,0,0,.3); opacity: 0; transition: opacity .35s; pointer-events: none; max-width: 86vw; }
 #toast.show { opacity: 1; }
+/* v0.4.3: avisos en juego abajo, a la altura del botón SALTAR, sin tapar el camino */
+body.playing { --jw: 122px; --jr: max(26px, env(safe-area-inset-right)); --jb: max(26px, env(safe-area-inset-bottom)); --tgap: 14px; }
+body.playing #toast { top: auto; bottom: calc(var(--jb) + var(--jw) / 2); transform: translate(-50%, 50%);
+  max-width: calc(100vw - 2 * (var(--jr) + var(--jw) + var(--tgap))); box-sizing: border-box;
+  font-size: 16px; font-weight: 800; line-height: 1.25; padding: 7px 14px; border-radius: 14px;
+  background: rgba(20, 50, 95, .42); text-shadow: 0 1px 2px rgba(0,0,0,.45); }
+@media (max-height: 430px) {
+  body.playing { --jw: 108px; --tgap: 12px; }
+  body.playing #toast { font-size: 14px; padding: 6px 12px; }
+}
+/* vertical estrecho: centrado en el hueco entre el borde izquierdo y SALTAR */
+@media (orientation: portrait) and (max-width: 600px) {
+  body.playing #toast { left: max(12px, env(safe-area-inset-left)); right: calc(var(--jr) + var(--jw) + 12px);
+    width: fit-content; max-width: none; margin: 0 auto; transform: translateY(50%); font-size: 14px; padding: 6px 12px; }
+}
 #flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 9; transition: opacity .4s; }
 
 #rotate { position: fixed; inset: 0; z-index: 50; background: linear-gradient(#62c6ff, #ffe6b8); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; text-align: center; }
