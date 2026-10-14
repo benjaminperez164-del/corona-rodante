@@ -313,3 +313,35 @@ body.theme-space { background: #281860; }
   0% { transform: translateY(0) rotate(0deg); opacity: 1; }
   100% { transform: translateY(110vh) rotate(720deg); opacity: .15; }
 }
+
+/* v0.5: botones grandes y separados en menú principal y pausa */
+.btn.orange { --c1: #ffb36b; --c2: #ff7a2f; --sh: #c4531a; }
+#scr-title .menu, #scr-pause .menu {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; width: min(380px, 86vw); margin: 18px auto 0; align-items: stretch;
+}
+#scr-title .menu .btn, #scr-pause .menu .btn {
+  min-height: 60px; min-width: 0; width: 100%; font-size: 22px; padding: 10px 18px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
+}
+#scr-title .menu .btn.big { min-height: 68px; font-size: 26px; }
+#scr-title .menu .row { display: contents; }
+#btn-practice { animation: pulseP 2.2s ease-in-out infinite; }
+@keyframes pulseP { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+#scr-title.screen, #scr-pause.screen { overflow-y: auto; align-items: safe center; }
+#scr-pause .panel { width: min(440px, 92vw); overflow: visible; max-height: none; margin: auto; }
+body.practice #hud-time, body.practice #btn-levels { display: none; }
+#btn-exit { display: none; }
+body.practice #btn-exit { display: flex; }
+/* apaisado / pantallas bajas: 2 columnas, objetivos táctiles grandes igualmente */
+@media (max-height: 560px) and (orientation: landscape) {
+  #scr-title .menu, #scr-pause .menu { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(640px, 92vw); gap: 14px 16px; margin-top: 10px; }
+  #scr-title .menu .btn, #scr-title .menu .btn.big, #scr-pause .menu .btn { min-height: 56px; font-size: 20px; padding: 8px 14px; }
+  #scr-pause .panel { width: min(680px, 94vw); padding: 12px 18px 18px; }
+}
+@media (max-height: 400px) and (orientation: landscape) {
+  #scr-title .logo { font-size: clamp(22px, 9vh, 36px); }
+  #scr-title .sub { display: none; }
+  #scr-title .menu { gap: 12px 16px; margin-top: 6px; }
+  #scr-pause .panel h2 { font-size: 20px; }
+  #scr-pause .menu { margin-top: 6px; gap: 12px 16px; }
+}

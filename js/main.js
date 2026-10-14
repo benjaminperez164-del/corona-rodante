@@ -1,13 +1,14 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=54';
-import { Level } from './world.js?v=54';
-import { LEVELS, WORLDS } from './levels.js?v=54';
-import { Input } from './input.js?v=54';
-import { Sfx } from './audio.js?v=54';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=54';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=54';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=54';
+import { Ball, stepBall } from './physics.js?v=55';
+import { Level } from './world.js?v=55';
+import { LEVELS, WORLDS } from './levels.js?v=55';
+import { Input } from './input.js?v=55';
+import { Sfx } from './audio.js?v=55';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=55';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=55';
+import { PRACTICE } from './practice.js?v=55';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=55';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -220,7 +221,7 @@ const sfx = new Sfx(); sfx.music = save.opts.music && !save.muted; sfx.sfx = sav
 const G = {
   state: 'title', level: null, levelIndex: 0, checkpoint: new THREE.Vector3(), coins: 0, time: 0, timerOn: false,
   deaths: 0, dead: false, deadT: 0, deadKind: '', winT: 0, shake: 0, lastGroundY: 0, cool: {}, t: 0, returnTo: 'title',
-  dailyMode: false, dailySpec: null,
+  dailyMode: false, dailySpec: null, practice: false,
   camPos: new THREE.Vector3(0, 6, 10), camLook: new THREE.Vector3(), followY: 0, bot: null, hintT: 0, hintShowing: false, selectedWorld: 0,
 };
 const DT = 1 / 120;
@@ -447,6 +448,7 @@ function renderOptions() {
 
 // ---------------- Niveles ----------------
 function loadLevel(i) {
+  G.practice = false; document.body.classList.remove('practice');
   if (G.level) G.level.dispose();
   G.levelIndex = i; G.level = new Level(scene, LEVELS[i], i);
   applyTheme(LEVELS[i].theme || 'sky');
@@ -461,6 +463,7 @@ function resetRun() {
   ballMesh.visible = true; ballMesh.scale.setScalar(1);
   if (L.crownObj) { L.crownObj.position.copy(L.crownPos); L.crownObj.scale.setScalar(1); }
   G.followY = ball.pos.y; snapCamera();
+  if (G.practice) { $('hud-level').textContent = '🌼 Patio de práctica'; updateHUD(); return; }
   const Ld = LEVELS[G.levelIndex];
   $('hud-level').textContent = G.dailyMode
     ? `📅 Reto · ${Ld.name}`
@@ -479,9 +482,21 @@ async function startLevel(i, fromMenu) {
   if (!G.hintShowing) setTimeout(() => toast(hint, 3.5), delay);
   $('joy-hint').style.opacity = (save.tutorialSeen || (save.levels[0] && save.levels[0].done)) ? 0 : 0;
 }
+function startPractice() {
+  sfx.init();
+  G.dailyMode = false; G.dailySpec = null;
+  if (G.level) G.level.dispose();
+  G.levelIndex = -1; G.level = new Level(scene, PRACTICE, 900);
+  G.practice = true; document.body.classList.add('practice');
+  applyTheme('sky'); resetRun();
+  G.state = 'play'; showScreen(null); setPlayingUI(true); sfx.musicOn = true;
+  maybeShowTutorial();
+  if (!G.hintShowing) setTimeout(() => toast(PRACTICE.hint, 3.5), 250);
+}
 function pause() { if (G.state !== 'play') return; G.state = 'pause'; setPlayingUI(false); $('hud').classList.remove('hidden'); showScreen('scr-pause'); }
 function resume() { G.state = 'play'; showScreen(null); setPlayingUI(true); }
 function toTitle() {
+  if (G.practice) { loadLevel(0); }
   G.dailyMode = false; G.dailySpec = null;
   G.state = 'title'; setPlayingUI(false); showScreen('scr-title'); sfx.musicOn = true;
   updateTitleBadge();
@@ -506,6 +521,7 @@ function handleEvents() {
 }
 const _v = new THREE.Vector3(), _v2 = new THREE.Vector3();
 function die(kind) {
+  if (G.practice) { G.checkpoint.copy(G.level.spawn); respawn(); return; }
   G.dead = true; G.deadT = 0; G.deadKind = kind; G.deaths++;
   sfx.play('fall');
   if (kind === 'spikes') { ballMesh.visible = false; fx.burst(ball.pos, 26, [0xffffff, 0xff6b6b, 0xdde3ea], { speed: 6, up: 6, life: 0.8 }); G.shake = 0.5; ball.vel.set(0, 0, 0); }
@@ -645,7 +661,7 @@ function fixedStep(dt) {
         }
       }
       handleEvents();
-      if (G.timerOn) G.time += dt;
+      if (G.timerOn && !G.practice) G.time += dt;
       if (ball.sinceGround === 0) G.lastGroundY = ball.pos.y;
       // monedas
       for (const c of L.coins) {
@@ -653,6 +669,10 @@ function fixedStep(dt) {
         if (c.pos.distanceToSquared(ball.pos) < 1.0) {
           c.taken = true; G.coins++; sfx.play('coin');
           fx.burst(c.pos, 10, [0xffd23a, 0xfff2a0], { speed: 3, up: 3, life: 0.5, g: 6 });
+          if (G.practice && G.coins >= L.coins.length) {
+            toast('¡Las juntaste todas! 🌟 Vuelven a aparecer', 2.6); sfx.play('star');
+            setTimeout(() => { if (G.practice && G.level === L) { for (const k of L.coins) k.taken = false; G.coins = 0; updateHUD(); } }, 2500);
+          }
         }
       }
       // puntos de control
@@ -786,6 +806,8 @@ on('btn-play', () => {
     G.returnTo = 'scr-title'; showScreen('scr-levels');
   }
 });
+on('btn-practice', () => { sfx.play('click'); startPractice(); });
+on('btn-exit', () => { sfx.play('click'); toTitle(); });
 on('btn-daily', () => { sfx.play('click'); showScreen('scr-daily'); });
 on('btn-achievements', () => { sfx.play('click'); notifyAchievements(); showScreen('scr-achievements'); });
 on('btn-shop', () => { sfx.play('click'); showScreen('scr-shop'); });
@@ -802,7 +824,7 @@ on('btn-mute', () => {
   sfx.setMusic(save.opts.music && !save.muted); sfx.setSfx(save.opts.sfx && !save.muted); updateHUD();
 });
 on('btn-resume', () => { sfx.play('click'); resume(); });
-on('btn-restart', () => { sfx.play('click'); resetRun(); resume(); });
+on('btn-restart', () => { sfx.play('click'); if (G.practice) G.checkpoint.copy(G.level.spawn); resetRun(); resume(); });
 on('btn-levels', () => { sfx.play('click'); G.dailyMode = false; G.dailySpec = null; G.state = 'menu'; setPlayingUI(false); showScreen('scr-levels'); });
 on('btn-pause-opts', () => { sfx.play('click'); G.returnTo = 'scr-pause'; showScreen('scr-options'); });
 on('btn-next', () => { sfx.play('click'); G.dailyMode = false; G.dailySpec = null; startLevel(G.levelIndex + 1, true); });
@@ -888,7 +910,7 @@ window.__game = {
   },
   teleport(x, y, z) { ball.reset(new THREE.Vector3(x, y, z)); },
   resetSave() { localStorage.removeItem(SAVE_KEY); save = loadSave(); },
-  dailySpec, localDateStr, evaluateAchievements,
+  dailySpec, localDateStr, evaluateAchievements, startPractice, pause,
   startDaily(dateStr) {
     const spec = dailySpec(dateStr || localDateStr(), LEVELS.length);
     const base = LEVELS[spec.baseIndex];
@@ -905,7 +927,7 @@ loadLevel(0);
 G.state = 'title';
 showScreen('scr-title');
 function updateTitleBadge() {
-  if ($('ver-badge')) $('ver-badge').textContent = 'v0.4.3';
+  if ($('ver-badge')) $('ver-badge').textContent = 'v0.5';
   if (!$('title-world')) return;
   const marks = [7, 15, 23, 31, 39, 47, 55, 63, 71];
   const labels = [

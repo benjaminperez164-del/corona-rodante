@@ -9,10 +9,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Corona Rodante: rueda por las Ruinas, el Volcán y el Glaciar. Reto Diario, bolas y logros. Juego de plataformas 3D para el navegador del móvil.">
 <title>Corona Rodante</title>
-<link rel="icon" href="icon.svg?v=54" type="image/svg+xml">
-<link rel="manifest" href="manifest.json?v=54">
-<link rel="stylesheet" href="css/style.css?v=54">
-<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=54" } }</script>
+<link rel="icon" href="icon.svg?v=55" type="image/svg+xml">
+<link rel="manifest" href="manifest.json?v=55">
+<link rel="stylesheet" href="css/style.css?v=55">
+<script type="importmap">{ "imports": { "three": "./js/vendor/three.module.min.js?v=55" } }</script>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -43,18 +43,17 @@
     <div class="sub" id="title-world">Mundo 1 · Ruinas Flotantes</div>
     <div class="menu">
       <button class="btn yellow big" id="btn-play">▶ Jugar</button>
-      <button class="btn green big" id="btn-daily">📅 Reto Diario</button>
+      <button class="btn orange big" id="btn-practice">🌼 Patio de práctica</button>
+      <button class="btn green" id="btn-daily">📅 Reto Diario</button>
       <div class="row">
         <button class="btn pink" id="btn-shop">🎱 Bolas</button>
         <button class="btn purple" id="btn-achievements">🏅 Logros</button>
       </div>
-      <div class="row">
-        <button class="btn blue" id="btn-options">⚙ Opciones</button>
-      </div>
+      <button class="btn blue" id="btn-options">⚙ Opciones</button>
     </div>
     <div class="title-foot">
       <div class="wallet"><span class="coin-ico"></span><span class="wallet-n">0</span></div>
-      <div class="ver-badge" id="ver-badge">v0.4.3</div>
+      <div class="ver-badge" id="ver-badge">v0.5</div>
     </div>
   </div>
 </section>
@@ -109,6 +108,7 @@
       <button class="btn blue" id="btn-restart">↺ Reiniciar</button>
       <button class="btn pink" id="btn-levels">☰ Niveles</button>
       <button class="btn green" id="btn-pause-opts">⚙ Opciones</button>
+      <button class="btn orange" id="btn-exit">🏠 Salir</button>
     </div>
   </div>
 </section>
@@ -182,6 +182,6 @@
 
 <div id="loading">Cargando…</div>
 <noscript>Este juego necesita JavaScript.</noscript>
-<script type="module" src="js/main.js?v=54"></script>
+<script type="module" src="js/main.js?v=55"></script>
 </body>
 </html>
