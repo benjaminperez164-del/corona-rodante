@@ -1,14 +1,14 @@
 // Corona Rodante — juego de plataformas 3D con bola para el navegador del móvil
 import * as THREE from 'three';
-import { Ball, stepBall } from './physics.js?v=55';
-import { Level } from './world.js?v=55';
-import { LEVELS, WORLDS } from './levels.js?v=55';
-import { Input } from './input.js?v=55';
-import { Sfx } from './audio.js?v=55';
-import { SKINS, skinMaterial, skinPreview } from './skins.js?v=55';
-import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=55';
-import { PRACTICE } from './practice.js?v=55';
-import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=55';
+import { Ball, stepBall } from './physics.js?v=56';
+import { Level } from './world.js?v=56';
+import { LEVELS, WORLDS } from './levels.js?v=56';
+import { Input } from './input.js?v=56';
+import { Sfx } from './audio.js?v=56';
+import { SKINS, skinMaterial, skinPreview } from './skins.js?v=56';
+import { localDateStr, dailySpec, applyDailyWin } from './daily.js?v=56';
+import { PRACTICE } from './practice.js?v=56';
+import { ACHIEVEMENTS, evaluateAchievements, achievementById } from './achievements.js?v=56';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -926,8 +926,9 @@ resize();
 loadLevel(0);
 G.state = 'title';
 showScreen('scr-title');
+requestAnimationFrame(() => requestAnimationFrame(() => window.hideSplash && window.hideSplash()));
 function updateTitleBadge() {
-  if ($('ver-badge')) $('ver-badge').textContent = 'v0.5';
+  if ($('ver-badge')) $('ver-badge').textContent = 'v0.5.1';
   if (!$('title-world')) return;
   const marks = [7, 15, 23, 31, 39, 47, 55, 63, 71];
   const labels = [
